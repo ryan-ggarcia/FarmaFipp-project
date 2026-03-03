@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmaFipp</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: #f4f4f4;
+}
+
+/* NAVBAR */
+.navbar {
+    background-color: #c40000;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.logo {
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links li {
+    position: relative;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 8px;
+    display: block;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: white;
+    color: #c40000;
+    border-radius: 5px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #c40000;
+    min-width: 200px;
+    list-style: none;
+    border-radius: 6px;
+    padding: 8px 0;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: 0.2s ease-in-out;
+}
+
+.dropdown:hover > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown > a {
+    padding: 10px 12px;
+}
+
+
+.dropdown {
+    padding-bottom: 10px;
+}
+
+
+.dropdown-menu li a {
+    padding: 10px 15px;
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">FarmaFipp</div>
+
+    <ul class="nav-links" id="navLinks">
+
+        <li><a href="/">Home</a></li>
+
+        <li class="dropdown">
+            <a>Produtos ▼</a>
+            <ul class="dropdown-menu">
+                <li><a href="produtos/pagina_produto">Página Produto</a></li>
+                <li><a href="lista_produtos">Lista de Produtos</a></li>
+            </ul>
+        </li>
+
+        <li><a href="carrinho">Carrinho</a></li>
+        <li><a href="checkout">Checkout</a></li>
+
+        <li class="dropdown">
+            <a>Autenticar ▼</a>
+            <ul class="dropdown-menu">
+                <li><a href="autenticar/login">Login</a></li>
+                <li><a href="cadastro">Cadastro</a></li>
+            </ul>
+        </li>
+
+        <li><a href="faq">FAQ</a></li>
+        <li><a href="contato">Contato</a></li>
+
+    </ul>
+
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+</nav>
+
+<%- body %>
+
+<script>
+function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("active");
+}
+
+function toggleDropdown(event, element) {
+    if (window.innerWidth <= 768) {
+        event.preventDefault();
+        element.parentElement.classList.toggle("open");
+    }
+}
+</script>
+
+</body>
+</html>
