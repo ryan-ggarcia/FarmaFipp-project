@@ -25,6 +25,7 @@ server.use("/login", autenticacaoRouter);
 server.use("/pagina_produto", produtoRouter);
 server.use("/produtos", produtoRouter);
 server.use("/autenticar", autenticacaoRouter);
+server.use("/servicos", ServicoRouter);
 
 
     

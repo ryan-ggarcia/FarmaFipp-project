@@ -1,0 +1,45 @@
+<script src="/js/servicos/alterar.js"></script>
+<div>
+    <h1>Alterar Serviços</h1>
+    <div>
+        <input type="hidden" id="id" value="<%= servico.getID() %>">
+        <div class="form-group">
+            <label>Data:</label>
+            <input value="<%= usuario.usuNome %>"  id="nome" type="text" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>E-mail:</label>
+            <input value="<%= usuario.usuEmail %>" id="email" type="email" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Senha:</label>
+            <input value="<%= usuario.usuSenha %>" id="senha" type="password" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Perfil:</label>
+            <select id="perfil" class="form-control">
+                <option value="0">-- Selecione --</option>
+                <% for(let i = 0; i<listaPerfil.length; i++) { %>
+                    <% if(usuario.perfilId == listaPerfil[i].perfilId) { %>
+                        <option selected="true" value="<%= listaPerfil[i].perfilId %>">
+                            <%= listaPerfil[i].perfilDescricao %>
+                        </option>
+                    <% } else { %>
+                        <option value="<%= listaPerfil[i].perfilId %>">
+                            <%= listaPerfil[i].perfilDescricao %>
+                        </option>
+                    <% } %>
+
+                <% } %>
+            </select>
+        </div>
+        <div class="form-group">
+            <label><input <% usuario.usuAtivo == 'S' ? 'checked' : '' %> id="ativo" type="checkbox"> Ativo</label>
+        </div>
+
+        <div>
+            <button id="btnAlterar" class="btn btn-primary">Alterar</button>
+            <a href="/usuario" class="btn btn-default">Voltar</a>
+        </div>
+    </div>
+</div>
