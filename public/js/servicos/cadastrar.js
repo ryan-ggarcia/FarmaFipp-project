@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     btn.addEventListener("click", gravar);
 
-    console.log(document.getElementById("btnGravar"));
-
     function gravar() {
         
         let inputData = document.getElementById("data");
@@ -36,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     data: inputData.value,
                     tipo: inputTipo.value,
                     descricao: inputDesc.value,
-                    status: cbStatus.checked
+                    status: cbStatus.checked === true ? true : false
                 })
             })
             .then(function(resposta) {
@@ -44,12 +42,18 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(function(corpo) {
                 if(corpo.ok) {
-                    alert(corpo.msg);
-                    //redireciona
-                    window.location.href = "/servicos";
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Sucesso',
+                      text: corpo.msg,
+                      timer: 1500,
+                      showConfirmButton: false
+                    }).then(()=>{
+                      window.location.href = "/servicos";
+                    });
                 }
                 else {
-                    alert(corpo.msg);
+                    Swal.fire({icon:'error', title:'Erro', text: corpo.msg});
                 }
 
 
@@ -62,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 let campo = document.getElementById(listaValidacao[i]);
                 campo.style.borderColor = "red";
             }
-            alert("Alguns campos não foram preenchidos corretamente, confira!");
+            Swal.fire({icon:'warning', title:'Atenção', text: 'Alguns campos não foram preenchidos corretamente, confira!'});
         }
     }
 })

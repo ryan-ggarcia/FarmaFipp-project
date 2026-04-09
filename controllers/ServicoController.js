@@ -5,26 +5,28 @@ class ServicoController{
         let servico = new ServicoModel();
         let lista = await servico.listar();
 
-        res.render("servicos/listar", {lista})
+        res.render("servicos/listar", {lista, active: 'servicos'})
     }
 
     async cadastrarView(req, res) {
-        res.render("servicos/cadastrar");
+        res.render("servicos/cadastrar", { active: 'servicos' });
     }
 
     async alterarView(req, res) {
         let servico = new ServicoModel();
         servico = await servico.obter(req.params.idAlteracao);
 
-        res.render("servicos/alterar", {servico});
+        res.render("servicos/alterar", {servico, active: 'servicos'});
     }
 
     async cadastrar(req, res) {
         console.log(req.body);
         let ok = false;
         let msg = "";
-        if(req.body.data != "" && req.body.tipo != "" && req.body.status && req.body.descricao != "") {
-            let servico = new ServicoModel(0, req.body.data, req.body.tipo, req.body.status == true ? 'aprovado' : 'nao aprovado', req.body.descricao);
+        // Treat status as optional; default to false => 'nao aprovado'
+        const statusBool = (typeof req.body.status !== 'undefined') ? (req.body.status === true || req.body.status === 'true') : false;
+        if(req.body.data != "" && req.body.tipo != "" && req.body.descricao != "") {
+            let servico = new ServicoModel(0, req.body.data, req.body.tipo, statusBool ? 'aprovado' : 'nao aprovado', req.body.descricao);
             let result = await servico.cadastrar();
             
             if(result) {
@@ -48,8 +50,9 @@ class ServicoController{
     async alterar(req, res) {
         let ok = false;
         let msg = "";
-        if(req.body.id != "0" && req.body.data != "" && req.body.tipo != "" && req.body.status != "" && req.body.descricao != "") {
-            let servico = new ServicoModel(req.body.id, req.body.data, req.body.tipo, req.body.status == true ? 'aprovado' : 'nao aprovado', req.body.descricao);
+        const statusBool = (typeof req.body.status !== 'undefined') ? (req.body.status === true || req.body.status === 'true') : false;
+        if(req.body.id != "0" && req.body.data != "" && req.body.tipo != "" && req.body.descricao != "") {
+            let servico = new ServicoModel(req.body.id, req.body.data, req.body.tipo, statusBool ? 'aprovado' : 'nao aprovado', req.body.descricao);
             let result = await servico.atualizar();
             if(result) {
                 ok = true;

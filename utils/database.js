@@ -12,7 +12,7 @@ class Database {
             host: 'localhost', //endereço do nosso banco de dados na nuvem
             database: 'farmafipp', //a database de cada um de vocês possui a nomenclatura PFS2_(RA)
             user: 'root', // usuario e senha de cada um de vocês é o RA
-            password: '170808',
+            password: '',
             idleTimeout: 30000,
             connectionLimit: 50
         });

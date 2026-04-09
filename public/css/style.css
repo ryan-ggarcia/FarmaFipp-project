@@ -1,0 +1,134 @@
+/* Custom dashboard styles for Farmafipp */
+:root{
+  --primary-red:#A31621;
+  --primary-blue:#4E8098;
+  --card-radius:12px;
+}
+
+body{
+  background: linear-gradient(to right, #e3f2fd, #fce4ec);
+  min-height:100vh;
+  color:#333;
+}
+
+/* Navbar */
+.main-header .navbar{
+  border-bottom: none;
+}
+
+/* Sidebar brand */
+.brand-link{
+  border-radius:0;
+}
+
+/* Cards grid */
+.dashboard-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:1.5rem;
+}
+
+@media (max-width:992px){
+  .dashboard-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width:576px){
+  .dashboard-grid{
+    grid-template-columns: 1fr;
+  }
+
+  form.d-none.d-md-flex{
+    display:none!important;
+  }
+}
+
+.card-saas{
+  border-radius:var(--card-radius);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  overflow:hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+  background:#fff;
+  border: none;
+}
+.card-saas:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+.card-saas.no-hover:hover {
+  transform: none !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06) !important;
+}
+
+.card-saas .card-image{
+  height:200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(90deg, rgba(78,128,152,0.08), rgba(163,22,33,0.06));
+}
+.card-saas .card-image img{
+  max-width:90%;
+  max-height:180px;
+  object-fit:contain;
+}
+.card-saas .card-body{
+  padding:1.25rem;
+}
+.card-saas .card-title{
+  font-weight:600;
+  color:var(--primary-red);
+}
+.card-saas .card-subtext{
+  color:#6c757d;
+  margin-bottom:1rem;
+}
+
+.btn-rounded{
+  border-radius:50px;
+}
+
+.btn-primary.custom{
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+.btn-danger.custom{
+  background: var(--primary-red);
+  border-color: var(--primary-red);
+}
+
+.small-count{
+  font-size:1.5rem;
+  font-weight:700;
+  color:var(--primary-blue);
+}
+
+/* Sidebar active link override */
+.nav-sidebar .nav-link.active{
+  background: linear-gradient(90deg, rgba(163,22,33,0.95), rgba(78,128,152,0.95));
+  color:#fff;
+}
+
+/* Minor tweaks */
+.main-footer{
+  background:transparent;
+  border-top:1px solid rgba(0,0,0,0.05);
+  padding:1rem 1.25rem;
+}
+
+/* Utility */
+.p-1-25{padding:1.25rem}
+
+/* subtle animation for buttons */
+.btn{
+  transition: box-shadow .15s ease, transform .12s ease;
+}
+.btn:hover{
+  transform: translateY(-2px);
+}
+
+/* Disable table row hover for listing */
+.table tbody tr:hover {
+  background-color: transparent !important;
+}
