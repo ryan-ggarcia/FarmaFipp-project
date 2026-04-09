@@ -24,7 +24,7 @@ class ServicoModel{
     setID(x){this.#id = x}
     setDATA(x){this.#data = x}
     setTIPO(x){this.#tipo = x}
-    setSTATUS(x){this.#tipo = x}
+    setSTATUS(x){this.#status = x}
     setDESC(x){this.#desc = x}
 
     async cadastrar() {

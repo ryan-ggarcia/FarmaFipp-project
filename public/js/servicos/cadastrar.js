@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     btn.addEventListener("click", gravar);
 
+    console.log(document.getElementById("btnGravar"));
+
     function gravar() {
         
         let inputData = document.getElementById("data");
@@ -11,8 +13,8 @@ document.addEventListener("DOMContentLoaded", function() {
         let inputTipo = document.getElementById("tipo");
         inputTipo.style.borderColor = "#ced4da";
         let cbStatus = document.getElementById("status");
-        let selectDesc = document.getElementById("desc");
-        selectDesc.style.borderColor = "#ced4da";
+        let inputDesc = document.getElementById("desc");
+        inputDesc.style.borderColor = "#ced4da";
 
         //validação dos campos
         let listaValidacao = [];
@@ -20,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
             listaValidacao.push("data");
         if(inputTipo.value == "")
             listaValidacao.push("tipo");
-        if(selectDesc.value == "")
+        if(inputDesc.value == "")
             listaValidacao.push("desc");
     
         if(listaValidacao.length == 0) {
@@ -31,9 +33,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    data: inputNome.value,
-                    tipo: inputEmail.value,
-                    descricao: selectPerfil.value,
+                    data: inputData.value,
+                    tipo: inputTipo.value,
+                    descricao: inputDesc.value,
                     status: cbStatus.checked
                 })
             })

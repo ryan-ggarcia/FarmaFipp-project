@@ -23,7 +23,7 @@ class ServicoController{
         console.log(req.body);
         let ok = false;
         let msg = "";
-        if(req.body.data != "" && req.body.tipo != "" && req.body.status != "" && req.body.descricao != "") {
+        if(req.body.data != "" && req.body.tipo != "" && req.body.status && req.body.descricao != "") {
             let servico = new ServicoModel(0, req.body.data, req.body.tipo, req.body.status == true ? 'aprovado' : 'nao aprovado', req.body.descricao);
             let result = await servico.cadastrar();
             

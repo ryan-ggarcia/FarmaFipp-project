@@ -5,41 +5,24 @@
         <input type="hidden" id="id" value="<%= servico.getID() %>">
         <div class="form-group">
             <label>Data:</label>
-            <input value="<%= usuario.usuNome %>"  id="nome" type="text" class="form-control">
+            <input value="<%= servico.getDATA().toISOString().split('T')[0] %>" id="data" type="date" class="form-control">
         </div>
         <div class="form-group">
-            <label>E-mail:</label>
-            <input value="<%= usuario.usuEmail %>" id="email" type="email" class="form-control">
+            <label>Tipo</label>
+            <input value="<%= servico.getTIPO() %>" id="tipo" type="text" class="form-control">
         </div>
         <div class="form-group">
-            <label>Senha:</label>
-            <input value="<%= usuario.usuSenha %>" id="senha" type="password" class="form-control">
+            <label><input <%= servico.getSTATUS() == 'aprovado' ? 'checked' : '' %> id="status" type="checkbox">Aprovado</label>
         </div>
         <div class="form-group">
-            <label>Perfil:</label>
-            <select id="perfil" class="form-control">
-                <option value="0">-- Selecione --</option>
-                <% for(let i = 0; i<listaPerfil.length; i++) { %>
-                    <% if(usuario.perfilId == listaPerfil[i].perfilId) { %>
-                        <option selected="true" value="<%= listaPerfil[i].perfilId %>">
-                            <%= listaPerfil[i].perfilDescricao %>
-                        </option>
-                    <% } else { %>
-                        <option value="<%= listaPerfil[i].perfilId %>">
-                            <%= listaPerfil[i].perfilDescricao %>
-                        </option>
-                    <% } %>
-
-                <% } %>
-            </select>
+            <label>Descrição:</label>
+            <input value="<%= servico.getDESC() %>" id="desc" type="text" class="form-control">
         </div>
-        <div class="form-group">
-            <label><input <% usuario.usuAtivo == 'S' ? 'checked' : '' %> id="ativo" type="checkbox"> Ativo</label>
-        </div>
+        
 
         <div>
             <button id="btnAlterar" class="btn btn-primary">Alterar</button>
-            <a href="/usuario" class="btn btn-default">Voltar</a>
+            <a href="/servicos" class="btn btn-default">Voltar</a>
         </div>
     </div>
 </div>
