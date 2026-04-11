@@ -1,0 +1,77 @@
+  <!-- GRID EJS -->
+            <!-- <div class="row g-3" id="productsGrid">
+
+                <% /* * O servidor passa o array `produtos`. Cada objeto deve ter: * p.id, p.nome, p.marca, p.preco, *
+                    p.precoAntigo (opcional), * p.desconto (opcional, número — ex: 20), * p.badge ('new' | 'hot' |
+                    null), * p.imagem, p.rating (1-5), p.totalAvaliacoes */ produtos.forEach(function(p, i) { %>
+                    <div class="col-6 col-md-4 col-xl-3" style="animation-delay: <%= i * 0.06 %>s">
+                        <div class="product-card">
+
+                            <% if (p.desconto) { %>
+                                <span class="badge-discount">-<%= p.desconto %>%</span>
+                                <% } else if (p.badge==='new' ) { %>
+                                    <span class="badge-discount badge-new">Novo</span>
+                                    <% } else if (p.badge==='hot' ) { %>
+                                        <span class="badge-discount badge-hot">🔥 Hot</span>
+                                        <% } %>
+
+                                            <button class="wishlist-btn" aria-label="Favoritar">
+                                                <i class="bi bi-heart"></i>
+                                            </button>
+
+                                            <div class="card-img-wrap">
+                                                <img src="<%= p.imagem %>" alt="<%= p.nome %>" loading="lazy" />
+                                                <div class="quick-view-overlay">
+                                                    <button class="btn-quick-view"><i class="bi bi-eye me-1"></i>
+                                                        Visualizar</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-body-inner">
+                                                <div class="brand-tag">
+                                                    <%= p.marca %>
+                                                </div>
+                                                <div class="prod-title">
+                                                    <%= p.nome %>
+                                                </div>
+
+                                                <div class="rating-row">
+                                                    <span class="stars-display">
+                                                        <% for (var s=1; s <=5; s++) { %>
+                                                            <%= s <=Math.round(p.rating) ? '★' : '☆' %>
+                                                                <% } %>
+                                                    </span>
+                                                    <span class="rating-count">(<%= p.totalAvaliacoes %>)</span>
+                                                </div>
+
+                                                <div class="price-row">
+                                                    <span class="price-now">R$ <%= p.preco.toFixed(2).replace('.', ',' )
+                                                            %></span>
+                                                    <% if (p.precoAntigo) { %>
+                                                        <span class="price-old">R$ <%=
+                                                                p.precoAntigo.toFixed(2).replace('.', ',' ) %></span>
+                                                        <% } %>
+                                                </div>
+
+                                                <button class="btn-add-cart" data-id="<%= p.id %>">
+                                                    <i class="bi bi-bag-plus"></i> Adicionar
+                                                </button>
+                                            </div>
+
+                        </div>
+                    </div>
+                    <% }) %>
+
+                        <div class="col-12 d-none" id="emptyState">
+                            <div class="empty-state">
+                                <div class="icon"><i class="bi bi-inbox"></i></div>
+                                <h5>Nenhum produto encontrado</h5>
+                                <p>Tente ajustar os filtros ou buscar por outro termo.</p>
+                                <a href="/produtos" class="btn btn-sm btn-rounded"
+                                    style="background:var(--primary-red);color:#fff;font-weight:600">
+                                    Ver todos os produtos
+                                </a>
+                            </div>
+                        </div>
+
+            </div>/#productsGrid -->
