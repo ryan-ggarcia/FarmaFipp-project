@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if(inputNome == "")
             listaValidacao.push("nome");
-        if(inputCpf == "")
+        if(inputCpf == "" || inputCpf.length != 11)
             listaValidacao.push("cpf");
         if(inputNascimento == "")
             listaValidacao.push("data de nascimento");
