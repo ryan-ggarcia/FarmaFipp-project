@@ -1,0 +1,104 @@
+const ServicoModel = require("../models/ServicoModel");
+
+class ServicoController{
+    async listarView(req, res) {
+        let servico = new ServicoModel();
+        let lista = await servico.listar();
+
+        res.render("servicos/listar", {lista})
+    }
+
+    async cadastrarView(req, res) {
+        res.render("servicos/cadastrar");
+    }
+
+    async alterarView(req, res) {
+        let servico = new ServicoModel();
+        servico = await servico.obter(req.params.idAlteracao);
+
+        res.render("servicos/alterar", {servico});
+    }
+
+    async cadastrar(req, res) {
+        console.log(req.body);
+        let ok = false;
+        let msg = "";
+        if(req.body.data != "" && req.body.tipo != "" && req.body.status && req.body.descricao != "") {
+            let servico = new ServicoModel(0, req.body.data, req.body.tipo, req.body.status == true ? 'aprovado' : 'nao aprovado', req.body.descricao);
+            let result = await servico.cadastrar();
+            
+            if(result) {
+                ok = true;
+                msg = "Serviço cadastrado!";
+            }
+            else {
+                ok = false;
+                msg = "Erro ao inserir serviço no banco de dados!";
+            }
+        }
+        else {
+            ok = false;
+            msg = "Erro durante a validação das informações do serviço!";
+
+        }
+
+        res.send({ok, msg})
+    }
+
+    async alterar(req, res) {
+        let ok = false;
+        let msg = "";
+        if(req.body.id != "0" && req.body.data != "" && req.body.tipo != "" && req.body.status != "" && req.body.descricao != "") {
+            let servico = new ServicoModel(req.body.id, req.body.data, req.body.tipo, req.body.status == true ? 'aprovado' : 'nao aprovado', req.body.descricao);
+            let result = await servico.atualizar();
+            if(result) {
+                ok = true;
+                msg = "Serviço alterado!";
+            }
+            else {
+                ok = false;
+                msg = "Erro ao alterar serviço no banco de dados";
+            }
+        }
+        else {
+            ok = false;
+            msg = "Erro ao validar as informações do serviço!";
+        }
+
+        res.send({ok, msg});
+    }
+
+    async deletar(req, res) {
+        let ok = false;
+        let msg = "";
+        if(req.body.id && req.body.id != "0") {
+            let servico = new ServicoModel();
+            let result = await servico.deletar(req.body.id);
+            if(result) {
+                ok = true;
+                msg = "Serviço excluído!";
+            }
+            else {
+                ok = false;
+                msg = "Erro ao excluir serviço no banco de dados!";
+            }
+        }
+        else {
+            ok = false;
+            msg = "ID não informado para exclusão!";
+        }
+        res.send({ok, msg});
+    }
+}
+
+class UsuarioController {
+
+    
+
+    
+
+    
+
+}
+
+module.exports = ServicoController;

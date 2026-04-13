@@ -1,0 +1,28 @@
+<script src="/js/servicos/alterar.js"></script>
+<div>
+    <h1>Alterar Serviços</h1>
+    <div>
+        <input type="hidden" id="id" value="<%= servico.getID() %>">
+        <div class="form-group">
+            <label>Data:</label>
+            <input value="<%= servico.getDATA().toISOString().split('T')[0] %>" id="data" type="date" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Tipo</label>
+            <input value="<%= servico.getTIPO() %>" id="tipo" type="text" class="form-control">
+        </div>
+        <div class="form-group">
+            <label><input <%= servico.getSTATUS() == 'aprovado' ? 'checked' : '' %> id="status" type="checkbox">Aprovado</label>
+        </div>
+        <div class="form-group">
+            <label>Descrição:</label>
+            <input value="<%= servico.getDESC() %>" id="desc" type="text" class="form-control">
+        </div>
+        
+
+        <div>
+            <button id="btnAlterar" class="btn btn-primary">Alterar</button>
+            <a href="/servicos" class="btn btn-default">Voltar</a>
+        </div>
+    </div>
+</div>
