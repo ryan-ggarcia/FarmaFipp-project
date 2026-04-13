@@ -7,6 +7,19 @@ class ClienteController{
         res.render('clientes/cadastrar');
     }
 
+    async listarView(req, res){
+        let cliente = new ClienteModel();
+        let lista = await cliente.Read();
+        res.render('clientes/listar', {lista});
+    }
+
+    async alterarView(req, res){
+        let cliente = new ClienteModel();
+        cliente = await cliente.Get(req.params.id)
+
+        res.render('clientes/alterar', {cliente});
+    }
+
     async cadastrar(req, res) {
         let ok = false;
         let msg = ""
@@ -37,7 +50,7 @@ class ClienteController{
         const cliId = result
 
         let endereco = new EnderecoModel(
-            rua, bairro, cidade, numero, estado, uf, cep, cliId
+            0, rua, bairro, cidade, numero, estado, uf, cep, cliId
         )
 
         let resultEnd = await endereco.Create()
@@ -50,6 +63,33 @@ class ClienteController{
             ok: true,
             msg: "Cliente e endereço cadastrados com sucesso!"
         })
+    }
+
+    async excluir(req, res){
+        let ok = false;
+        let msg = ""
+        const {id} = req.body;
+
+        if(id && id != "0"){
+            let cliente = new ClienteModel();
+            let endereco = new EnderecoModel();
+
+            let resultEnd = await endereco.Delete(id);
+
+            let result = await cliente.Delete(id);
+
+            if(result && resultEnd){
+                return res.send({ok: true, msg: "Cliente e endereço excluídos com sucesso!"})
+            }
+            else{
+                return res.send({ok: false, msg: "Erro ao excluir cliente e endereço!"})
+            }
+        }
+        else{
+            return res.send({ok: false, msg: "ID do cliente inválido!"})
+        }
+
+        res.send({ok, msg});
     }
 }
 
