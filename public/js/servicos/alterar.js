@@ -31,11 +31,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    id: inputId.value,
                     data: inputData.value,
+                    hora: inputHora.value,
+                    preco: inputPreco.value,
+                    status: cbStatus.checked === true ? true : false,
+                    obs: inputObs.value,
+                    descricao: inputDescricao.value,
                     tipo: inputTipo.value,
-                    descricao: inputDesc.value,
-                    status: cbStatus.checked === true ? true : false
+                    func: inputFunc.value,
+                    clie: inputClie.value
                 })
             })
             .then(function(resposta) {

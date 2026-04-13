@@ -1,0 +1,82 @@
+<script src="/js/clientes/cadastrar.js"></script>
+<div>
+    <div class="card card-saas no-hover">
+        <div class="card-body">
+            <h4 class="mb-3" style="color:  rgba(163,22,33,0.95); font-weight: bold;">Cadastro de Cliente</h4>
+            <div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Nome:</label>
+                        <input id="nome" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">CPF:</label>
+                        <input id="cpf" type="text" class="form-control" onkeypress="mascara('###.###.###-##', this,event)" maxlength="14">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Telefone:</label>
+                        <input id="telefone" type="text" class="form-control" onkeypress="mascara('(##) #####-####', this,event)" maxlength="15">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Data de Nascimento:</label>
+                        <input id="data" type="date" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Email:</label>
+                        <input id="email" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Senha:</label>
+                        <input id="senha" type="password" class="form-control">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="card card-saas no-hover">
+        <div class="card-body">
+            <h4 class="mb-3" style="color:  rgba(163,22,33,0.95); font-weight: bold;">Cadastro de Endereço</h4>
+            <div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Rua:</label>
+                        <input id="rua" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Número:</label>
+                        <input id="num" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Bairro:</label>
+                        <input id="bairro" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Cidade:</label>
+                        <input id="cidade" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado:</label>
+                        <input id="estado" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">CEP:</label>
+                        <input id="cep" type="text" class="form-control" onkeypress="mascara('#####-###', this,event)" maxlength="9">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">UF:</label>
+                        <input id="uf" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button id="btnCadastrar" type="button" style="margin-right: 5px; margin-top: 5px;"
+                        class="btn btn-primary custom btn-rounded">Cadastrar</button>
+                    <a href="/clientes/listar" style="margin-top: 5px;"
+                        class="btn btn-outline-secondary btn-rounded">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

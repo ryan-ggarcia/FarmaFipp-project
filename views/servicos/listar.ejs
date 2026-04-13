@@ -6,7 +6,8 @@
       <small class="text-muted">Gerencie os serviços registrados no sistema</small>
     </div>
     <div>
-      <a class="btn btn-primary custom btn-rounded" href="/servicos/cadastrar"><i class="fas fa-plus me-2"></i> Cadastrar Serviço</a>
+      <a class="btn btn-primary custom btn-rounded" href="/servicos/cadastrar"><i class="fas fa-plus me-2"></i>
+        Cadastrar Serviço</a>
     </div>
   </div>
 
@@ -17,33 +18,44 @@
           <thead class="table-light">
             <tr>
               <th>ID</th>
-              <th>Data</th>
               <th>Tipo</th>
+              <th>Preço</th>
+              <th>Observações</th>
               <th>Status</th>
-              <th>Descrição</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Funcionario</th>
+              <th>Cliente</th>
               <th class="text-end">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <% for(let i = 0; i < lista.length; i++) { %>
+            <% for(let i=0; i < lista.length; i++) { %>
               <tr>
                 <td><%= lista[i].getID() %></td>
-                <td><%= lista[i].getDATA() %></td>
-                <td><%= lista[i].getTIPO() %></td>
-                <td>
-                  <% if(lista[i].getSTATUS() == 'aprovado') { %>
+                <td><%= lista[i].getDESC_TIPO() %></td>
+                <td>R$ <%= lista[i].getPRECO() %></td>
+                <td><%= lista[i].getOBS() %></td>
+                 <td>
+                  <% if(lista[i].getSTATUS()=='aprovado' ) { %>
                     <span class="badge bg-success">Aprovado</span>
-                  <% } else { %>
-                    <span class="badge bg-secondary">Pendente</span>
-                  <% } %>
+                    <% } else { %>
+                      <span class="badge bg-secondary">Pendente</span>
+                      <% } %>
                 </td>
-                <td><%= lista[i].getDESC() %></td>
+                <td><%= (lista[i].getDATA() instanceof Date) ? lista[i].getDATA().toISOString().split('T')[0] : (typeof lista[i].getDATA() === 'string' ? lista[i].getDATA().split('T')[0] : lista[i].getDATA()) %></td>
+                <td><%= lista[i].getHORA() %></td>
+                <td><%= lista[i].getNOME_FUNC() %></td>
+                <td><%= lista[i].getNOME_CLIE() %></td>
+               
                 <td class="text-end">
-                  <a href="/servicos/alterar/<%= lista[i].getID() %>" class="btn btn-sm btn-primary btn-rounded me-2" title="Alterar"><i class="fas fa-pen"></i></a>
-                  <button data-id="<%= lista[i].getID() %>" class="btn btn-sm btn-danger btn-rounded btnExcluir" title="Excluir"><i class="fas fa-trash"></i></button>
+                  <a href="/servicos/alterar/<%= lista[i].getID() %>" class="btn btn-sm btn-primary btn-rounded me-2"
+                    title="Alterar"><i class="fas fa-pen"></i></a>
+                  <button data-id="<%= lista[i].getID() %>" class="btn btn-sm btn-danger btn-rounded btnExcluir"
+                    title="Excluir"><i class="fas fa-trash"></i></button>
                 </td>
               </tr>
-            <% } %>
+              <% } %>
           </tbody>
         </table>
       </div>
