@@ -1,0 +1,38 @@
+<script src="/js/clientes/alterar.js"></script>
+<div>
+    <h1>Alterar dados do cliente</h1>
+    <div>
+        <div class="form-group">
+            <input type="text" id="cliId" value="<%= cliente.cliId %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="cliNome" value="<%= cliente.cliNome %>">
+        </div>
+        <div class="form-group">
+            <select id="cliStatus" value="<%=cliente.cliStatus %>">
+                <option value="1" <%= cliente.cliStatus ? 'selected' : '' %>>Ativo</option>
+                <option value="0" <%= !cliente.cliStatus ? 'selected' : '' %>>Inativo</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="text" id="cliCpf" value="<%= cliente.cliCpf %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="cliTelefone" value="<%= cliente.cliTelefone %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="cliEmail" value="<%= cliente.cliEmail %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="cliSenha" value="<%= cliente.cliSenha %>">
+        </div>
+        <div class="form-group">
+            <input type="date" id="cliNascimento" value="<%= cliente.cliNascimento %>">
+        </div>
+        <div>
+            <button id="btnAlterar" class="btn btn-primary">Alterar</button>
+            <a href="/clientes/listar">Voltar</a>
+        </div>
+    </div>
+    <h1>Alterar Endereço</h1>
+</div>

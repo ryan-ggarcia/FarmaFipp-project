@@ -65,6 +65,28 @@ class ClienteController{
         })
     }
 
+    async alterar(req, res){
+        let ok = false;
+        let msg = ""
+
+        const { id, nome, cpf, data, telefone, email, senha } = req.body;
+
+        if (!id || !nome || !cpf || !data || !telefone || !email || !senha) {
+            return res.send({ok: false, msg: "Preencha os dados do cliente"})
+        }
+
+        let cliente = new ClienteModel(id, nome, 1, cpf, email, senha, telefone, data)
+        let result = await cliente.Update()
+
+        if(result){
+            return res.send({ok: true, msg: "Cliente alterado com sucesso!"})
+        }
+        else{
+            return res.send({ok: false, msg: "Erro ao alterar cliente!"})
+        }
+
+    }
+
     async excluir(req, res){
         let ok = false;
         let msg = ""
