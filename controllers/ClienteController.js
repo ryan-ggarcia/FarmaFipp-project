@@ -15,9 +15,10 @@ class ClienteController{
 
     async alterarView(req, res){
         let cliente = new ClienteModel();
+        let endereco = new EnderecoModel()
         cliente = await cliente.Get(req.params.id)
-
-        res.render('clientes/alterar', {cliente});
+        endereco = await endereco.Get(cliente.cliId)
+        res.render('clientes/alterar', {cliente, endereco});
     }
 
     async cadastrar(req, res) {
@@ -26,8 +27,7 @@ class ClienteController{
 
         console.log(req.body)
 
-        const { nome, cpf, data, telefone, email, senha } = req.body;
-        const { rua, numero, bairro, cidade, estado, cep, uf } = req.body;
+        const { nome, cpf, data, telefone, email, senha, rua, numero, bairro, cidade, estado, cep, uf } = req.body;
 
         if (!nome || !cpf || !data || !telefone || !email || !senha) {
             return res.send({ ok: false, msg: "Preencha os dados do cliente" })
@@ -69,22 +69,32 @@ class ClienteController{
         let ok = false;
         let msg = ""
 
-        const { id, nome, cpf, data, telefone, email, senha } = req.body;
+        const { id, nome, cpf, data, telefone, email, senha, status, endId, rua, num, bairro, cidade, estado, cep, uf } = req.body;
 
         if (!id || !nome || !cpf || !data || !telefone || !email || !senha) {
             return res.send({ok: false, msg: "Preencha os dados do cliente"})
         }
 
-        let cliente = new ClienteModel(id, nome, 1, cpf, email, senha, telefone, data)
+        if (!endId || !rua || !num || !bairro || !cidade || !estado || !cep || !uf) {
+            return res.send({ok: false, msg: "Preencha os dados do endereço"})
+        }
+
+        //Update do cliente
+        let cliente = new ClienteModel(id, nome, status, cpf, email, senha, telefone, data)
         let result = await cliente.Update()
 
-        if(result){
-            return res.send({ok: true, msg: "Cliente alterado com sucesso!"})
+        //Update do endereço
+        let endereco = new EnderecoModel(endId, rua, bairro, cidade, num, estado, uf, cep, id)
+        let resultEnd = await endereco.Update()
+
+        //Verificação dos resultados
+        if(result && resultEnd){
+            return res.send({ok: true, msg: "Cliente e endereço alterados com sucesso!"})
         }
         else{
-            return res.send({ok: false, msg: "Erro ao alterar cliente!"})
+            let errorMsg = !result ? "Erro ao alterar dados do cliente":"Erro ao alterar dados do endereço";
+            return res.send({ok: false, msg: errorMsg})
         }
-
     }
 
     async excluir(req, res){

@@ -97,7 +97,7 @@ class ClienteModel{
     }
 
     async Get(id){
-        let sql = "select * from cliente where idClinete = ?";
+        let sql = "select c.*, e.* from cliente c left join endereco e on c.idClinete = e.cli_id where c.idClinete = ?";
 
         let values = [id];
 
@@ -113,6 +113,14 @@ class ClienteModel{
                 rows[0]["cli_senha"], 
                 rows[0]["cli_telefone"], 
                 rows[0]["cli_nascimento"]);
+                cliente.endId = rows[0]["end_id"];
+                cliente.endRua = rows[0]["end_rua"];
+                cliente.endBairro = rows[0]["end_bairro"];
+                cliente.endCidade = rows[0]["end_cidade"];
+                cliente.endNum = rows[0]["end_num"];
+                cliente.endEstado = rows[0]["end_estado"];
+                cliente.endUf = rows[0]["end_uf"];
+                cliente.endCep = rows[0]["end_cep"];
                 
             return cliente;
         }
@@ -120,44 +128,48 @@ class ClienteModel{
     }
 
     async Read(){
-        let sql = "select c.idClinete, c.cli_nome, c.cli_status, c.cli_cpf, c.cli_email, c.cli_senha, c.cli_telefone, c.cli_nascimento, e.end_rua, e.end_bairro, e.end_cidade, e.end_num, e.end_estado, e.end_uf, e.end_cep from cliente c left join endereco e on c.idClinete = e.cli_id";
+    // 1. Adicionei 'e.id_endereco' (verifique o nome real da coluna no seu banco!)
+    let sql = "select c.idClinete, c.cli_nome, c.cli_status, c.cli_cpf, c.cli_email, c.cli_senha, c.cli_telefone, c.cli_nascimento, e.end_id, e.end_rua, e.end_bairro, e.end_cidade, e.end_num, e.end_estado, e.end_uf, e.end_cep from cliente c left join endereco e on c.idClinete = e.cli_id";
 
-        let rows = await banco.ExecutaComando(sql);
+    let rows = await banco.ExecutaComando(sql);
+    let lista = [];
 
-        let lista = [];
+    rows.forEach(row => { // Mudei para 'row' (singular) para não confundir com 'rows' (array)
+        let c = new ClienteModel(
+            row.idClinete, 
+            row.cli_nome, 
+            row.cli_status,
+            row.cli_cpf,
+            row.cli_email,
+            row.cli_senha,
+            row.cli_telefone,
+            row.cli_nascimento
+        );
 
-        rows.forEach(rows =>{
-            let c = new ClienteModel(
-                rows.idClinete, 
-                rows.cli_nome, 
-                rows.cli_status,
-                rows.cli_cpf,
-                rows.cli_email,
-                rows.cli_senha,
-                rows.cli_telefone,
-                rows.cli_nascimento
-            )
-            c.endRua = rows.end_rua;
-            c.endBairro = rows.end_bairro;
-            c.endCidade = rows.end_cidade;
-            c.endNum = rows.end_num;
-            c.endEstado = rows.end_estado;
-            c.endUf = rows.end_uf;
-            c.endCep = rows.end_cep;
-            lista.push(c);
-        });
+        // 2. ATRIBUIÇÃO DO ID DO ENDEREÇO (Crucial para o seu fetch de alterar)
+        c.endId = row.end_id; 
+        c.endRua = row.end_rua;
+        c.endBairro = row.end_bairro;
+        c.endCidade = row.end_cidade;
+        c.endNum = row.end_num;
+        c.endEstado = row.end_estado;
+        c.endUf = row.end_uf;
+        c.endCep = row.end_cep;
+        lista.push(c);
+    });
 
-        return lista;
-    }
+    return lista;
+}
 
     async Update(id){
         let sql = "update cliente set cli_nome = ?, cli_status = ?, cli_cpf = ?, cli_email = ?, cli_senha = ?, cli_telefone = ?, cli_nascimento = ? where idClinete = ?";
 
-        let values = [this.#cliNome, this.#cliStatus, this.#cliCpf, this.#cliEmail, this.#cliSenha, this.#cliTelefone, this.#cliNascimento, id];
+        let values = [this.#cliNome, this.#cliStatus, this.#cliCpf, this.#cliEmail, this.#cliSenha, this.#cliTelefone, this.#cliNascimento, this.#cliId];
 
         let result = await banco.ExecutaComandoNonQuery(sql, values);
 
         return result;
+        
     }
 
     async Delete(id){

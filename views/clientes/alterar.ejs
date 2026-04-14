@@ -3,7 +3,7 @@
     <h1>Alterar dados do cliente</h1>
     <div>
         <div class="form-group">
-            <input type="text" id="cliId" value="<%= cliente.cliId %>">
+            <input type="hidden" id="cliId" value="<%= cliente.cliId %>">
         </div>
         <div class="form-group">
             <input type="text" id="cliNome" value="<%= cliente.cliNome %>">
@@ -24,15 +24,41 @@
             <input type="text" id="cliEmail" value="<%= cliente.cliEmail %>">
         </div>
         <div class="form-group">
-            <input type="text" id="cliSenha" value="<%= cliente.cliSenha %>">
+            <input type="password" id="cliSenha" value="<%= cliente.cliSenha %>">
         </div>
         <div class="form-group">
             <input type="date" id="cliNascimento" value="<%= cliente.cliNascimento %>">
+        </div>
+    </div>
+    <h1>Alterar Endereço</h1>
+    <div>
+        <div class="form-group">
+            <input type="hidden" id="endId" value="<%= cliente.endId %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="endRua" value="<%= cliente.endRua %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="endBairro" value="<%= cliente.endBairro %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="endNum" value="<%= cliente.endNum %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="endCidade" value="<%= cliente.endCidade %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="endEstado" value="<%= cliente.endEstado %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="endUf" value="<%= cliente.endUf %>">
+        </div>
+        <div class="form-group">
+            <input type="text" id="endCep" value="<%= cliente.endCep %>">
         </div>
         <div>
             <button id="btnAlterar" class="btn btn-primary">Alterar</button>
             <a href="/clientes/listar">Voltar</a>
         </div>
     </div>
-    <h1>Alterar Endereço</h1>
 </div>
