@@ -1,39 +1,43 @@
 const ServicoModel = require("../models/ServicoModel");
+const TipoServico = require("../models/TipoServicoModal");
 
-class ServicoController{
+class ServicoController {
     async listarView(req, res) {
         let servico = new ServicoModel();
         let lista = await servico.listar();
 
-        res.render("servicos/listar", {lista})
+        res.render("servicos/listar", { lista, active: 'servicos' })
     }
 
     async cadastrarView(req, res) {
-        res.render("servicos/cadastrar");
+        let tipoServico = new TipoServico();
+        let listaTipos = await tipoServico.listar();
+        res.render("servicos/cadastrar", { listaTipos, active: 'servicos' });
     }
 
     async alterarView(req, res) {
         let servico = new ServicoModel();
         servico = await servico.obter(req.params.idAlteracao);
 
-        res.render("servicos/alterar", {servico});
+        res.render("servicos/alterar", { servico, active: 'servicos' });
     }
 
     async cadastrar(req, res) {
         console.log(req.body);
         let ok = false;
         let msg = "";
-        if(req.body.data != "" && req.body.tipo != "" && req.body.status && req.body.descricao != "") {
-            let servico = new ServicoModel(0, req.body.data, req.body.tipo, req.body.status == true ? 'aprovado' : 'nao aprovado', req.body.descricao);
+        // Treat status as optional; default to false => 'nao aprovado'
+        let { data, hora, preco, status, obs, descricao, tipo, func, clie } = req.body;
+        if (data != "" && tipo != "" && descricao != "" && typeof status !== 'undefined' && hora != "" && preco != "" && func != "" && clie != "" && obs != "") {
+            let statusStr = typeof status === 'undefined' ? 'Aguardando' : (status ? 'Ativo' : 'Inativo');
+            let servico = new ServicoModel(0, data, tipo, statusStr, descricao);
             let result = await servico.cadastrar();
-            
-            if(result) {
+
+            if (result) {
                 ok = true;
-                msg = "Serviço cadastrado!";
             }
             else {
                 ok = false;
-                msg = "Erro ao inserir serviço no banco de dados!";
             }
         }
         else {
@@ -42,16 +46,17 @@ class ServicoController{
 
         }
 
-        res.send({ok, msg})
+        res.send({ ok, msg })
     }
 
     async alterar(req, res) {
         let ok = false;
         let msg = "";
-        if(req.body.id != "0" && req.body.data != "" && req.body.tipo != "" && req.body.status != "" && req.body.descricao != "") {
-            let servico = new ServicoModel(req.body.id, req.body.data, req.body.tipo, req.body.status == true ? 'aprovado' : 'nao aprovado', req.body.descricao);
+        const statusBool = (typeof req.body.status !== 'undefined') ? (req.body.status === true || req.body.status === 'true') : false;
+        if (req.body.id != "0" && req.body.data != "" && req.body.tipo != "" && req.body.descricao != "") {
+            let servico = new ServicoModel(req.body.id, req.body.data, req.body.tipo, statusBool ? 'aprovado' : 'nao aprovado', req.body.descricao);
             let result = await servico.atualizar();
-            if(result) {
+            if (result) {
                 ok = true;
                 msg = "Serviço alterado!";
             }
@@ -65,16 +70,16 @@ class ServicoController{
             msg = "Erro ao validar as informações do serviço!";
         }
 
-        res.send({ok, msg});
+        res.send({ ok, msg });
     }
 
     async deletar(req, res) {
         let ok = false;
         let msg = "";
-        if(req.body.id && req.body.id != "0") {
+        if (req.body.id && req.body.id != "0") {
             let servico = new ServicoModel();
             let result = await servico.deletar(req.body.id);
-            if(result) {
+            if (result != null) {
                 ok = true;
                 msg = "Serviço excluído!";
             }
@@ -87,17 +92,17 @@ class ServicoController{
             ok = false;
             msg = "ID não informado para exclusão!";
         }
-        res.send({ok, msg});
+        res.send({ ok, msg });
     }
 }
 
 class UsuarioController {
 
-    
 
-    
 
-    
+
+
+
 
 }
 

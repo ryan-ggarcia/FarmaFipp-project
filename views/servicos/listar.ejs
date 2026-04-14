@@ -1,44 +1,64 @@
 <script src="/js/servicos/listar.js"></script>
-<div>
-    <h1>Serviços cadastrados</h1>
+<div class="p-3 p-1-25">
+  <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <a class="btn btn-primary" href="/servicos/cadastrar"><i class="fas fa-plus"></i>Cadastrar Serviço</a>
+      <h3 class="mb-0">Serviços cadastrados</h3>
+      <small class="text-muted">Gerencie os serviços registrados no sistema</small>
     </div>
-    <br>
     <div>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Data</th>
-                    <th>Tipo</th>
-                    <th>Status</th>
-                    <th>Descrição</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for(let i = 0; i < lista.length; i++) { %>
-                    <tr>
-                        <td><%= lista[i].getID() %></td>
-                        <td><%= lista[i].getDATA() %></td>
-                        <td><%= lista[i].getTIPO() %></td>
-                        <td><%= lista[i].getSTATUS() %></td>
-                        <td><%= lista[i].getDESC() %></td>
-                        <td>
-                            <a href="/servicos/alterar/<%= lista[i].getID() %>" class="btn btn-primary">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                            <button data-id="<%= lista[i].getID() %>" class="btn btn-danger btnExcluir">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                <% } %>
-                
-            </tbody>
+      <a class="btn btn-primary custom btn-rounded" href="/servicos/cadastrar"><i class="fas fa-plus me-2"></i>
+        Cadastrar Serviço</a>
+    </div>
+  </div>
 
-
+  <div class="card card-saas">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Preço</th>
+              <th>Observações</th>
+              <th>Status</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Funcionario</th>
+              <th>Cliente</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(let i=0; i < lista.length; i++) { %>
+              <tr>
+                <td><%= lista[i].getID() %></td>
+                <td><%= lista[i].getDESC_TIPO() %></td>
+                <td>R$ <%= lista[i].getPRECO() %></td>
+                <td><%= lista[i].getOBS() %></td>
+                 <td>
+                  <% if(lista[i].getSTATUS()=='aprovado' ) { %>
+                    <span class="badge bg-success">Aprovado</span>
+                    <% } else { %>
+                      <span class="badge bg-secondary">Pendente</span>
+                      <% } %>
+                </td>
+                <td><%= (lista[i].getDATA() instanceof Date) ? lista[i].getDATA().toISOString().split('T')[0] : (typeof lista[i].getDATA() === 'string' ? lista[i].getDATA().split('T')[0] : lista[i].getDATA()) %></td>
+                <td><%= lista[i].getHORA() %></td>
+                <td><%= lista[i].getNOME_FUNC() %></td>
+                <td><%= lista[i].getNOME_CLIE() %></td>
+               
+                <td class="text-end">
+                  <a href="/servicos/alterar/<%= lista[i].getID() %>" class="btn btn-sm btn-primary btn-rounded me-2"
+                    title="Alterar"><i class="fas fa-pen"></i></a>
+                  <button data-id="<%= lista[i].getID() %>" class="btn btn-sm btn-danger btn-rounded btnExcluir"
+                    title="Excluir"><i class="fas fa-trash"></i></button>
+                </td>
+              </tr>
+              <% } %>
+          </tbody>
         </table>
+      </div>
     </div>
+  </div>
 </div>

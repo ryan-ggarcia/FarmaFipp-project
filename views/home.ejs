@@ -1,7 +1,145 @@
+<section class="dashboard-intro mb-4">
+  <h1 class="h3">Seja bem-vindo <span style="color: var(--primary-red);">Administrador!</span></h1>
+  <p class="text-muted">O que vamos fazer hoje?</p>
+</section>
 
+<div class="dashboard-grid">
+  <!-- Serviços -->
+  <div class="card card-saas">
+    <div class="card-image">
+      <img src="/img/gerenciar-servico.jpg" alt="Serviços">
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <h5 class="card-title">Gerenciar Serviços</h5>
+          <p class="card-subtext">Controle os serviços</p>
+        </div>
+        <div class="text-end">
+          <div class="small-count"><%= (servicos && servicos.length) ? servicos.length : 0 %></div>
+          <div class="text-muted small">Serviços</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/servicos" style="margin-right: 5px;" class="btn btn-primary custom btn-rounded">Gerenciar</a>
+        <a href="/servicos" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
+      </div>
+    </div>
+  </div>
 
-<h1>Olá Mundo!</h1>
+  <!-- Produtos -->
+  <div class="card card-saas">
+    <div class="card-image">
+      <img src="/img/gerenciar-produto.jpg" alt="Produtos">
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div class="row">
+          <h5 class="card-title">Gerenciar Produtos</h5>
+          <span class="card-subtext"> Controle os produtos cadastrados</span>
+        </div>
+        <div class="text-end">
+          <div class="small-count">0</div>
+          <div class="text-muted small">Produtos</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/produtos" style="margin-right: 5px;" class="btn btn-danger custom btn-rounded">Gerenciar</a>
+        <a href="/produtos" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
+      </div>
+    </div>
+  </div>
 
-<h2>aula de PFS1</h2>
+  <!-- Usuários -->
+  <div class="card card-saas">
+    <div class="card-image" style="background: linear-gradient(90deg, rgba(78,128,152,0.06), rgba(163,22,33,0.04));">
+      <i class="bi bi-people fs-1" style="color:var(--primary-blue);"></i>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div class="row">
+          <h5 class="card-title">Gerenciar Usuários</h5>
+          <p class="card-subtext">Administre os usuários do sistema</p>
+        </div>
+        <div class="text-end">
+          <div class="small-count">0</div>
+          <div class="text-muted small">Usuários</div>
+        </div>
+      </div>
+      <div class="d-flex gap-3">
+        <a href="/usuarios" style="margin-right: 5px;" class="btn btn-primary custom btn-rounded">Gerenciar</a>
+        <a href="/usuarios" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
+      </div>
+    </div>
+  </div>
 
-<a href="/carros">Ir para Carros</a>
+  <!-- Compras -->
+  <div class="card card-saas">
+    <div class="card-image" style="background: linear-gradient(90deg, rgba(163,22,33,0.04), rgba(78,128,152,0.06));">
+      <i class="bi bi-cart fs-1" style="color:var(--primary-red);"></i>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <h5 class="card-title">Gerenciar Compras</h5>
+          <p class="card-subtext">Controle as compras realizadas</p>
+        </div>
+        <div class="text-end">
+          <div class="small-count">0</div>
+          <div class="text-muted small">Compras</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/compras" style="margin-right: 5px;" class="btn btn-danger custom btn-rounded">Gerenciar</a>
+        <a href="/compras" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Funcionários -->
+  <div class="card card-saas">
+    <div class="card-image" style="background: linear-gradient(90deg, rgba(78,128,152,0.06), rgba(163,22,33,0.04));">
+      <i class="bi bi-person-badge fs-1" style="color:var(--primary-blue);"></i>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <h5 class="card-title">Gerenciar Funcionários</h5>
+          <p class="card-subtext">Gerencie sua equipe</p>
+        </div>
+        <div class="text-end">
+          <div class="small-count">0</div>
+          <div class="text-muted small">Funcionários</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/funcionarios" style="margin-right: 5px;" class="btn btn-primary custom btn-rounded">Gerenciar</a>
+        <a href="/funcionarios" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fornecedores -->
+  <div class="card card-saas">
+    <div class="card-image" style="background: linear-gradient(90deg, rgba(163,22,33,0.04), rgba(78,128,152,0.06));">
+      <i class="bi bi-truck fs-1" style="color:var(--primary-red);"></i>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <h5 class="card-title">Gerenciar Fornecedores</h5>
+          <p class="card-subtext">Controle seus fornecedores</p>
+        </div>
+        <div class="text-end">
+          <div class="small-count">0</div>
+          <div class="text-muted small">Fornecedores</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/fornecedores" style="margin-right: 5px;" class="btn btn-danger custom btn-rounded">Gerenciar</a>
+        <a href="/fornecedores" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
+      </div>
+    </div>
+  </div>
+
+</div>

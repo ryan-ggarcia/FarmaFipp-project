@@ -31,11 +31,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    id: inputId.value,
                     data: inputData.value,
+                    hora: inputHora.value,
+                    preco: inputPreco.value,
+                    status: cbStatus.checked === true ? true : false,
+                    obs: inputObs.value,
+                    descricao: inputDescricao.value,
                     tipo: inputTipo.value,
-                    descricao: inputDesc.value,
-                    status: cbStatus.checked
+                    func: inputFunc.value,
+                    clie: inputClie.value
                 })
             })
             .then(function(resposta) {
@@ -43,12 +47,18 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(function(corpo) {
                 if(corpo.ok) {
-                    alert(corpo.msg);
-                    //redireciona
-                    window.location.href = "/servicos";
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Sucesso',
+                      text: corpo.msg,
+                      timer: 1500,
+                      showConfirmButton: false
+                    }).then(()=>{
+                      window.location.href = "/servicos";
+                    });
                 }
                 else {
-                    alert(corpo.msg);
+                    Swal.fire({icon:'error', title:'Erro', text: corpo.msg});
                 }
 
 
@@ -61,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 let campo = document.getElementById(listaValidacao[i]);
                 campo.style.borderColor = "red";
             }
-            alert("Alguns campos não foram preenchidos corretamente, confira!");
+            Swal.fire({icon:'warning', title:'Atenção', text: 'Alguns campos não foram preenchidos corretamente, confira!'});
         }
     }
 })
