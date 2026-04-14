@@ -125,13 +125,21 @@ class ServicoModel{
     }
 
     async deletar(id) {
-        let sql = "delete from agendar_servico where idAgendar_Servico = ?";
-        let valores = [id]; 
-        let banco = new Database();
+        //Deletando primeiro a entidade filho do relacionamentos muitos pra muitos
+        const sqlChild = "delete from agendar_servico_funcionario where Agendar_Servico_idAgendar_Servico = ?"
+        
+        const sql = "delete from agendar_servico where idAgendar_Servico = ?";
+        const valores = [id]; 
+        const banco = new Database();
+        let deleteChild = await banco.ExecutaComandoNonQuery(sqlChild, valores);
+        if(deleteChild){
+            //Caso o retoro da promisse de deleção do filho seja positivo 
+            let result = await banco.ExecutaComandoNonQuery(sql, valores);
+            return result
+        }else{
+            return null;
+        }
 
-        let result = await banco.ExecutaComandoNonQuery(sql, valores);
-
-        return result;
     }
 
     async listar() {

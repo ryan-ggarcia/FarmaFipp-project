@@ -2,7 +2,7 @@
 const express = require('express');
 const homeRouter = require("./routes/HomeRouter");
 const usuarioRouter = require("./routes/UsuarioRouter")
-const ServicoRouter = require ('./routes/servicoRouter');
+const ServicoRouter = require ('./routes/ServicoRouter');
 const ClienteRouter = require('./routes/ClienteRoute');
 
 const expressEjsLayouts = require('express-ejs-layouts');
