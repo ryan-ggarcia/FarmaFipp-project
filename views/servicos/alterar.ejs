@@ -21,7 +21,11 @@
             </div>
           </div>
 
-        
+          <div class="col-12">
+            <label class="form-label">Descrição</label>
+            <textarea id="desc" class="form-control" rows="3"><%= servico.getDESC() %></textarea>
+          </div>
+
           <div class="col-12 d-flex gap-2">
             <button id="btnAlterar" type="button" class="btn btn-primary custom btn-rounded">Salvar Alterações</button>
             <a href="/servicos" class="btn btn-outline-secondary btn-rounded">Voltar</a>

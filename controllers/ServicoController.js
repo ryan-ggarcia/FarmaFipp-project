@@ -79,7 +79,7 @@ class ServicoController {
         if (req.body.id && req.body.id != "0") {
             let servico = new ServicoModel();
             let result = await servico.deletar(req.body.id);
-            if (result) {
+            if (result != null) {
                 ok = true;
                 msg = "Serviço excluído!";
             }
