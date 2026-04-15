@@ -1,5 +1,6 @@
 const ClienteModel = require('../models/ClienteModel');
 const EnderecoModel = require('../models/EnderecoModel');
+const {cpf} = require ('cpf-cnpj-validator');
 const bcrypt = require('bcrypt');
 
 class ClienteController{
@@ -27,9 +28,11 @@ class ClienteController{
 
         console.log(req.body)
 
-        const { nome, cpf, data, telefone, email, senha, rua, numero, bairro, cidade, estado, cep, uf } = req.body;
+        const { nome, cpf: inputCpf, data, telefone, email, senha, rua, numero, bairro, cidade, estado, cep, uf } = req.body;
 
-        if (!nome || !cpf || !data || !telefone || !email || !senha) {
+        const cpfLimpo = inputCpf ? inputCpf.replace(/\D/g, '') : '';
+
+        if (!nome || !cpfLimpo || !data || !telefone || !email || !senha) {
             return res.send({ ok: false, msg: "Preencha os dados do cliente" })
         }
 
@@ -37,9 +40,23 @@ class ClienteController{
             return res.send({ ok: false, msg: "Preencha os dados do endereço" })
         }
 
+        if(!cpfLimpo || !cpf.isValid(cpfLimpo)){
+            return res.send({ ok: false, msg: "CPF inválido" })
+        }
+        //Verificar se CPF ou email já existem no banco
+        let cpfExistente = await new ClienteModel().FindByCpf(cpfLimpo);
+        let emailExistente = await new ClienteModel().FindByEmail(email);
+
+        if(cpfExistente || emailExistente){
+            let msgCpf = cpfExistente ? "CPF já cadastrado. " : "";
+            let msgEmail = emailExistente ? "Email já cadastrado." : "";
+            return res.send({ ok: false, msg: msgCpf + msgEmail })
+        }
+
+
         const senhaHash = await bcrypt.hash(senha, 10)
 
-        let cliente = new ClienteModel(0, nome, 1, cpf, email, senhaHash, telefone, data)
+        let cliente = new ClienteModel(0, nome, 1, cpfLimpo, email, senhaHash, telefone, data)
 
         let result = await cliente.Create()
 
@@ -59,19 +76,18 @@ class ClienteController{
             return res.send({ ok: false, msg: "Erro ao cadastrar endereço" })
         }
 
-        return res.send({
-            ok: true,
-            msg: "Cliente e endereço cadastrados com sucesso!"
-        })
+        return res.send({ok: true, msg: "Cliente e endereço cadastrados com sucesso!"})
     }
 
     async alterar(req, res){
         let ok = false;
         let msg = ""
 
-        const { id, nome, cpf, data, telefone, email, senha, status, endId, rua, num, bairro, cidade, estado, cep, uf } = req.body;
+        const { id, nome, cpf: inputCpf, data, telefone, email, senha, status, endId, rua, num, bairro, cidade, estado, cep, uf } = req.body;
 
-        if (!id || !nome || !cpf || !data || !telefone || !email || !senha) {
+        const cpfLimpo = inputCpf ? inputCpf.replace(/\D/g, '') : '';
+
+        if (!id || !nome || !cpfLimpo || !data || !telefone || !email || !senha) {
             return res.send({ok: false, msg: "Preencha os dados do cliente"})
         }
 
@@ -79,8 +95,12 @@ class ClienteController{
             return res.send({ok: false, msg: "Preencha os dados do endereço"})
         }
 
+        if(!cpf.isValid(cpfLimpo)){
+            return res.send({ok: false, msg: "CPF inválido"})
+        }
+
         //Update do cliente
-        let cliente = new ClienteModel(id, nome, status, cpf, email, senha, telefone, data)
+        let cliente = new ClienteModel(id, nome, status, cpfLimpo, email, senha, telefone, data)
         let result = await cliente.Update()
 
         //Update do endereço
@@ -89,7 +109,7 @@ class ClienteController{
 
         //Verificação dos resultados
         if(result && resultEnd){
-            return res.send({ok: true, msg: "Cliente e endereço alterados com sucesso!"})
+            return res.send({ok: true, msg: "Dados do cliente alterados com sucesso!"})
         }
         else{
             let errorMsg = !result ? "Erro ao alterar dados do cliente":"Erro ao alterar dados do endereço";
