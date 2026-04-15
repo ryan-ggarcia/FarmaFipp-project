@@ -161,7 +161,7 @@ class ClienteModel{
     }
 
     async Delete(id){
-        let sql = "delete from cliente where idClinete = ?";
+        let sql = "delete from cliente where idClinete = ? or idFuncionario = ?";
 
         let values = [id];
 

@@ -1,5 +1,5 @@
-const ClienteModel = require('../models/ClienteModal')
-const EnderecoModel = require('../models/EnderecoModal')
+const ClienteModel = require('../models/ClienteModel')
+const EnderecoModel = require('../models/EnderecoModel')
 const bcrypt = require('bcrypt');
 
 class ClienteController{

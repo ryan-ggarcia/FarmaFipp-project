@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <h1>Cadastrar Fornecedor</h1>
+    
+    <form >
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required><br>
+
+        <label for="cnpj">CNPJ:</label>
+        <input type="text" id="cnpj" name="cnpj" required><br>
+
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" required><br>
+
+        <label for="endereco">Endereço:</label>
+        <div class="col-md-4">
+            <label class="form-label">Rua:</label>
+            <input id="rua" type="text" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Número:</label>
+            <input id="num" type="text" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Bairro:</label>
+            <input id="bairro" type="text" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Cidade:</label>
+            <input id="cidade" type="text" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Estado:</label>
+            <input id="estado" type="text" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">CEP:</label>
+            <input id="cep" type="text" class= "form-control" onkeypress="mascara('#####-###', this,event)" maxlength="9">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">UF:</label>
+            <input id="uf" type="text" class="form-control">
+            </div>
+        </div>
+
+        <button id="cadastrar">Cadastrar</button>
+    </form>
+</body>
+</html>
