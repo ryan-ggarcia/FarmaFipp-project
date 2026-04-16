@@ -1,200 +1,288 @@
 DOCUMENTACAO DE FUNCIONALIDADES - PROJETO FARMAFIPP
 
-1) VISAO GERAL DO PROJETO
-- Aplicacao web em Node.js com Express e EJS.
-- Arquitetura organizada por camadas:
-  - Rotas: recebem URL e direcionam para controllers.
-  - Controllers: validam entrada e coordenam regras de negocio.
-  - Models: executam comandos SQL no MySQL.
-  - Views: telas EJS renderizadas no servidor.
-  - JS de frontend: validacoes e chamadas fetch para API interna.
-- Tema visual principal: AdminLTE.
+OBJETIVO DESTE DOCUMENTO
+- Este documento descreve as funcionalidades basicas do sistema com foco em manutencao.
+- Publico alvo: desenvolvedor que vai corrigir bug, evoluir modulo existente ou adicionar funcionalidade.
+- Escopo atual do projeto na raiz: Home, Servicos e Clientes.
 
 
-2) TECNOLOGIAS E DEPENDENCIAS
-- express: servidor HTTP e roteamento.
-- ejs + express-ejs-layouts: renderizacao de views com layout.
-- mysql2: conexao com banco de dados MySQL via pool.
-- bcrypt: hash de senha no cadastro de cliente.
-- cpf-cnpj-validator: validacao de CPF no backend.
+1) VISAO GERAL DA APLICACAO
+- Stack principal:
+  - Node.js + Express (backend e roteamento)
+  - EJS + express-ejs-layouts (renderizacao server-side)
+  - MySQL via mysql2 (persistencia)
+  - JavaScript no frontend para validacao e chamadas fetch
+- Arquitetura por camadas:
+  - routes/: define endpoints e redireciona para controller
+  - controllers/: valida entrada, aplica regra e decide resposta
+  - models/: executa SQL e converte dados em objetos
+  - views/: paginas EJS
+  - public/js/: comportamento de tela (DOM/fetch/validacao)
+- Padrao de resposta da API interna (rotas POST):
+  - JSON com formato: { ok: boolean, msg: string }
 
 
-3) INICIALIZACAO E MIDDLEWARES
-Fluxo de inicializacao:
-- O servidor sobe na porta 5000.
-- Configura view engine EJS.
-- Configura layout padrao.
-- Publica pasta public como arquivos estaticos.
-- Habilita leitura de body em formato URL encoded e JSON.
-- Registra rotas:
-  - /           (home)
-  - /servicos   (modulo de servicos)
-  - /clientes   (modulo de clientes)
+2) BOOTSTRAP E PIPELINE DE REQUISICAO
+Arquivo principal: server.js
+- Porta padrao: 5000
+- Middlewares configurados:
+  - express.urlencoded({ extended: true })
+  - express.json()
+  - express.static("public")
+  - express-ejs-layouts
+- View engine:
+  - ejs
+  - layout padrao: ./layout.ejs
+- Rotas montadas:
+  - /            -> HomeRouter
+  - /servicos    -> ServicoRouter
+  - /clientes    -> ClienteRoute
+
+Fluxo completo de uma requisicao com envio de formulario:
+1. Usuario aciona botao na view.
+2. Script em public/js valida dados no navegador.
+3. Script envia fetch para rota Express.
+4. Router chama metodo do controller.
+5. Controller valida novamente e chama model.
+6. Model executa SQL via utils/database.js.
+7. Controller devolve JSON (ok/msg) ou renderiza view.
+8. Frontend alerta usuario e redireciona/recarrega.
 
 
-4) ACESSO AO BANCO
-Arquivo utilitario de banco:
-- Cria um pool mysql2 com host localhost e database farmafipp.
-- Fornece 3 metodos genericos:
-  - ExecutaComando(sql, valores): SELECT e retorno de linhas.
-  - ExecutaComandoNonQuery(sql, valores): INSERT/UPDATE/DELETE com retorno booleano (affectedRows > 0).
-  - ExecutaComandoLastInserted(sql, valores): INSERT com retorno de insertId.
+3) CAMADA DE DADOS (DATABASE E MODELS)
+3.1 utilitario de conexao
+Arquivo: utils/database.js
+- Usa mysql2.createPool com database farmafipp.
+- Metodos genericos:
+  - ExecutaComando(sql, valores): retorna rows para SELECT.
+  - ExecutaComandoNonQuery(sql, valores): retorna boolean de affectedRows > 0.
+  - ExecutaComandoLastInserted(sql, valores): retorna insertId.
+
+3.2 tabelas utilizadas pelo codigo atual
+- Servico
+  - idServico, serv_data, serv_tipo, serv_status, serv_descricao
+- cliente
+  - idClinete, cli_nome, cli_status, cli_cpf, cli_email, cli_senha, cli_telefone, cli_nascimento
+- endereco
+  - end_id, end_rua, end_bairro, end_cidade, end_num, end_estado, end_uf, end_cep, cli_id
+
+Observacao importante:
+- O campo id do cliente esta como idClinete no SQL (grafia original do banco/codigo).
+- Nao corrigir esse nome isoladamente sem migracao de schema e queries.
 
 
-5) FUNCIONALIDADES DO MODULO HOME
-Rota:
+4) MODULO HOME
+4.1 Rotas
 - GET /
 
-Comportamento:
+4.2 Comportamento
 - Renderiza a view home.
 
+4.3 Arquivos envolvidos
+- routes/HomeRouter.js
+- controllers/HomeController.js
+- views/home.ejs
 
-6) FUNCIONALIDADES DO MODULO SERVICOS
-6.1 Rotas de servicos
-- GET  /servicos               -> lista servicos
-- GET  /servicos/cadastrar     -> tela de cadastro
-- POST /servicos/cadastrar     -> cria servico
-- GET  /servicos/alterar/:id   -> tela de alteracao
-- POST /servicos/alterar       -> atualiza servico
-- POST /servicos/deletar       -> exclui servico
 
-6.2 Regras de negocio no backend
-Cadastro de servico:
-- Campos esperados: data, tipo, status, descricao.
+5) MODULO SERVICOS
+5.1 Rotas
+- GET  /servicos                 -> listarView
+- GET  /servicos/cadastrar       -> cadastrarView
+- POST /servicos/cadastrar       -> cadastrar
+- GET  /servicos/alterar/:idAlteracao -> alterarView
+- POST /servicos/alterar         -> alterar
+- POST /servicos/deletar         -> deletar
+
+5.2 Contratos de entrada e saida
+POST /servicos/cadastrar
+- Body esperado:
+  - data: string
+  - tipo: string
+  - status: boolean
+  - descricao: string
+- Resposta:
+  - { ok: true, msg: "Serviço cadastrado!" }
+  - ou { ok: false, msg: "..." }
+
+POST /servicos/alterar
+- Body esperado:
+  - id: string|number
+  - data: string
+  - tipo: string
+  - status: boolean
+  - descricao: string
+- Resposta:
+  - { ok: true, msg: "Serviço alterado!" }
+  - ou { ok: false, msg: "..." }
+
+POST /servicos/deletar
+- Body esperado:
+  - id: string|number
+- Resposta:
+  - { ok: true, msg: "Serviço excluído!" }
+  - ou { ok: false, msg: "..." }
+
+5.3 Regras implementadas no backend
+- Validacao de obrigatoriedade para data/tipo/descricao.
+- Conversao do status vindo do frontend (boolean) para texto no banco:
+  - true  => "aprovado"
+  - false => "nao aprovado"
+- Listagem retorna todos os registros da tabela Servico.
+
+5.4 Comportamento de frontend (public/js/servicos)
+cadastrar.js
 - Valida campos obrigatorios.
-- Converte status booleano do frontend para texto no banco:
-  - true  -> aprovado
-  - false -> nao aprovado
-- Salva no banco e retorna JSON com ok/msg.
+- Marca borda vermelha em campo invalido.
+- Faz POST JSON para /servicos/cadastrar.
+- Em sucesso: alert + redireciona para /servicos.
 
-Alteracao de servico:
-- Exige id valido e campos obrigatorios.
-- Mantem regra de conversao de status.
-- Atualiza no banco e retorna JSON com ok/msg.
+alterar.js
+- Mesma estrategia de validacao do cadastro.
+- Faz POST JSON para /servicos/alterar.
+- Em sucesso: alert + redireciona para /servicos.
 
-Exclusao de servico:
-- Exige id valido.
-- Remove registro e retorna JSON com ok/msg.
+listar.js
+- Acopla evento em botoes .btnExcluir.
+- Pede confirmacao antes de excluir.
+- Faz POST JSON para /servicos/deletar.
+- Em sucesso: recarrega pagina.
 
-Listagem de servicos:
-- Busca todos os registros da tabela Servico.
-- Renderiza view com a lista para exibicao em tabela.
-
-6.3 Frontend de servicos
-Tela cadastrar:
-- Valida campos obrigatorios no navegador.
-- Destaca borda em vermelho quando campo obrigatorio estiver vazio.
-- Envia POST via fetch para /servicos/cadastrar.
-- Em sucesso, exibe alerta e redireciona para /servicos.
-
-Tela listar:
-- Botao Excluir envia POST para /servicos/deletar.
-- Exibe confirmacao antes da exclusao.
-- Em sucesso, recarrega a pagina para atualizar a tabela.
-
-Tela alterar:
-- Carrega dados atuais do servico.
-- Valida campos antes de enviar.
-- Envia POST para /servicos/alterar.
-- Em sucesso, retorna para /servicos.
+5.5 Arquivos-chave para manutencao
+- routes/ServicoRouter.js
+- controllers/ServicoController.js
+- models/ServicoModel.js
+- views/servicos/*.ejs
+- public/js/servicos/*.js
 
 
-7) FUNCIONALIDADES DO MODULO CLIENTES
-7.1 Rotas de clientes
-- GET  /clientes/cadastrar     -> tela de cadastro
-- POST /clientes/cadastrar     -> cria cliente e endereco
-- GET  /clientes/listar        -> lista clientes
-- GET  /clientes/alterar/:id   -> tela de alteracao
-- POST /clientes/alterar       -> atualiza cliente e endereco
-- POST /clientes/excluir       -> exclui cliente e endereco
+6) MODULO CLIENTES
+6.1 Rotas
+- GET  /clientes/cadastrar       -> cadastrarView
+- POST /clientes/cadastrar       -> cadastrar
+- GET  /clientes/listar          -> listarView
+- GET  /clientes/alterar/:id     -> alterarView
+- POST /clientes/alterar         -> alterar
+- POST /clientes/excluir         -> excluir
 
-7.2 Regras de negocio no backend
-Cadastro de cliente:
-- Campos de cliente obrigatorios:
-  nome, cpf, data, telefone, email, senha.
-- Campos de endereco obrigatorios:
-  rua, numero, bairro, cidade, estado, cep, uf.
-- Limpa mascara do CPF e valida CPF no backend.
-- Verifica duplicidade de CPF e email no banco.
-- Aplica hash bcrypt na senha antes de salvar.
-- Cria primeiro cliente e, depois, endereco vinculado ao cliId.
-- Retorna JSON com sucesso ou erro.
+6.2 Contratos de entrada e saida
+POST /clientes/cadastrar
+- Body esperado (cliente):
+  - nome, cpf, data, telefone, email, senha
+- Body esperado (endereco):
+  - rua, numero, bairro, cidade, estado, cep, uf
+- Respostas comuns:
+  - sucesso: { ok: true, msg: "Cliente e endereço cadastrados com sucesso!" }
+  - erro de validacao: { ok: false, msg: "..." }
 
-Listagem de clientes:
-- Busca clientes com join de endereco.
-- Renderiza tabela com dados pessoais e dados de endereco.
+POST /clientes/alterar
+- Body esperado:
+  - id, nome, cpf, data, telefone, email, senha, status
+  - endId, rua, num, bairro, cidade, estado, cep, uf
+- Respostas comuns:
+  - sucesso: { ok: true, msg: "Dados do cliente alterados com sucesso!" }
+  - erro: { ok: false, msg: "..." }
 
-Alteracao de cliente:
-- Valida campos obrigatorios de cliente e endereco.
-- Valida CPF.
-- Atualiza dados de cliente e endereco.
-- Retorna JSON com resultado da operacao.
+POST /clientes/excluir
+- Body esperado:
+  - id
+- Resposta:
+  - { ok: true, msg: "Cliente e endereço excluídos com sucesso!" }
+  - ou { ok: false, msg: "..." }
 
-Exclusao de cliente:
-- Exige id valido.
-- Exclui endereco vinculado ao cliente.
-- Exclui cliente.
-- Retorna JSON com resultado.
+6.3 Regras implementadas no backend
+Cadastro:
+- Remove mascara do CPF.
+- Valida CPF com cpf-cnpj-validator.
+- Verifica duplicidade de CPF e email.
+- Faz hash de senha com bcrypt (salt rounds 10).
+- Salva cliente primeiro; depois endereco usando cliId retornado.
 
-7.3 Frontend de clientes
-Tela cadastrar:
-- Mascara de CPF em tempo real.
-- Validacao local de campos obrigatorios.
-- Validacao local de CPF (algoritmo de digito verificador).
-- Integracao com ViaCEP ao sair do campo CEP:
-  - valida formato de CEP (8 digitos)
-  - consulta https://viacep.com.br/ws/{cep}/json/
-  - preenche rua, bairro, cidade, estado e uf automaticamente
-  - trata CEP nao encontrado ou erro de consulta
-- Envio de dados via POST /clientes/cadastrar em JSON.
+Listagem:
+- Consulta com LEFT JOIN cliente + endereco.
+- Renderiza view de listagem com dados agrupados.
 
-Tela listar:
-- Exibe tabela de clientes.
-- Possui botao para exibir/ocultar detalhes de endereco na linha abaixo.
-- Possui botao de alteracao para tela dedicada.
-- Possui botao de exclusao com confirmacao e chamada POST /clientes/excluir.
+Alteracao:
+- Exige preenchimento de dados de cliente e endereco.
+- Atualiza cliente e endereco separadamente.
+- Retorna erro especificando qual etapa falhou.
 
-Tela alterar:
-- Carrega dados atuais de cliente e endereco.
-- Valida campos obrigatorios.
-- Envia alteracao por fetch para /clientes/alterar.
-- Em sucesso, volta para /clientes/listar.
+Exclusao:
+- Exclui endereco por cli_id.
+- Exclui cliente por idClinete.
+
+6.4 Comportamento de frontend (public/js/clientes)
+cadastrar.js
+- Mascara CPF em tempo real.
+- Validacao de campos obrigatorios no cliente.
+- Validacao de CPF no navegador (digitos verificadores).
+- Consulta ViaCEP ao sair do campo CEP:
+  - valida 8 digitos
+  - busca em https://viacep.com.br/ws/{cep}/json/
+  - preenche rua/bairro/cidade/estado/uf automaticamente
+- Faz POST JSON para /clientes/cadastrar.
+
+alterar.js
+- Coleta cliente e endereco da tela.
+- Valida obrigatoriedade.
+- Faz POST JSON para /clientes/alterar.
+- Em sucesso redireciona para /clientes/listar.
+
+listar.js
+- Acopla .btnExcluir.
+- Confirmacao antes de excluir.
+- Faz POST JSON para /clientes/excluir.
+- Em sucesso recarrega pagina.
+
+6.5 Arquivos-chave para manutencao
+- routes/ClienteRoute.js
+- controllers/ClienteController.js
+- models/ClienteModel.js
+- models/EnderecoModel.js
+- views/clientes/*.ejs
+- public/js/clientes/*.js
 
 
-8) LAYOUT E NAVEGACAO
-- Layout principal com menu lateral e topbar (AdminLTE).
-- Menu com atalhos para:
-  - Inicio
+7) PADROES DE CODIGO IMPORTANTES PARA QUEM VAI MANTER
+- Sempre validar no frontend e no backend.
+- Sempre responder JSON padrao { ok, msg } nas rotas POST.
+- Evitar logica SQL em controller; manter no model.
+- Evitar alterar nome de campo de banco sem migracao planejada.
+- Em feature nova, seguir ordem:
+  1. criar rota
+  2. criar/ajustar metodo de controller
+  3. criar/ajustar metodo de model
+  4. criar/ajustar view
+  5. criar/ajustar JS da tela
+
+
+8) PONTOS DE ATENCAO (RISCOS TECNICOS JA OBSERVADOS)
+- Nao existe transacao envolvendo cliente + endereco no cadastro.
+  - Risco: cliente ser criado e endereco falhar.
+- Nao existe middleware global de tratamento de erro.
+  - Risco: rejeicoes de Promise sem resposta padronizada.
+- Nao existe autenticacao/controle de acesso nas rotas atuais.
+- Valores sensiveis do banco estao no codigo (localhost/root).
+  - Recomenda-se migrar para variaveis de ambiente.
+
+
+9) CHECKLIST RAPIDO PARA CORRECAO DE BUG
+1. Reproduzir bug na tela e identificar rota atingida.
+2. Conferir payload enviado no fetch (frontend).
+3. Conferir validacoes no controller.
+4. Conferir SQL e nome de campos no model.
+5. Testar resposta JSON esperada (ok/msg).
+6. Validar fluxo completo tela -> backend -> banco.
+
+
+10) RESUMO EXECUTIVO
+- O sistema atual esta funcionalmente centrado em dois CRUDs:
   - Servicos
-- As views de clientes e servicos sao injetadas no corpo do layout.
-
-
-9) ESTRUTURA DE PASTAS (RESUMO)
-- controllers/: regras de cada modulo.
-- models/: acesso a dados (SQL).
-- routes/: mapeamento de endpoints.
-- views/: paginas EJS.
-- public/js/: scripts de comportamento e fetch.
-- utils/database.js: pool e metodos genericos de banco.
-- server.js: bootstrap da aplicacao.
-
-
-10) FLUXO RESUMIDO DE REQUISICOES
-Exemplo generico:
-- Usuario clica em botao na view.
-- JS da pagina valida e envia fetch.
-- Rota Express recebe a chamada.
-- Controller valida e chama model.
-- Model executa SQL.
-- Controller retorna JSON (ok/msg) ou renderiza view.
-- Frontend reage com alerta, redirecionamento ou recarga.
-
-
-11) OBSERVACOES TECNICAS IMPORTANTES
-- O projeto possui pontos comentados para modulos futuros (autenticacao, carrinho etc.).
-- Atualmente o modulo principal em uso e focado em Servicos e Clientes.
-- O cadastro de clientes tem protecao de CPF duplicado, email duplicado e hash de senha.
-- A API consumida no frontend e interna (rotas Express do proprio sistema), exceto consulta de CEP no ViaCEP.
+  - Clientes (com endereco)
+- A manutencao deve priorizar consistencia entre:
+  - nomes de campo no frontend
+  - validacoes no controller
+  - colunas reais no banco
+- Para evolucao segura, manter padrao de resposta e separacao por camadas.
 
 
 Fim da documentacao.
