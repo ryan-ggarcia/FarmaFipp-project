@@ -1,0 +1,200 @@
+DOCUMENTACAO DE FUNCIONALIDADES - PROJETO FARMAFIPP
+
+1) VISAO GERAL DO PROJETO
+- Aplicacao web em Node.js com Express e EJS.
+- Arquitetura organizada por camadas:
+  - Rotas: recebem URL e direcionam para controllers.
+  - Controllers: validam entrada e coordenam regras de negocio.
+  - Models: executam comandos SQL no MySQL.
+  - Views: telas EJS renderizadas no servidor.
+  - JS de frontend: validacoes e chamadas fetch para API interna.
+- Tema visual principal: AdminLTE.
+
+
+2) TECNOLOGIAS E DEPENDENCIAS
+- express: servidor HTTP e roteamento.
+- ejs + express-ejs-layouts: renderizacao de views com layout.
+- mysql2: conexao com banco de dados MySQL via pool.
+- bcrypt: hash de senha no cadastro de cliente.
+- cpf-cnpj-validator: validacao de CPF no backend.
+
+
+3) INICIALIZACAO E MIDDLEWARES
+Fluxo de inicializacao:
+- O servidor sobe na porta 5000.
+- Configura view engine EJS.
+- Configura layout padrao.
+- Publica pasta public como arquivos estaticos.
+- Habilita leitura de body em formato URL encoded e JSON.
+- Registra rotas:
+  - /           (home)
+  - /servicos   (modulo de servicos)
+  - /clientes   (modulo de clientes)
+
+
+4) ACESSO AO BANCO
+Arquivo utilitario de banco:
+- Cria um pool mysql2 com host localhost e database farmafipp.
+- Fornece 3 metodos genericos:
+  - ExecutaComando(sql, valores): SELECT e retorno de linhas.
+  - ExecutaComandoNonQuery(sql, valores): INSERT/UPDATE/DELETE com retorno booleano (affectedRows > 0).
+  - ExecutaComandoLastInserted(sql, valores): INSERT com retorno de insertId.
+
+
+5) FUNCIONALIDADES DO MODULO HOME
+Rota:
+- GET /
+
+Comportamento:
+- Renderiza a view home.
+
+
+6) FUNCIONALIDADES DO MODULO SERVICOS
+6.1 Rotas de servicos
+- GET  /servicos               -> lista servicos
+- GET  /servicos/cadastrar     -> tela de cadastro
+- POST /servicos/cadastrar     -> cria servico
+- GET  /servicos/alterar/:id   -> tela de alteracao
+- POST /servicos/alterar       -> atualiza servico
+- POST /servicos/deletar       -> exclui servico
+
+6.2 Regras de negocio no backend
+Cadastro de servico:
+- Campos esperados: data, tipo, status, descricao.
+- Valida campos obrigatorios.
+- Converte status booleano do frontend para texto no banco:
+  - true  -> aprovado
+  - false -> nao aprovado
+- Salva no banco e retorna JSON com ok/msg.
+
+Alteracao de servico:
+- Exige id valido e campos obrigatorios.
+- Mantem regra de conversao de status.
+- Atualiza no banco e retorna JSON com ok/msg.
+
+Exclusao de servico:
+- Exige id valido.
+- Remove registro e retorna JSON com ok/msg.
+
+Listagem de servicos:
+- Busca todos os registros da tabela Servico.
+- Renderiza view com a lista para exibicao em tabela.
+
+6.3 Frontend de servicos
+Tela cadastrar:
+- Valida campos obrigatorios no navegador.
+- Destaca borda em vermelho quando campo obrigatorio estiver vazio.
+- Envia POST via fetch para /servicos/cadastrar.
+- Em sucesso, exibe alerta e redireciona para /servicos.
+
+Tela listar:
+- Botao Excluir envia POST para /servicos/deletar.
+- Exibe confirmacao antes da exclusao.
+- Em sucesso, recarrega a pagina para atualizar a tabela.
+
+Tela alterar:
+- Carrega dados atuais do servico.
+- Valida campos antes de enviar.
+- Envia POST para /servicos/alterar.
+- Em sucesso, retorna para /servicos.
+
+
+7) FUNCIONALIDADES DO MODULO CLIENTES
+7.1 Rotas de clientes
+- GET  /clientes/cadastrar     -> tela de cadastro
+- POST /clientes/cadastrar     -> cria cliente e endereco
+- GET  /clientes/listar        -> lista clientes
+- GET  /clientes/alterar/:id   -> tela de alteracao
+- POST /clientes/alterar       -> atualiza cliente e endereco
+- POST /clientes/excluir       -> exclui cliente e endereco
+
+7.2 Regras de negocio no backend
+Cadastro de cliente:
+- Campos de cliente obrigatorios:
+  nome, cpf, data, telefone, email, senha.
+- Campos de endereco obrigatorios:
+  rua, numero, bairro, cidade, estado, cep, uf.
+- Limpa mascara do CPF e valida CPF no backend.
+- Verifica duplicidade de CPF e email no banco.
+- Aplica hash bcrypt na senha antes de salvar.
+- Cria primeiro cliente e, depois, endereco vinculado ao cliId.
+- Retorna JSON com sucesso ou erro.
+
+Listagem de clientes:
+- Busca clientes com join de endereco.
+- Renderiza tabela com dados pessoais e dados de endereco.
+
+Alteracao de cliente:
+- Valida campos obrigatorios de cliente e endereco.
+- Valida CPF.
+- Atualiza dados de cliente e endereco.
+- Retorna JSON com resultado da operacao.
+
+Exclusao de cliente:
+- Exige id valido.
+- Exclui endereco vinculado ao cliente.
+- Exclui cliente.
+- Retorna JSON com resultado.
+
+7.3 Frontend de clientes
+Tela cadastrar:
+- Mascara de CPF em tempo real.
+- Validacao local de campos obrigatorios.
+- Validacao local de CPF (algoritmo de digito verificador).
+- Integracao com ViaCEP ao sair do campo CEP:
+  - valida formato de CEP (8 digitos)
+  - consulta https://viacep.com.br/ws/{cep}/json/
+  - preenche rua, bairro, cidade, estado e uf automaticamente
+  - trata CEP nao encontrado ou erro de consulta
+- Envio de dados via POST /clientes/cadastrar em JSON.
+
+Tela listar:
+- Exibe tabela de clientes.
+- Possui botao para exibir/ocultar detalhes de endereco na linha abaixo.
+- Possui botao de alteracao para tela dedicada.
+- Possui botao de exclusao com confirmacao e chamada POST /clientes/excluir.
+
+Tela alterar:
+- Carrega dados atuais de cliente e endereco.
+- Valida campos obrigatorios.
+- Envia alteracao por fetch para /clientes/alterar.
+- Em sucesso, volta para /clientes/listar.
+
+
+8) LAYOUT E NAVEGACAO
+- Layout principal com menu lateral e topbar (AdminLTE).
+- Menu com atalhos para:
+  - Inicio
+  - Servicos
+- As views de clientes e servicos sao injetadas no corpo do layout.
+
+
+9) ESTRUTURA DE PASTAS (RESUMO)
+- controllers/: regras de cada modulo.
+- models/: acesso a dados (SQL).
+- routes/: mapeamento de endpoints.
+- views/: paginas EJS.
+- public/js/: scripts de comportamento e fetch.
+- utils/database.js: pool e metodos genericos de banco.
+- server.js: bootstrap da aplicacao.
+
+
+10) FLUXO RESUMIDO DE REQUISICOES
+Exemplo generico:
+- Usuario clica em botao na view.
+- JS da pagina valida e envia fetch.
+- Rota Express recebe a chamada.
+- Controller valida e chama model.
+- Model executa SQL.
+- Controller retorna JSON (ok/msg) ou renderiza view.
+- Frontend reage com alerta, redirecionamento ou recarga.
+
+
+11) OBSERVACOES TECNICAS IMPORTANTES
+- O projeto possui pontos comentados para modulos futuros (autenticacao, carrinho etc.).
+- Atualmente o modulo principal em uso e focado em Servicos e Clientes.
+- O cadastro de clientes tem protecao de CPF duplicado, email duplicado e hash de senha.
+- A API consumida no frontend e interna (rotas Express do proprio sistema), exceto consulta de CEP no ViaCEP.
+
+
+Fim da documentacao.
