@@ -1,13 +1,14 @@
-
-
 document.addEventListener("DOMContentLoaded", function(){
     let btn = document.getElementById("btnCadastrar");
+    let inputCepEl = document.getElementById("cep");
+    inputCepEl.addEventListener("blur", buscarCep);
+
     let inputCpfEl = document.getElementById("cpf");
 
     btn.addEventListener("click", cadastrar)
 
     inputCpfEl.addEventListener("input", function(e){
-        let valor = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+        let valor = e.target.value.replace(/\D/g, ''); 
         
         if(valor.length > 11) valor = valor.substring(0, 11);
 
@@ -21,6 +22,58 @@ document.addEventListener("DOMContentLoaded", function(){
 
         e.target.value = valor;
     });
+
+    function limparCamposEnd(){
+        document.getElementById("rua").value = "";
+        document.getElementById("bairro").value = "";
+        document.getElementById("cidade").value = "";
+        document.getElementById("estado").value = "";
+        document.getElementById("uf").value = "";
+    }
+
+    async function buscarCep(){
+        let cep = document.getElementById("cep").value.replace(/\D/g, '');
+
+        if(!cep){
+            limparCamposEnd();
+            return;
+        }
+
+        if(!/^\d{8}$/.test(cep)){
+            limparCamposEnd();
+            alert("CEP inválido!");
+            return;
+        }
+
+        try{
+            document.getElementById("rua").value = "...";
+            document.getElementById("bairro").value = "...";
+            document.getElementById("cidade").value = "...";
+            document.getElementById("estado").value = "...";
+            document.getElementById("uf").value = "...";
+
+            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            if(!res.ok) throw new Error("Erro ao consultar CEP");
+            
+            const data = await res.json();
+
+            if (data.erro){
+                limparCamposEnd();
+                alert("CEP não encontrado!");
+                return;
+            }
+
+            document.getElementById("rua").value = data.logradouro || "";
+            document.getElementById("bairro").value = data.bairro || "";
+            document.getElementById("cidade").value = data.localidade || "";
+            document.getElementById("estado").value = data.uf || "";
+            document.getElementById("uf").value = data.uf || "";
+        } catch(erro){
+            limparCamposEnd();
+            alert("Erro ao consultar CEP. Tente novamente mais tarde.");
+            console.log(erro);
+        }
+    }
 
     function cadastrar(){
         //inputs de cliente
@@ -114,10 +167,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if (cpf.length !== 11) return false;
 
-        // Rejeita CPFs com todos os dígitos iguais
+        
         if (/^(\d)\1{10}$/.test(cpf)) return false;
 
-        // Validação do primeiro dígito verificador
+        
         let soma = 0;
         for (let i = 0; i < 9; i++) {
             soma += parseInt(cpf.charAt(i)) * (10 - i);
@@ -126,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function(){
         if (resto === 10) resto = 0;
         if (resto !== parseInt(cpf.charAt(9))) return false;
 
-        // Validação do segundo dígito verificador
+        
         soma = 0;
         for (let i = 0; i < 10; i++) {
             soma += parseInt(cpf.charAt(i)) * (11 - i);
