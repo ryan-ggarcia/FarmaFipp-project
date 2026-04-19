@@ -7,7 +7,8 @@ const homeRouter = require("./routes/HomeRouter");
 // const checkoutRouter = require ('./routes/checkoutRoute');
 // const produtoRouter = require ('./routes/produtoRoute');
 const ServicoRouter = require('./routes/ServicoRouter');
-const ClienteRouter = require('./routes/ClienteRoute')
+const ClienteRouter = require('./routes/ClienteRoute');
+const FuncionarioRouter = require('./routes/FuncionarioRoute');
 
 const expressEjsLayouts = require('express-ejs-layouts');
 
@@ -32,6 +33,7 @@ server.use("/", homeRouter);
 // server.use("/autenticar", autenticacaoRouter);
 server.use("/servicos", ServicoRouter);
 server.use("/clientes", ClienteRouter);
+server.use("/funcionarios", FuncionarioRouter);
 
 
     

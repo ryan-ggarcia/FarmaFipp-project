@@ -140,8 +140,6 @@ class ClienteController{
         else{
             return res.send({ok: false, msg: "ID do cliente inválido!"})
         }
-
-        res.send({ok, msg});
     }
 }
 
