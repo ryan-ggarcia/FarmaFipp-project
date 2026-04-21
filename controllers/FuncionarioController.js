@@ -1,5 +1,6 @@
 const FuncionarioModel = require("../models/FuncionarioModel")
 const { cpf } = require("cpf-cnpj-validator")
+const bcrypt = require("bcrypt")
 
 class FuncionarioController{
     async cadastrarView(req, res){
@@ -34,13 +35,17 @@ class FuncionarioController{
         let cpfExistente = await new FuncionarioModel().FindByCpf(cpfLimpo);
         let matriculaExistente = await new FuncionarioModel().FindByRegistration(matricula);
 
+        
+
         if(cpfExistente || matriculaExistente){
             let msgCpf = cpfExistente ? "CPF já cadastrado. " : "";
             let msgMatricula = matriculaExistente ? "Matrícula já cadastrada." : "";
             return res.send({ ok: false, msg: msgCpf + msgMatricula })
         }
 
-        let funcionario = new FuncionarioModel(0, cargo, nome, telefone, email, senha, matricula, cpfLimpo, 1)
+        const senhaHash = await bcrypt.hash(senha, 10)
+
+        let funcionario = new FuncionarioModel(0, cargo, nome, telefone, email, senhaHash, matricula, cpfLimpo, 1)
         let result = await funcionario.Create()
 
         if(result){
@@ -73,7 +78,7 @@ class FuncionarioController{
         let {id} = req.body;
 
         if(!id){
-            return res.send({ok: false, msg: "ID do funcionário é obrigatório"})
+            return res.send({ok: false, msg: "ID do funcionário não encontrado"})
         }
 
         let funcionario = new FuncionarioModel();
