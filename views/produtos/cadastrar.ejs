@@ -1,0 +1,53 @@
+
+
+<form>
+    <label for="nome" class="form-label">Nome do Produto:</label>
+    <input type="text" class="form-control" id="nome" name="nome" required>
+
+    <label for="validade" class="form-label">Validade:</label>
+    <input type="date" class="form-control" id="validade" name="validade" required>
+
+    <label for="preco" class="form-label">Preço:</label>
+    <input type="number" class="form-control" id="preco" name="preco" step="0.01" required>
+
+    <label for="quantidade" class="form-label">Quantidade:</label>
+    <input type="number" class="form-control" id="quantidade" name="quantidade" min="0" required>
+
+    <label for="descricao" class="form-label">Descrição:</label>
+    <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
+
+    <label for="marca" class="form-label">Marca:</label>
+    <input type="text" class="form-control" id="marca" name="marca" required>
+
+    <label for="categoria" class="form-label">Categoria:</label>
+    <select class="form-control" id="categoria" name="categoria" required>
+        <option value="">Selecione uma categoria</option>
+        <% categorias.forEach((categoria) => { %>
+            <option value="<%= categoria.idCategoria %>"><%= categoria.cat_nome %></option>
+        <% }) %>
+    </select>
+
+    <label for="fornecedor" class="form-label">Fornecedor:</label>
+    <select class="form-control" id="fornecedor" name="fornecedor" required>
+        <option value="">Selecione um fornecedor</option>
+        <% for(let i = 0; i < fornecedores.length; i++) { %>
+            <option value="<%= fornecedores[i].id %>"><%= fornecedores[i].nome %></option>
+        <% } %>
+    </select>
+
+    <label for="img" class="form-label">imagem do produto:</label>
+    <input type="file" class="form-control" id="img" name="img">
+
+    <div class="form-group" id="divPrevia" style="display:none;">
+        <label>Prévia da Imagem:</label>
+        <img id="previaImagem" src="#" width="200">
+    </div>
+
+        <div>
+    
+
+    <button type="button" id="cadastrar" class="btn btn-primary">Cadastrar Produto</button>
+
+</form>
+
+<script src="/js/produtos/cadastrar.js"></script>
