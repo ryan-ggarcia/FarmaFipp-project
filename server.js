@@ -17,8 +17,8 @@ server.set('layout', "layout");
 server.use(express.static("public"));
 server.use(express.urlencoded({extended:true}));
 server.use(express.json());
-server.use("/", homeRouter);
-server.use("/usuarioView",usuarioRouter)
+server.use("/admin", homeRouter);
+server.use("/",usuarioRouter)
 server.use("/servicos", ServicoRouter);
 server.use("/clientes", ClienteRouter);
 server.use("/fornecedores", FornecedorRouter);
