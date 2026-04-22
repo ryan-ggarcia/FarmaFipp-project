@@ -1,5 +1,5 @@
-let Database = require('../utils/database');
-let banco = new Database();
+const Database = require('../utils/database');
+const banco = new Database();
 
 class ClienteModel{
     #cliId;

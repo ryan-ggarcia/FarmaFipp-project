@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", function(){
         let id = this.dataset.id;
 
         if(confirm("Deseja realmente excluir este cliente?")){
-            fetch("/clientes/excluir", {
-                method: "POST",
+            fetch("/clientes/deletar", {
+                method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 },

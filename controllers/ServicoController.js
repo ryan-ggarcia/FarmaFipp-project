@@ -1,5 +1,5 @@
 const ServicoModel = require("../models/ServicoModel");
-const TipoServico = require("../models/TipoServicoModal");
+const TipoServico = require("../models/TipoServicoModel");
 
 class ServicoController {
     async listarView(req, res) {
