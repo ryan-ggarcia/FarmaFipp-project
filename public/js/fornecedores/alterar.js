@@ -1,9 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('cadastrar');
+document.addEventListener('DOMContentLoaded', function() {
+    const alter_button = document.getElementById('alterar');
 
-    btn.addEventListener('click', cadastrar);
+    alter_button.addEventListener('click', alterar_fornecedor);
 
-    function cadastrar(){
+    function alterar_fornecedor() {
+        const id = document.querySelector('#id');
+        id.style.borderColor = '#ced4da';
         const nome = document.querySelector('#nome');
         nome.style.borderColor = '#ced4da';
         const cnpj = document.querySelector('#cnpj');
@@ -38,31 +40,34 @@ document.addEventListener('DOMContentLoaded', () => {
         if(uf.value.length < 2){ listaValid.push('uf'); }
 
         if(listaValid.length == 0){
-            fetch('/fornecedores/cadastrar', {
-                method: "POST",
+            fetch('/fornecedores/alterar', {
+                method: "PUT",
                 headers:  {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
+                    id: id.value,
                     nome: nome.value,
                     cnpj: cnpj.value,
                     telefone: telefone.value,
                     rua: rua.value,
-                    numero: numero.value,
+                    num: numero.value,
                     bairro: bairro.value,
                     cidade: cidade.value,
                     cep: cep.value,
-                    uf: uf.value,
-                    estado: estado.value
+                    estado: estado.value,
+                    uf: uf.value
                 })
-            }).then((response) => {
-                return response.json();
-            }).then((data) => {
-                alert(data.msg);
-                if(data.ok){
-                    window.location.href = '/fornecedores/';
-                }
             })
+            .then(response => response.json())
+            .then(data => {
+                if(data.ok) {
+                    alert(data.msg);
+                    window.location.href = '/fornecedores';
+                } else {
+                    alert(data.msg || 'Erro ao alterar fornecedor.');
+                }
+            });
         }else{
             alert('Preencha os campos corretamente!');
             for(let i = 0; i < listaValid.length; i++){

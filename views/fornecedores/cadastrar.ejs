@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+
 <body>
     
     <h1>Cadastrar Fornecedor</h1>
     
-    <form >
+
         <label for="nome">Nome:</label>
         <input type="text" id="nome" name="nome" required><br>
 
@@ -42,7 +36,7 @@
         </div>
         <div class="col-md-4">
             <label class="form-label">CEP:</label>
-            <input id="cep" type="text" class= "form-control" onkeypress="mascara('#####-###', this,event)" maxlength="9">
+            <input id="cep" type="text" class= "form-control">
         </div>
         <div class="col-md-4">
             <label class="form-label">UF:</label>
@@ -50,7 +44,9 @@
             </div>
         </div>
 
-        <button id="cadastrar">Cadastrar</button>
-    </form>
+        <button type="button" id="cadastrar">Cadastrar</button>
+
 </body>
-</html>
+
+
+<script src="/js/fornecedores/cadastrar.js"></script>
