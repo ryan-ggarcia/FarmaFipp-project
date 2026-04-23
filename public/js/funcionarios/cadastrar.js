@@ -1,7 +1,7 @@
-
-
 document.addEventListener("DOMContentLoaded", function(){
     let btn = document.getElementById("btnCadastrar");
+    let inputCepEl = document.getElementById("cep");
+    inputCepEl.addEventListener("blur", buscarCep);
 
     let inputCpfEl = document.getElementById("cpf");
 
@@ -23,6 +23,58 @@ document.addEventListener("DOMContentLoaded", function(){
         e.target.value = valor;
     });
 
+    function limparCamposEnd(){
+        document.getElementById("rua").value = "";
+        document.getElementById("bairro").value = "";
+        document.getElementById("cidade").value = "";
+        document.getElementById("estado").value = "";
+        document.getElementById("uf").value = "";
+    }
+
+    async function buscarCep(){
+        let cep = document.getElementById("cep").value.replace(/\D/g, '');
+
+        if(!cep){
+            limparCamposEnd();
+            return;
+        }
+
+        if(!/^\d{8}$/.test(cep)){
+            limparCamposEnd();
+            alert("CEP inválido!");
+            return;
+        }
+
+        try{
+            document.getElementById("rua").value = "...";
+            document.getElementById("bairro").value = "...";
+            document.getElementById("cidade").value = "...";
+            document.getElementById("estado").value = "...";
+            document.getElementById("uf").value = "...";
+
+            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            if(!res.ok) throw new Error("Erro ao consultar CEP");
+            
+            const data = await res.json();
+
+            if (data.erro){
+                limparCamposEnd();
+                alert("CEP não encontrado!");
+                return;
+            }
+
+            document.getElementById("rua").value = data.logradouro || "";
+            document.getElementById("bairro").value = data.bairro || "";
+            document.getElementById("cidade").value = data.localidade || "";
+            document.getElementById("estado").value = data.uf || "";
+            document.getElementById("uf").value = data.uf || "";
+        } catch(erro){
+            limparCamposEnd();
+            alert("Erro ao consultar CEP. Tente novamente mais tarde.");
+            console.log(erro);
+        }
+    }
+
     function cadastrar(){
         let nome = document.getElementById("nome").value;
         let cargo = document.getElementById("cargo").value;
@@ -31,6 +83,16 @@ document.addEventListener("DOMContentLoaded", function(){
         let email = document.getElementById("email").value;
         let senha = document.getElementById("senha").value;
         let matricula = document.getElementById("matricula").value;
+        //input de endereço
+        //inputs de endereço
+        let rua = document.getElementById("rua").value;
+        let num = document.getElementById("num").value;
+        let complemento = document.getElementById("complemento").value;
+        let bairro = document.getElementById("bairro").value;
+        let cidade = document.getElementById("cidade").value;
+        let estado = document.getElementById("estado").value;
+        let cep = document.getElementById("cep").value;
+        let uf = document.getElementById("uf").value;
         let listaValidacao = []
 
         if(!nome){
@@ -38,9 +100,6 @@ document.addEventListener("DOMContentLoaded", function(){
         }
         if(!cargo){
             listaValidacao.push("Preencha o cargo")
-        }
-        if(!cpf){
-            listaValidacao.push("Preencha o CPF")
         }
         if(!telefone){
             listaValidacao.push("Preencha o telefone")
@@ -54,6 +113,33 @@ document.addEventListener("DOMContentLoaded", function(){
         if(!matricula){
             listaValidacao.push("Preencha a matrícula")
         }
+        if(!rua){
+            listaValidacao.push("Preencha a rua")
+        }
+        if(!num){
+            listaValidacao.push("Preencha o número")
+        }
+        if(!bairro){
+            listaValidacao.push("Preencha o bairro")
+        }
+        if(!cidade){
+            listaValidacao.push("Preencha a cidade")
+        }
+        if(!estado){
+            listaValidacao.push("Preencha o estado")
+        }
+        if(!cep){
+            listaValidacao.push("Preencha o CEP")
+        }
+        if(!uf){
+            listaValidacao.push("Preencha a UF")
+        }
+
+        if(cpf != "" && !validarCpf(cpf)){
+            alert("Informe um CPF válido!");
+            return;
+        }
+
 
         if(listaValidacao.length == 0){
         fetch("/funcionarios/cadastrar",{
@@ -68,7 +154,15 @@ document.addEventListener("DOMContentLoaded", function(){
                 telefone,
                 email,
                 senha,
-                matricula
+                matricula,
+                rua,
+                num,
+                complemento,
+                bairro,
+                cidade,
+                estado,
+                cep,
+                uf
             })
         })
         .then(res =>{

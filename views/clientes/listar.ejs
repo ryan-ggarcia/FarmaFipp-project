@@ -16,6 +16,8 @@
                     <th>Email</th>
                     <th>Telefone</th>
                     <th>Data de Nascimento</th>
+                    <th>Perfil</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +31,9 @@
                         <td><%= c.cliTelefone %></td>
                         <td><%= new Date(c.cliNascimento).toLocaleDateString('pt-BR') %></td>
                         <td>
+                            <%= c.perfilId == 1 ? 'Cliente' : c.perfilId == 2 ? 'Funcionario' : (c.perfilId || '-') %>
+                        </td>
+                        <td>
                             <button data-id="<%= c.cliId %>" class="btn btn-info btnDetalhes">
                     <i class="fas fa-eye"></i>
                             </button>
@@ -41,7 +46,7 @@
                         </td>
                     </tr>
                     <tr class="detalhes" id="detalhes-<%= c.cliId %>" style="display: none;">
-                        <td colspan="8">
+                        <td colspan="10">
                             <strong>Endereço:</strong><br>
                             Rua: <%= c.endRua %><br>
                             Bairro: <%= c.endBairro %><br>

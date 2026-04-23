@@ -86,12 +86,13 @@ document.addEventListener("DOMContentLoaded", function(){
         //inputs de endereço
         let inputRua = document.getElementById("rua").value;
         let inputNum = document.getElementById("num").value;
+        let inputComplemento = document.getElementById("complemento").value;
         let inputBairro = document.getElementById("bairro").value;
         let inputCidade = document.getElementById("cidade").value;
         let inputEstado = document.getElementById("estado").value;
         let inputCep = document.getElementById("cep").value;
         let inputUf = document.getElementById("uf").value;
-
+        
         let listaValidacao = []
 
         if(inputNome == "")
@@ -145,7 +146,8 @@ document.addEventListener("DOMContentLoaded", function(){
                     cidade: inputCidade,
                     estado: inputEstado,
                     cep: inputCep,
-                    uf: inputUf
+                    uf: inputUf,
+                    complemento: inputComplemento
                 })
             })
             .then(res=>{

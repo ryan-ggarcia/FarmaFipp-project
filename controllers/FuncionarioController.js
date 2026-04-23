@@ -1,4 +1,5 @@
 const FuncionarioModel = require("../models/FuncionarioModel")
+const EnderecoModelFuncionario = require("../models/EnderecoModelFuncionario")
 const { cpf } = require("cpf-cnpj-validator")
 const bcrypt = require("bcrypt")
 
@@ -15,12 +16,14 @@ class FuncionarioController{
 
     async alterarView(req, res){
         let funcionario = new FuncionarioModel();
+        let endereco = new EnderecoModelFuncionario();
         funcionario = await funcionario.Get(req.params.id)
-        res.render("funcionarios/alterar", {funcionario})
+        endereco = await endereco.Get(funcionario.funcId)
+        res.render("funcionarios/alterar", {funcionario, endereco})
     }
 
     async cadastrar(req, res){
-        let {nome, cargo, cpf: inputCpf, telefone, email, senha, matricula} = req.body;
+        let {nome, cargo, cpf: inputCpf, telefone, email, senha, matricula, rua, num, complemento, bairro, cidade, estado, cep, uf} = req.body;
 
          const cpfLimpo = inputCpf ? inputCpf.replace(/\D/g, '') : '';
 
@@ -35,8 +38,6 @@ class FuncionarioController{
         let cpfExistente = await new FuncionarioModel().FindByCpf(cpfLimpo);
         let matriculaExistente = await new FuncionarioModel().FindByRegistration(matricula);
 
-        
-
         if(cpfExistente || matriculaExistente){
             let msgCpf = cpfExistente ? "CPF já cadastrado. " : "";
             let msgMatricula = matriculaExistente ? "Matrícula já cadastrada." : "";
@@ -45,18 +46,30 @@ class FuncionarioController{
 
         const senhaHash = await bcrypt.hash(senha, 10)
 
-        let funcionario = new FuncionarioModel(0, cargo, nome, telefone, email, senhaHash, matricula, cpfLimpo, 1)
+        let funcionario = new FuncionarioModel(0, cargo, nome, telefone, email, senhaHash, matricula, cpfLimpo, 2)
         let result = await funcionario.Create()
 
-        if(result){
-            res.send({ok: true, msg: "Funcionário cadastrado com sucesso"})
-        } else {
-            res.send({ok: false, msg: "Erro ao cadastrar funcionário"})
-        } 
+        if(!result){
+            return res.send({ok: false, msg: "Erro ao cadastrar funcionário"})
+        }
+
+        const funcId = result 
+
+        let endereco = new EnderecoModelFuncionario(
+            0, rua, bairro, cidade, num, estado, uf, cep, complemento, funcId
+        )
+
+        let resultEnd = await endereco.Create()
+
+         if(!resultEnd){
+            return res.send({ok: false, msg: "Erro ao cadastrar endereço do funcionário"})
+        }
+
+        res.send({ok: true, msg: "Funcionário e endereço cadastrados com sucesso"})
     }
 
     async alterar(req, res){
-        let {id, nome, cargo, cpf: inputCpf, telefone, email, senha, matricula} = req.body;
+        let {id, nome, cargo, cpf: inputCpf, telefone, email, senha, matricula, endId, rua, num, complemento, bairro, cidade, estado, cep, uf} = req.body;
 
         const cpfLimpo = inputCpf ? inputCpf.replace(/\D/g, '') : '';
 
@@ -64,31 +77,47 @@ class FuncionarioController{
             return res.send({ok: false, msg: "Preencha todos os campos"})
         }
 
-        let funcionario = new FuncionarioModel(id, cargo, nome, telefone, email, senha, matricula, cpfLimpo, 1)
+        if (!endId || !rua || !num || !bairro || !cidade || !estado || !cep || !uf) {
+            return res.send({ok: false, msg: "Preencha os dados do endereço"})
+        }
+
+        if(!cpf.isValid(cpfLimpo)){
+            return res.send({ok: false, msg: "CPF inválido"})
+        }
+
+        let funcionario = new FuncionarioModel(id, cargo, nome, telefone, email, senha, matricula, cpfLimpo, 2)
         let result = await funcionario.Update()
 
-        if(result){
-            res.send({ok: true, msg: "Funcionário alterado com sucesso"})
+        let endereco = new EnderecoModelFuncionario(endId, rua, bairro, cidade, num, estado, uf, cep, complemento || "", id)
+        let resultEnd = await endereco.Update()
+
+        if(result && resultEnd){
+            res.send({ok: true, msg: "Dados do funcionário alterados com sucesso"})
         } else {
-            res.send({ok: false, msg: "Erro ao alterar funcionário"})
+            let errorMsg = !result ? "Erro ao alterar dados do funcionário" : "Erro ao alterar dados do endereço";
+            res.send({ok: false, msg: errorMsg})
         }
     }
 
     async excluir(req, res){
         let {id} = req.body;
 
-        if(!id){
-            return res.send({ok: false, msg: "ID do funcionário não encontrado"})
-        }
+        if(id && id != "0"){
 
         let funcionario = new FuncionarioModel();
+        let endereco = new EnderecoModelFuncionario();
+
+        let resultEnd = await endereco.Delete(id)
         let result = await funcionario.Delete(id)
 
-        if(result){
-            res.send({ok: true, msg: "Funcionário excluído com sucesso"})
+        if(result && resultEnd){
+            res.send({ok: true, msg: "Funcionário e endereço excluídos com sucesso"})
         }
         else{
             res.send({ok: false, msg: "Erro ao excluir funcionário"})
+            }
+        }else{
+            res.send({ok: false, msg: "ID do funcionário inválido"})
         }
     }
 

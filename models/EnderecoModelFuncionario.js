@@ -1,16 +1,17 @@
 let Database = require('../utils/database');
 let banco = new Database();
 
-class EnderecoModel{
+class EnderecoModelFuncionario{
     #endId;
     #endRua;
     #endBairro;
     #endCidade;
     #endNum;
+    #endComplemento;
     #endEstado;
     #endUF;
     #endCep;
-    #cliId;
+    #funcId;
 
     get endId(){
         return this.#endId;
@@ -52,6 +53,14 @@ class EnderecoModel{
         this.#endNum = value;
     }
 
+    get endComplemento(){
+        return this.#endComplemento;
+    }
+
+    set endComplemento(value){
+        this.#endComplemento = value;
+    }
+
     get endEstado(){
         return this.#endEstado;
     }
@@ -76,15 +85,15 @@ class EnderecoModel{
         this.#endCep = value;
     }
 
-    get cliId(){
-        return this.#cliId;
+    get funcId(){
+        return this.#funcId;
     }
 
-    set cliId(value){
-        this.#cliId = value;
+    set funcId(value){
+        this.#funcId = value;
     }
 
-    constructor(endId, endRua, endBairro, endCidade, endNum, endEstado, endUF, endCep, cliId){
+    constructor(endId, endRua, endBairro, endCidade, endNum, endEstado, endUF, endCep, endComplemento, funcId){
         this.#endId = endId;
         this.#endRua = endRua;
         this.#endBairro = endBairro;
@@ -93,12 +102,13 @@ class EnderecoModel{
         this.#endEstado = endEstado;
         this.#endUF = endUF;
         this.#endCep = endCep;
-        this.#cliId = cliId;
+        this.#endComplemento = endComplemento;
+        this.#funcId = funcId;
     }
 
     async Create(){
-        let sql = "insert into endereco (end_rua, end_bairro, end_cidade, end_num, end_estado, end_uf, end_cep, cli_id) values (?, ?, ?, ?, ?, ?, ?, ?)";
-        let values = [this.#endRua, this.#endBairro, this.#endCidade, this.#endNum, this.#endEstado, this.#endUF, this.#endCep, this.#cliId];
+        let sql = "insert into endereco_funcionario (end_rua, end_bairro, end_cidade, end_num, end_estado, end_uf, end_cep, end_complemento, func_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        let values = [this.#endRua, this.#endBairro, this.#endCidade, this.#endNum, this.#endEstado, this.#endUF, this.#endCep, this.#endComplemento, this.#funcId];
 
         let result = await banco.ExecutaComandoNonQuery(sql, values);
 
@@ -106,14 +116,14 @@ class EnderecoModel{
     }
 
     async Get(id){
-        let sql = "select * from endereco where end_id = ?";
+        let sql = "select * from endereco_funcionario where end_id = ?";
 
         let values = [id];
 
         let rows = await banco.ExecutaComando(sql, values);
         
         if(rows.length > 0){
-            let endreco = new EnderecoModel(
+            let endreco = new EnderecoModelFuncionario(
                 rows[0].end_id,
                 rows[0].end_rua,
                 rows[0].end_bairro,
@@ -122,7 +132,8 @@ class EnderecoModel{
                 rows[0].end_estado,
                 rows[0].end_uf,
                 rows[0].end_cep,
-                rows[0].cli_id
+                rows[0].end_complemento,
+                rows[0].func_id
             )
             return endreco;
         }
@@ -130,13 +141,13 @@ class EnderecoModel{
     }
 
     async Read(){
-        let sql = "select * from endereco";
+        let sql = "select * from endereco_funcionario";
 
         let rows = await banco.ExecutaComando(sql);
         let lista = [];
 
         rows.forEach(rows =>{
-            let endereco = new EnderecoModel(
+            let endereco = new EnderecoModelFuncionario(
                 rows.end_id,
                 rows.end_rua,
                 rows.end_bairro,
@@ -145,7 +156,8 @@ class EnderecoModel{
                 rows.end_estado,
                 rows.end_uf,
                 rows.end_cep,
-                rows.cli_id
+                rows.end_complemento,
+                rows.func_id
             )
             lista.push(endereco);
         })
@@ -153,8 +165,8 @@ class EnderecoModel{
     }
 
     async Update(){
-        let sql = "update endereco set end_rua = ?, end_bairro = ?, end_cidade = ?, end_num = ?, end_estado = ?, end_uf = ?, end_cep = ? where end_id = ?";
-        let values = [this.#endRua, this.#endBairro, this.#endCidade, this.#endNum, this.#endEstado, this.#endUF, this.#endCep, this.#endId];
+        let sql = "update endereco_funcionario set end_rua = ?, end_bairro = ?, end_cidade = ?, end_num = ?, end_estado = ?, end_uf = ?, end_cep = ?, end_complemento = ?, func_id = ? where end_id = ?";
+        let values = [this.#endRua, this.#endBairro, this.#endCidade, this.#endNum, this.#endEstado, this.#endUF, this.#endCep, this.#endComplemento, this.#funcId, this.#endId];
 
         let result = await banco.ExecutaComandoNonQuery(sql, values);
 
@@ -162,7 +174,7 @@ class EnderecoModel{
     }
 
     async Delete (id){
-        let sql = "delete from endereco where cli_id = ?";
+        let sql = "delete from endereco_funcionario where func_id = ?";
         let values = [id];
 
         let result = await banco.ExecutaComandoNonQuery(sql, values);
@@ -171,4 +183,4 @@ class EnderecoModel{
     }
 }
 
-module.exports = EnderecoModel;
+module.exports = EnderecoModelFuncionario;

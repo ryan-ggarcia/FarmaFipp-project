@@ -1,5 +1,5 @@
 const ClienteModel = require('../models/ClienteModel');
-const EnderecoModel = require('../models/EnderecoModel');
+const EnderecoModelCliente = require('../models/EnderecoModelCliente');
 const {cpf} = require ('cpf-cnpj-validator');
 const bcrypt = require('bcrypt');
 
@@ -16,7 +16,7 @@ class ClienteController{
 
     async alterarView(req, res){
         let cliente = new ClienteModel();
-        let endereco = new EnderecoModel()
+        let endereco = new EnderecoModelCliente()
         cliente = await cliente.Get(req.params.id)
         endereco = await endereco.Get(cliente.cliId)
         res.render('clientes/alterar', {cliente, endereco});
@@ -28,7 +28,7 @@ class ClienteController{
 
         console.log(req.body)
 
-        const { nome, cpf: inputCpf, data, telefone, email, senha, rua, numero, bairro, cidade, estado, cep, uf } = req.body;
+        const { nome, cpf: inputCpf, data, telefone, email, senha, rua, numero, complemento, bairro, cidade, estado, cep, uf } = req.body;
 
         const cpfLimpo = inputCpf ? inputCpf.replace(/\D/g, '') : '';
 
@@ -56,7 +56,7 @@ class ClienteController{
 
         const senhaHash = await bcrypt.hash(senha, 10)
 
-        let cliente = new ClienteModel(0, nome, 1, cpfLimpo, email, senhaHash, telefone, data)
+        let cliente = new ClienteModel(0, nome, 1, cpfLimpo, email, senhaHash, telefone, data, 1)
 
         let result = await cliente.Create()
 
@@ -66,8 +66,8 @@ class ClienteController{
 
         const cliId = result
 
-        let endereco = new EnderecoModel(
-            0, rua, bairro, cidade, numero, estado, uf, cep, cliId
+        let endereco = new EnderecoModelCliente(
+            0, rua, bairro, cidade, numero, estado, uf, cep, complemento, cliId
         )
 
         let resultEnd = await endereco.Create()
@@ -83,7 +83,7 @@ class ClienteController{
         let ok = false;
         let msg = ""
 
-        const { id, nome, cpf: inputCpf, data, telefone, email, senha, status, endId, rua, num, bairro, cidade, estado, cep, uf } = req.body;
+        const { id, nome, cpf: inputCpf, data, telefone, email, senha, status, endId, rua, num, complemento, bairro, cidade, estado, cep, uf } = req.body;
 
         const cpfLimpo = inputCpf ? inputCpf.replace(/\D/g, '') : '';
 
@@ -99,12 +99,13 @@ class ClienteController{
             return res.send({ok: false, msg: "CPF inválido"})
         }
 
+
         //Update do cliente
-        let cliente = new ClienteModel(id, nome, status, cpfLimpo, email, senha, telefone, data)
+        let cliente = new ClienteModel(id, nome, status, cpfLimpo, email, senha, telefone, data, 1)
         let result = await cliente.Update()
 
         //Update do endereço
-        let endereco = new EnderecoModel(endId, rua, bairro, cidade, num, estado, uf, cep, id)
+        let endereco = new EnderecoModelCliente(endId, rua, bairro, cidade, num, estado, uf, cep, complemento, id)
         let resultEnd = await endereco.Update()
 
         //Verificação dos resultados
@@ -124,7 +125,7 @@ class ClienteController{
 
         if(id && id != "0"){
             let cliente = new ClienteModel();
-            let endereco = new EnderecoModel();
+            let endereco = new EnderecoModelCliente();
 
             let resultEnd = await endereco.Delete(id);
 

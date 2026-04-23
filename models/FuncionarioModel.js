@@ -155,7 +155,7 @@ class FuncionarioModel {
     }
 
     async Get(id){
-        let sql = "select * from funcionario where idFuncionario = ?";
+        let sql = "select f.*, e.* from funcionario f left join endereco_funcionario e on f.idFuncionario = e.func_id where f.idFuncionario = ?";
 
         let values = [id];
         
@@ -163,30 +163,37 @@ class FuncionarioModel {
 
         if(rows.length > 0){
             let func = new FuncionarioModel(
-                rows[0].idFuncionario,
-                rows[0].func_cargo,
-                rows[0].func_nome,
-                rows[0].func_telefone,
-                rows[0].func_email,
-                rows[0].func_senha,
-                rows[0].func_matricula,
-                rows[0].func_cpf,
-                rows[0].perfil_id
-            )
+                rows[0]["idFuncionario"],
+                rows[0]["func_cargo"],
+                rows[0]["func_nome"],
+                rows[0]["func_telefone"],
+                rows[0]["func_email"],
+                rows[0]["func_senha"],
+                rows[0]["func_matricula"],
+                rows[0]["func_cpf"],
+                rows[0]["perfil_id"]);
+                func.endId = rows[0]["end_id"];
+                func.endRua = rows[0]["end_rua"];
+                func.endBairro = rows[0]["end_bairro"];
+                func.endCidade = rows[0]["end_cidade"];
+                func.endNum = rows[0]["end_num"];
+                func.endEstado = rows[0]["end_estado"];
+                func.endUf = rows[0]["end_uf"];
+                func.endCep = rows[0]["end_cep"];
+            
             return func;
         }
         return null;
     }
 
     async Read(){
-        let sql = "select * from funcionario";
-
-        let lista = [];
+        let sql = "select f.idFuncionario, f.func_cargo, f.func_nome, f.func_telefone, f.func_email, f.func_senha, f.func_matricula, f.func_cpf, f.perfil_id, e.end_id, e.end_rua, e.end_bairro, e.end_cidade, e.end_num, e.end_estado, e.end_uf, e.end_cep from funcionario f left join endereco_funcionario e on f.idFuncionario = e.func_id";
 
         let rows = await banco.ExecutaComando(sql)
+        let lista = [];
 
         rows.forEach(row =>{
-            let func = new FuncionarioModel(
+            let f = new FuncionarioModel(
                 row.idFuncionario,
                 row.func_cargo,
                 row.func_nome,
@@ -197,7 +204,15 @@ class FuncionarioModel {
                 row.func_cpf,
                 row.perfil_id
             )
-            lista.push(func);
+            f.endId = row.end_id;
+            f.endRua = row.end_rua;
+            f.endBairro = row.end_bairro;
+            f.endCidade = row.end_cidade;
+            f.endNum = row.end_num;
+            f.endEstado = row.end_estado;
+            f.endUf = row.end_uf;
+            f.endCep = row.end_cep;
+            lista.push(f);
         })
         return lista;
     }

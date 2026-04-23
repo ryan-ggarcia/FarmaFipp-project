@@ -285,4 +285,17 @@ listar.js
 - Para evolucao segura, manter padrao de resposta e separacao por camadas.
 
 
+11) NOVAS FUNCIONALIDADES IMPLEMENTADAS
+- Foi adicionado o modulo de Funcionarios com fluxo de cadastro, listagem, alteracao e exclusao.
+- A tela de alteracao de funcionarios foi alinhada ao mesmo padrao de arquitetura usado no modulo de clientes.
+- O carregamento dos dados de funcionario agora considera tambem os dados de endereco no fluxo da camada model/controller.
+- O fluxo de alteracao foi padronizado para validar dados principais e dados de endereco antes de persistir.
+
+Atualizacao importante de banco de dados:
+- Foram criadas mais 2 tabelas de endereco para separar responsabilidades por modulo:
+  - endereco_cliente
+  - endereco_funcionario
+- Com essa separacao, cada entidade passa a manter seu proprio relacionamento de endereco, reduzindo conflito de colunas e simplificando manutencao.
+
+
 Fim da documentacao.

@@ -12,7 +12,16 @@ document.addEventListener("DOMContentLoaded", function(){
         let inputEmail = document.getElementById("funcEmail").value;
         let inputSenha = document.getElementById("funcSenha").value;
         let inputCpf = document.getElementById("funcCpf").value;
-        let listaValidacao = []
+        //inputs de endereço
+        let inputIdEnd = document.getElementById("endId").value;
+        let inputRua = document.getElementById("endRua").value;
+        let inputBairro = document.getElementById("endBairro").value;
+        let inputCidade = document.getElementById("endCidade").value;
+        let inputNum = document.getElementById("endNum").value;
+        let inputEstado = document.getElementById("endEstado").value;
+        let inputUf = document.getElementById("endUf").value;
+        let inputCep = document.getElementById("endCep").value;
+        let listaValidacao = []        
 
         if(inputMatricula == "")
             listaValidacao.push("funcMatricula");
@@ -28,6 +37,24 @@ document.addEventListener("DOMContentLoaded", function(){
             listaValidacao.push("funcSenha");
         if(inputCpf == "")
             listaValidacao.push("funcCpf");
+        if(inputRua == "")
+            listaValidacao.push("endRua");
+        if(inputBairro == "")
+            listaValidacao.push("endBairro");
+        if(inputCidade == "")
+            listaValidacao.push("endCidade");
+        if(inputNum == "")
+            listaValidacao.push("endNum");
+        if(inputEstado == "")
+            listaValidacao.push("endEstado");
+        if(inputUf == "")
+            listaValidacao.push("endUf");
+        if(inputCep == "")
+            listaValidacao.push("endCep");
+
+        console.log("Dados:", { inputIdEnd });
+        console.log("Dados que vou enviar:", { inputId, inputIdEnd, inputRua, inputBairro, inputCidade, inputNum, inputEstado, inputUf, inputCep });
+
 
         if(listaValidacao.length == 0){
             fetch("/funcionarios/alterar",{
@@ -43,7 +70,16 @@ document.addEventListener("DOMContentLoaded", function(){
                     telefone: inputTelefone,
                     email: inputEmail,
                     senha: inputSenha,
-                    cpf: inputCpf
+                    cpf: inputCpf,
+                    //dados de endereço
+                    endId: inputIdEnd,
+                    rua: inputRua,
+                    bairro: inputBairro,
+                    cidade: inputCidade,
+                    num: inputNum,
+                    estado: inputEstado,
+                    uf: inputUf,
+                    cep: inputCep
                 })
             })
             .then(response => response.json())

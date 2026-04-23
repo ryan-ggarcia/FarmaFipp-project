@@ -10,6 +10,7 @@ class ClienteModel{
     #cliSenha;
     #cliTelefone;
     #cliNascimento;
+    #perfilId;
 
     get cliId(){
         return this.#cliId;
@@ -75,7 +76,15 @@ class ClienteModel{
         this.#cliNascimento = value;
     }
 
-    constructor(cliId, cliNome, cliStatus, cliCpf, cliEmail, cliSenha, cliTelefone, cliNascimento){
+    get perfilId(){
+        return this.#perfilId;
+    }
+
+    set perfilId(value){
+        this.#perfilId = value;
+    }
+
+    constructor(cliId, cliNome, cliStatus, cliCpf, cliEmail, cliSenha, cliTelefone, cliNascimento, perfilId){
         this.#cliId = cliId;
         this.#cliNome = cliNome;
         this.#cliStatus = cliStatus;
@@ -84,12 +93,13 @@ class ClienteModel{
         this.#cliSenha = cliSenha;
         this.#cliTelefone = cliTelefone;
         this.#cliNascimento = cliNascimento;
+        this.#perfilId = perfilId;
     }
 
     async Create(){
-        let sql = "insert into cliente (cli_nome, cli_status, cli_cpf, cli_email, cli_senha, cli_telefone, cli_nascimento) values (?, ?, ?, ?, ?, ?, ?)";
+        let sql = "insert into cliente (cli_nome, cli_status, cli_cpf, cli_email, cli_senha, cli_telefone, cli_nascimento, perfil_id) values (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        let values = [this.#cliNome, this.#cliStatus, this.#cliCpf, this.#cliEmail, this.#cliSenha, this.#cliTelefone, this.#cliNascimento];
+        let values = [this.#cliNome, this.#cliStatus, this.#cliCpf, this.#cliEmail, this.#cliSenha, this.#cliTelefone, this.#cliNascimento, this.#perfilId];
 
         let result = await banco.ExecutaComandoLastInserted(sql, values);
 
@@ -97,7 +107,7 @@ class ClienteModel{
     }
 
     async Get(id){
-        let sql = "select c.*, e.* from cliente c left join endereco e on c.idClinete = e.cli_id where c.idClinete = ?";
+        let sql = "select c.*, e.* from cliente c left join endereco_cliente e on c.idClinete = e.cli_id where c.idClinete = ?";
 
         let values = [id];
 
@@ -112,7 +122,8 @@ class ClienteModel{
                 rows[0]["cli_email"], 
                 rows[0]["cli_senha"], 
                 rows[0]["cli_telefone"], 
-                rows[0]["cli_nascimento"]);
+                rows[0]["cli_nascimento"],
+                rows[0]["perfil_id"]);
                 cliente.endId = rows[0]["end_id"];
                 cliente.endRua = rows[0]["end_rua"];
                 cliente.endBairro = rows[0]["end_bairro"];
@@ -143,7 +154,8 @@ class ClienteModel{
                 rows[0]["cli_email"],
                 rows[0]["cli_senha"],
                 rows[0]["cli_telefone"],
-                rows[0]["cli_nascimento"]
+                rows[0]["cli_nascimento"],
+                rows[0]["perfil_id"]
             );
             return cliente;
         }
@@ -166,7 +178,8 @@ class ClienteModel{
                 rows[0]["cli_email"],
                 rows[0]["cli_senha"],
                 rows[0]["cli_telefone"],
-                rows[0]["cli_nascimento"]
+                rows[0]["cli_nascimento"],
+                rows[0]["perfil_id"]
             );
             return cliente; 
         }
@@ -175,7 +188,7 @@ class ClienteModel{
 
     async Read(){
     
-    let sql = "select c.idClinete, c.cli_nome, c.cli_status, c.cli_cpf, c.cli_email, c.cli_senha, c.cli_telefone, c.cli_nascimento, e.end_id, e.end_rua, e.end_bairro, e.end_cidade, e.end_num, e.end_estado, e.end_uf, e.end_cep from cliente c left join endereco e on c.idClinete = e.cli_id";
+    let sql = "select c.idClinete, c.cli_nome, c.cli_status, c.cli_cpf, c.cli_email, c.cli_senha, c.cli_telefone, c.cli_nascimento, c.perfil_id, e.end_id, e.end_rua, e.end_bairro, e.end_cidade, e.end_num, e.end_estado, e.end_uf, e.end_cep from cliente c left join endereco_cliente e on c.idClinete = e.cli_id";
 
     let rows = await banco.ExecutaComando(sql);
     let lista = [];
@@ -189,7 +202,8 @@ class ClienteModel{
             row.cli_email,
             row.cli_senha,
             row.cli_telefone,
-            row.cli_nascimento
+            row.cli_nascimento,
+            row.perfil_id
         );
         c.endId = row.end_id; 
         c.endRua = row.end_rua;
@@ -206,9 +220,9 @@ class ClienteModel{
 }
 
     async Update(id){
-        let sql = "update cliente set cli_nome = ?, cli_status = ?, cli_cpf = ?, cli_email = ?, cli_senha = ?, cli_telefone = ?, cli_nascimento = ? where idClinete = ?";
+        let sql = "update cliente set cli_nome = ?, cli_status = ?, cli_cpf = ?, cli_email = ?, cli_senha = ?, cli_telefone = ?, cli_nascimento = ?, perfil_id = ? where idClinete = ?";
 
-        let values = [this.#cliNome, this.#cliStatus, this.#cliCpf, this.#cliEmail, this.#cliSenha, this.#cliTelefone, this.#cliNascimento, this.#cliId];
+        let values = [this.#cliNome, this.#cliStatus, this.#cliCpf, this.#cliEmail, this.#cliSenha, this.#cliTelefone, this.#cliNascimento, this.#perfilId, this.#cliId];
 
         let result = await banco.ExecutaComandoNonQuery(sql, values);
 
