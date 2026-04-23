@@ -41,12 +41,20 @@
             <div>
                 <div class="row g-3">
                     <div class="col-md-4">
+                        <label class="form-label">CEP:</label>
+                        <input id="cep" type="text" class="form-control" onkeypress="mascara('#####-###', this,event)" maxlength="9">
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label">Rua:</label>
                         <input id="rua" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Número:</label>
                         <input id="num" type="text" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Complemento:</label>
+                        <input id="complemento" type="text" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Bairro:</label>
@@ -59,10 +67,6 @@
                     <div class="col-md-4">
                         <label class="form-label">Estado:</label>
                         <input id="estado" type="text" class="form-control">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">CEP:</label>
-                        <input id="cep" type="text" class="form-control" onkeypress="mascara('#####-###', this,event)" maxlength="9">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">UF:</label>
