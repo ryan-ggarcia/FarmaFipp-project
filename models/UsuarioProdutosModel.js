@@ -57,6 +57,8 @@ class UsuarioProdutosModel extends ProdutoModel {
         return rows ? produto : false;
     }
 
+    
+
 }
 
 module.exports = UsuarioProdutosModel;

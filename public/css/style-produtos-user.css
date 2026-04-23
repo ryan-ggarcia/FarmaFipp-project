@@ -226,13 +226,7 @@
     color: var(--primary-red);
 }
 
-/* ── Gradient backgrounds for cards ── */
-.img-gradient-1 { background: linear-gradient(135deg, #e3f2fd, #bbdefb) !important; }
-.img-gradient-2 { background: linear-gradient(135deg, #f3e5f5, #e1bee7) !important; }
-.img-gradient-3 { background: linear-gradient(135deg, #e8f5e9, #c8e6c9) !important; }
-.img-gradient-4 { background: linear-gradient(135deg, #fff3e0, #ffe0b2) !important; }
-.img-gradient-5 { background: linear-gradient(135deg, #fce4ec, #f8bbd0) !important; }
-.img-gradient-6 { background: linear-gradient(135deg, #e0f7fa, #b2ebf2) !important; }
+
 
 /* ── Card entrance animation ── */
 .product-card {

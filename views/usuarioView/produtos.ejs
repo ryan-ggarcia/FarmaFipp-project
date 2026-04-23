@@ -22,9 +22,11 @@
             </button>
             <button class="produto-tab" data-tab="promocao" onclick="switchTab('promocao')">
                 <i class="bi bi-tag-fill me-1"></i> Promoção
-                <% if(produtosPromocao && produtosPromocao.length > 0) { %>
-                    <span class="tab-count"><%= produtosPromocao.length %></span>
-                <% } %>
+                <% if(produtosPromocao && produtosPromocao.length> 0) { %>
+                    <span class="tab-count">
+                        <%= produtosPromocao.length %>
+                    </span>
+                    <% } %>
             </button>
         </div>
 
@@ -32,8 +34,10 @@
         <div class="row g-2 align-items-center">
             <div class="col-md-5">
                 <div class="position-relative">
-                    <i class="bi bi-search position-absolute" style="left:1rem;top:50%;transform:translateY(-50%);color:#aaa;font-size:.85rem"></i>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar produtos..." style="padding-left:2.5rem" onkeyup="filterProducts()">
+                    <i class="bi bi-search position-absolute"
+                        style="left:1rem;top:50%;transform:translateY(-50%);color:#aaa;font-size:.85rem"></i>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar produtos..."
+                        style="padding-left:2.5rem" onkeyup="filterProducts()">
                 </div>
             </div>
             <div class="col-md-3">
@@ -50,7 +54,8 @@
                 </select>
             </div>
             <div class="col-md-2 text-end">
-                <button class="btn-filter w-100" onclick="resetFilters()"><i class="bi bi-arrow-counterclockwise me-1"></i>Limpar</button>
+                <button class="btn-filter w-100" onclick="resetFilters()"><i
+                        class="bi bi-arrow-counterclockwise me-1"></i>Limpar</button>
             </div>
         </div>
     </div>
@@ -63,13 +68,17 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="products-count">
-                <% if(produtos && produtos.length > 0) { %>
-                    Exibindo <span id="visibleCount"><%= produtos.length %></span> de <span><%= produtos.length %></span> produtos
-                <% } %>
+                <% if(produtos && produtos.length> 0) { %>
+                    Exibindo <span id="visibleCount">
+                        <%= produtos.length %>
+                    </span> de <span>
+                        <%= produtos.length %>
+                    </span> produtos
+                    <% } %>
             </div>
         </div>
 
-        <% if(!produtos || produtos.length === 0) { %>
+        <% if(!produtos || produtos.length===0) { %>
             <div class="empty-state">
                 <i class="bi bi-box-seam"></i>
                 <h4>Nenhum produto encontrado</h4>
@@ -78,69 +87,81 @@
                     <i class="bi bi-house me-1"></i> Voltar ao Início
                 </a>
             </div>
-        <% } else { %>
-            <div class="row g-3" id="productsGrid">
-                <% for(let i = 0; i < produtos.length; i++) { %>
-                <div class="col-6 col-md-4 col-lg-3" data-product
-                     data-name="<%= produtos[i].nome.toLowerCase() %>"
-                     data-category="<%= produtos[i].categoria %>"
-                     data-price="<%= produtos[i].preco %>">
-                    <div class="product-card h-100">
-                        <% if(!produtos[i].disponivel) { %>
-                            <span class="badge-discount" style="background:#666">Esgotado</span>
-                        <% } else if(produtos[i].quantidade <= 10) { %>
-                            <span class="badge-discount" style="background:var(--accent-yellow);color:#333">Últimas unid.</span>
+            <% } else { %>
+                <div class="row g-3" id="productsGrid">
+                    <% for(let i=0; i < produtos.length; i++) { %>
+                        <div class="col-6 col-md-4 col-lg-3" data-product
+                            data-name="<%= produtos[i].nome.toLowerCase() %>"
+                            data-category="<%= produtos[i].categoria %>" data-price="<%= produtos[i].preco %>">
+                            <div class="product-card h-100">
+                                <% if(produtos[i].quantidade <= 0) { %>
+                                    <span class="badge-discount" style="background:#666">Esgotado</span>
+                                    <% } else if(produtos[i].quantidade <=10) { %>
+                                        <span class="badge-discount"
+                                            style="background:var(--accent-yellow);color:#333">Últimas unid.</span>
+                                        <% } %>
+
+                                            <button class="wishlist-btn" title="Adicionar à lista de desejos">
+                                                <i class="bi bi-heart"></i>
+                                            </button>
+
+                                            <div class="img-wrap">
+                                                <% if(produtos[i].img && produtos[i].img !== 'Imagem não disponível') { %>
+                                                    <img src="<%= produtos[i].img %>" alt="<%= produtos[i].nome %>"
+                                                        class="product-db-img" />
+                                                    <% } else { %>
+                                                        <i class="bi bi-capsule"
+                                                            style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
+                                                        <% } %>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <% if(produtos[i].marca && produtos[i].marca !== 'Marca não disponível') { %>
+                                                    <div class="brand-tag">
+                                                        <%= produtos[i].marca %>
+                                                    </div>
+                                                    <% } %>
+                                                        <div class="prod-title">
+                                                            <%= produtos[i].nome %>
+                                                        </div>
+                                                        <% if(produtos[i].descricao && produtos[i].descricao !== 'Descrição não disponível') { %>
+                                                            <div class="product-desc">
+                                                                <%= produtos[i].descricao %>
+                                                            </div>
+                                                            <% } %>
+                                                                <div class="product-meta">
+                                                                    <% if(produtos[i].validade && produtos[i].validade !== 'Produto sem validade') { %>
+                                                                        <span class="meta-item">
+                                                                            <i class="bi bi-calendar3"></i>
+                                                                            <%= new Date(produtos[i].validade).toLocaleDateString('pt-BR') %>
+                                                                        </span>
+                                                                        <% } %>
+                                                                            <span class="stock-badge <%= produtos[i].quantidade <= 0 ? 'stock-out' : produtos[i].quantidade <= 10 ? 'stock-low' : 'stock-in' %>">
+                                                                                <%= produtos[i].quantidade <= 0 ? 'Esgotado' : produtos[i].quantidade <= 10 ? 'Últimas unid.' : 'Em estoque' %>
+                                                                            </span>
+                                                                </div>
+                                                                <div class="price-row">
+                                                                    <span class="price-now">R$ <%= produtos[i].preco %></span>
+                                                                </div>
+                                                                <button class="btn-add" <% if(produtos[i].quantidade <= 0) {
+                                                                    %>disabled style="opacity:.5;cursor:not-allowed"<% }
+                                                                        %>>
+                                                                        <i class="bi bi-bag-plus me-1"></i>
+                                                                        <%= produtos[i].quantidade > 0 ? 'Adicionar'
+                                                                            : 'Indisponível' %>
+                                                                </button>
+                                            </div>
+                            </div>
+                        </div>
                         <% } %>
+                </div>
 
-                        <button class="wishlist-btn" title="Adicionar à lista de desejos">
-                            <i class="bi bi-heart"></i>
-                        </button>
-
-                        <div class="img-wrap <%= produtos[i].gradientClass %>">
-                            <% if(produtos[i].img) { %>
-                                <img src="<%= produtos[i].img %>" alt="<%= produtos[i].nome %>" class="product-db-img" />
-                            <% } else { %>
-                                <i class="bi bi-capsule" style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
-                            <% } %>
-                        </div>
-
-                        <div class="card-body">
-                            <% if(produtos[i].marca) { %>
-                                <div class="brand-tag"><%= produtos[i].marca %></div>
-                            <% } %>
-                            <div class="prod-title"><%= produtos[i].nome %></div>
-                            <% if(produtos[i].descricao) { %>
-                                <div class="product-desc"><%= produtos[i].descricao %></div>
-                            <% } %>
-                            <div class="product-meta">
-                                <% if(produtos[i].validadeStr) { %>
-                                    <span class="meta-item <%= produtos[i].validadeClass %>">
-                                        <i class="bi bi-calendar3"></i> <%= produtos[i].validadeStr %>
-                                    </span>
-                                <% } %>
-                                <span class="stock-badge <%= produtos[i].stockClass %>">
-                                    <%= produtos[i].stockText %>
-                                </span>
-                            </div>
-                            <div class="price-row">
-                                <span class="price-now">R$ <%= produtos[i].precoFormatado %></span>
-                            </div>
-                            <button class="btn-add" <% if(!produtos[i].disponivel) { %>disabled style="opacity:.5;cursor:not-allowed"<% } %>>
-                                <i class="bi bi-bag-plus me-1"></i>
-                                <%= produtos[i].disponivel ? 'Adicionar' : 'Indisponível' %>
-                            </button>
-                        </div>
-                    </div>
+                <div id="noFilterResults" class="empty-state" style="display:none">
+                    <i class="bi bi-search"></i>
+                    <h4>Nenhum resultado encontrado</h4>
+                    <p>Tente buscar com outros termos ou limpar os filtros.</p>
                 </div>
                 <% } %>
-            </div>
-
-            <div id="noFilterResults" class="empty-state" style="display:none">
-                <i class="bi bi-search"></i>
-                <h4>Nenhum resultado encontrado</h4>
-                <p>Tente buscar com outros termos ou limpar os filtros.</p>
-            </div>
-        <% } %>
     </div>
 </section>
 
@@ -157,20 +178,23 @@
                 </div>
                 <div>
                     <h5 class="mb-1">Produtos em Promoção</h5>
-                    <p class="mb-0">Estes produtos estão com validade próxima (até 90 dias) e por isso têm preços especiais. Aproveite!</p>
+                    <p class="mb-0">Estes produtos estão com validade próxima (até 90 dias) e por isso têm preços
+                        especiais. Aproveite!</p>
                 </div>
             </div>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="products-count">
-                <% if(produtosPromocao && produtosPromocao.length > 0) { %>
-                    <span><%= produtosPromocao.length %></span> produto(s) em promoção
-                <% } %>
+                <% if(produtosPromocao && produtosPromocao.length> 0) { %>
+                    <span>
+                        <%= produtosPromocao.length %>
+                    </span> produto(s) em promoção
+                    <% } %>
             </div>
         </div>
 
-        <% if(!produtosPromocao || produtosPromocao.length === 0) { %>
+        <% if(!produtosPromocao || produtosPromocao.length===0) { %>
             <div class="empty-state">
                 <i class="bi bi-tags"></i>
                 <h4>Nenhuma promoção no momento</h4>
@@ -179,57 +203,69 @@
                     <i class="bi bi-grid me-1"></i> Ver Todos os Produtos
                 </button>
             </div>
-        <% } else { %>
-            <div class="row g-3" id="promoGrid">
-                <% for(let i = 0; i < produtosPromocao.length; i++) { %>
-                <div class="col-6 col-md-4 col-lg-3" data-promo-product
-                     data-name="<%= produtosPromocao[i].nome.toLowerCase() %>"
-                     data-category="<%= produtosPromocao[i].categoria %>"
-                     data-price="<%= produtosPromocao[i].preco %>">
-                    <div class="product-card h-100 promo-card">
-                        <span class="badge-discount promo-badge-fire"><i class="bi bi-fire me-1"></i>Promoção</span>
+            <% } else { %>
+                <div class="row g-3" id="promoGrid">
+                    <% for(let i=0; i < produtosPromocao.length; i++) { %>
+                        <div class="col-6 col-md-4 col-lg-3" data-promo-product
+                            data-name="<%= produtosPromocao[i].nome.toLowerCase() %>"
+                            data-category="<%= produtosPromocao[i].categoria %>"
+                            data-price="<%= produtosPromocao[i].preco %>">
+                            <div class="product-card h-100 promo-card">
+                                <span class="badge-discount promo-badge-fire"><i
+                                        class="bi bi-fire me-1"></i>-15%</span>
 
-                        <button class="wishlist-btn" title="Adicionar à lista de desejos">
-                            <i class="bi bi-heart"></i>
-                        </button>
+                                <button class="wishlist-btn" title="Adicionar à lista de desejos">
+                                    <i class="bi bi-heart"></i>
+                                </button>
 
-                        <div class="img-wrap <%= produtosPromocao[i].gradientClass %>">
-                            <% if(produtosPromocao[i].img) { %>
-                                <img src="<%= produtosPromocao[i].img %>" alt="<%= produtosPromocao[i].nome %>" class="product-db-img" />
-                            <% } else { %>
-                                <i class="bi bi-capsule" style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
-                            <% } %>
-                        </div>
+                                <div class="img-wrap">
+                                    <% if(produtosPromocao[i].img && produtosPromocao[i].img !== 'Imagem não disponível') { %>
+                                        <img src="<%= produtosPromocao[i].img %>" alt="<%= produtosPromocao[i].nome %>"
+                                            class="product-db-img" />
+                                        <% } else { %>
+                                            <i class="bi bi-capsule" style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
+                                            <% } %>
+                                </div>
 
-                        <div class="card-body">
-                            <% if(produtosPromocao[i].marca) { %>
-                                <div class="brand-tag"><%= produtosPromocao[i].marca %></div>
-                            <% } %>
-                            <div class="prod-title"><%= produtosPromocao[i].nome %></div>
-                            <% if(produtosPromocao[i].descricao) { %>
-                                <div class="product-desc"><%= produtosPromocao[i].descricao %></div>
-                            <% } %>
-                            <div class="product-meta">
-                                <span class="meta-item <%= produtosPromocao[i].validadeClass %>">
-                                    <i class="bi bi-calendar3"></i> Vence: <%= produtosPromocao[i].validadeStr %>
-                                </span>
-                                <span class="stock-badge <%= produtosPromocao[i].stockClass %>">
-                                    <%= produtosPromocao[i].stockText %>
-                                </span>
+                                <div class="card-body">
+                                    <% if(produtosPromocao[i].marca && produtosPromocao[i].marca !== 'Marca não disponível') { %>
+                                        <div class="brand-tag">
+                                            <%= produtosPromocao[i].marca %>
+                                        </div>
+                                        <% } %>
+                                            <div class="prod-title">
+                                                <%= produtosPromocao[i].nome %>
+                                            </div>
+                                            <% if(produtosPromocao[i].descricao && produtosPromocao[i].descricao !== 'Descrição não disponível') { %>
+                                                <div class="product-desc">
+                                                    <%= produtosPromocao[i].descricao %>
+                                                </div>
+                                                <% } %>
+                                                    <div class="product-meta">
+                                                        <% if(produtosPromocao[i].validade && produtosPromocao[i].validade !== 'Produto sem validade') { %>
+                                                            <span class="meta-item validade-warn">
+                                                                <i class="bi bi-calendar3"></i> Vence: <%= new Date(produtosPromocao[i].validade).toLocaleDateString('pt-BR') %>
+                                                            </span>
+                                                            <% } %>
+                                                            <span class="stock-badge <%= produtosPromocao[i].quantidade <= 0 ? 'stock-out' : produtosPromocao[i].quantidade <= 10 ? 'stock-low' : 'stock-in' %>">
+                                                                <%= produtosPromocao[i].quantidade <= 0 ? 'Esgotado' : produtosPromocao[i].quantidade <= 10 ? 'Últimas unid.' : 'Em estoque' %>
+                                                            </span>
+                                                    </div>
+                                                    <div class="price-row">
+                                                        <span class="price-now">R$ <%= produtosPromocao[i].preco %></span>
+                                                    </div>
+                                                    <button class="btn-add" <% if(produtosPromocao[i].quantidade <= 0) {
+                                                        %>disabled style="opacity:.5;cursor:not-allowed"<% } %>>
+                                                            <i class="bi bi-bag-plus me-1"></i>
+                                                            <%= produtosPromocao[i].quantidade > 0 ? 'Adicionar'
+                                                                : 'Indisponível' %>
+                                                    </button>
+                                </div>
                             </div>
-                            <div class="price-row">
-                                <span class="price-now">R$ <%= produtosPromocao[i].precoFormatado %></span>
-                            </div>
-                            <button class="btn-add" <% if(!produtosPromocao[i].disponivel) { %>disabled style="opacity:.5;cursor:not-allowed"<% } %>>
-                                <i class="bi bi-bag-plus me-1"></i>
-                                <%= produtosPromocao[i].disponivel ? 'Adicionar' : 'Indisponível' %>
-                            </button>
                         </div>
-                    </div>
+                        <% } %>
                 </div>
                 <% } %>
-            </div>
-        <% } %>
     </div>
 </section>
 
