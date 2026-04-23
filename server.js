@@ -8,14 +8,17 @@ const FornecedorRouter = require('./routes/FornecedorRoute');
 //const brazilianUtils = require('@brazilian-utils/brazilian-utils');
 const expressEjsLayouts = require('express-ejs-layouts');
 const ProdutoRouter = require('./routes/ProdutoRouter');
-
 const server = express();
+//Preparando o servidor para receber as imagem 
+
+
 server.set('view engine', 'ejs');
 //server.use(brazilianUtils);
 server.use(expressEjsLayouts);
 // set default layout to views/layout.ejs
+
 server.set('layout', "layout");
-server.use(express.static("public"));
+server.use(express.static(__dirname + "/public"));
 server.use(express.urlencoded({extended:true}));
 server.use(express.json());
 server.use("/", homeRouter);

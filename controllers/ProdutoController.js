@@ -1,7 +1,13 @@
 const FornecedorModel = require('../models/FornecedorModel')
 const ProdutoModel = require('../models/ProdutoModel')
 class ProdutoController {
-
+    async listar(req,res){
+        let listaPro = new ProdutoModel()
+        let lista = await listaPro.Read()
+        let categoria = new ProdutoModel()
+        categoria = await categoria.ListCategorias()
+        res.render('produtos/listar', {lista,categoria})
+    }
     async cadastrarView(req,res){
         let fornecedor = new FornecedorModel();
         let listaFornecedor = await fornecedor.List();

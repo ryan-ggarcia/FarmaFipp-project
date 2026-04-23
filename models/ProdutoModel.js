@@ -52,6 +52,35 @@ class ProdutoModel{
         let result =  await banco.ExecutaComando(sql);
         return result;
     }
+    async Read(){
+        const sql = 'select * from produto'
+        const banco = new Database()
+        let result = await banco.ExecutaComando(sql)
+        let lista = []
+        for(let i=0;i < result.length; i++){
+
+            let imagem = '/img/produtos/barra-de-imagem.png'
+
+            if(result[i]['pro_img'] != null){
+                imagem = '/img/produtos/' + result[i]['pro_img']
+            }
+            // console.log('Imagem:', imagem); 
+            let produtos = new ProdutoModel(
+                result[i]['idProduto'],
+                result[i]['pro_nome'],
+                result[i]['descricao'],
+                result[i]['pro_validade'],
+                result[i]['pro_preco'],
+                result[i]['pro_quantidade'],
+                result[i]['Categoria_Produto'],
+                result[i]['idFornecedor'],
+                result[i]['marca'],
+                imagem,
+            )
+            lista.push(produtos)
+        }
+        return lista
+    }
 }
 
 module.exports = ProdutoModel;

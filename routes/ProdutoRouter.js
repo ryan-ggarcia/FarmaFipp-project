@@ -16,7 +16,7 @@ let storage = multer.diskStorage({
 })
 
 let upload = multer({ storage: storage });
-
+router.get('/listar', ctrl.listar)
 router.get('/cadastrar', ctrl.cadastrarView);
 router.post('/cadastrar', upload.single('img'), ctrl.cadastrar);
 

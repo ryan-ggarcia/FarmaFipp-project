@@ -1,0 +1,90 @@
+
+<link rel="stylesheet" href="/css/style-listProduto.css">
+<div class="p-3 p-1-25">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="mb-0">Produtos cadastrados</h3>
+      <small class="text-muted">Gerencie os produtos registrados no sistema</small>
+    </div>
+    <div>
+      <a class="btn btn-primary custom btn-rounded" href="/servicos/cadastrar"><i class="fas fa-plus me-2"></i>
+        Cadastrar Produtos</a>
+    </div>
+  </div>
+
+  <div class="card card-saas no-hover">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Imagem</th>
+              <th>Nome</th>
+              <th>Preço</th>
+              <th>Marca</th>
+              <th>Categoria</th>
+              <th>Descrição</th>
+              <th>Quantidade</th>
+              <th>Validade</th>
+              <th>Fornecedor</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(let i=0; i < lista.length; i++) { %>
+              <tr>
+                <td><%= lista[i].id %></td>
+                <%if(lista[i].img != '/img/produtos/barra-de-imagem.png'){%>
+                     <td style="text-align: center;">
+                        <button class="prev-img" style="border: none; background-color: transparent;">
+                                <img src="/img/produtos/imagem.png" alt="">
+                        </button>
+                    </td>
+                <%} else{%>
+                    <td style="text-align: center;"><img style="cursor: not-allowed;" src="<%=lista[i].img%>" width="24" walt="Imagem do produto"></td>
+                <%}%>
+                <td><%= lista[i].nome %></td>
+                <td>R$<%= lista[i].preco %></td>
+                <td>
+                 <%= lista[i].marca%>
+                </td>
+                <td><%= categoria[i].cat_nome %></td>
+                <td><%= lista[i].descricao%></td>
+                <td><%= lista[i].quantidade %></td>
+                <td>
+                    <% 
+                    const validade = lista[i].validade;
+                    let validadeFormatada = '';
+                    if (validade instanceof Date) {
+                        validadeFormatada = validade.toISOString().split('T')[0];
+                    } else if (typeof validade === 'string') {
+                        validadeFormatada = validade.split('T')[0];
+                    } else {
+                        validadeFormatada = validade;
+                    }
+                    %>
+                    <%= validadeFormatada %>
+                </td>
+               <td><%= lista[i].fornecedor %></td>
+                <td class="text-end">
+                  <a href="/servicos/alterar/<%= lista[i].id%>" class="btn btn-sm btn-primary btn-rounded me-2"
+                    title="Alterar"><i class="fas fa-pen"></i></a>
+                  <button data-id="<%= lista[i].id%>" class="btn btn-sm btn-danger btn-rounded btnExcluir"
+                    title="Excluir"><i class="fas fa-trash"></i></button>
+                </td>
+              </tr>
+                <!-- <div class="background-prev">
+                    <div class="card-prev">
+                        <img src="<%=lista[i].img%>" width="200" alt="">
+                        <button class="cancelar">Voltar</button>
+                    </div>
+                </div> -->
+              <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/produtos/listar.js"></script>
