@@ -1,11 +1,14 @@
+const UsuarioProdutosController = require('./UsuarioProdutoController');
 
+const produtosCtrl = new UsuarioProdutosController();
 
 class UsuarioController{
     homeView(req,res){
         res.render("usuarioView/home", {layout:"layoutPublico"})
     }
-    produtosView(req,res){
-        res.render("usuarioView/produtos", {layout:"layoutPublico"})
+
+    async produtosView(req, res){
+        await produtosCtrl.UserProductsView(req, res);
     }
 }
 

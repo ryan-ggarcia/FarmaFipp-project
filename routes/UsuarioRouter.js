@@ -6,7 +6,7 @@ let controller = new UsuarioController()
 let loginController = new LoginController()
 const router = express.Router()
 
-router.get("/home", controller.homeView)
+router.get("/", controller.homeView)
 router.get("/produtos",controller.produtosView)
 router.get("/login",loginController.loginView)
 
