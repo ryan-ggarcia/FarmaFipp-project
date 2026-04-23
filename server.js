@@ -1,4 +1,5 @@
 //CommonJS
+require('dotenv').config()
 const express = require('express');
 const homeRouter = require("./routes/HomeRouter");
 const usuarioRouter = require("./routes/UsuarioRouter")
@@ -27,6 +28,6 @@ server.use("/fornecedores", FornecedorRouter);
     
 
 
-server.listen(5000, function(){
+server.listen(process.env.PORT || 5000, function(){
     console.log("Servidor Iniciado.");
 });
