@@ -1,254 +1,272 @@
-<link rel="stylesheet" href="/css/style-produtos.css" />
-<div class="page-header">
-    <div class="container-xl">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Início</a></li>
-                        <li class="breadcrumb-item active">Produtos</li>
-                    </ol>
-                </nav>
-                <div class="d-flex align-items-baseline gap-3">
-                    <h1 class="page-title">Todos os Produtos</h1>
-                    <span class="result-count">
-                       <!-- result aqui -->
+<!-- ════════════════════════════════
+     PAGE: PRODUTOS – USER VIEW
+════════════════════════════════ -->
+<link rel="stylesheet" href="/css/style-produtos-user.css">
+
+<!-- Hero Banner -->
+<div class="produtos-hero">
+    <div class="container position-relative" style="z-index:2">
+        <span class="hero-badge"><i class="bi bi-bag-heart me-1"></i> Nosso Catálogo</span>
+        <h1>Nossos Produtos</h1>
+        <p>Encontre medicamentos, suplementos, dermocosméticos e muito mais com os melhores preços.</p>
+    </div>
+</div>
+
+<!-- Tabs + Filter Bar -->
+<div class="container">
+    <div class="filter-bar">
+        <!-- Tabs -->
+        <div class="produto-tabs mb-3">
+            <button class="produto-tab active" data-tab="todos" onclick="switchTab('todos')">
+                <i class="bi bi-grid me-1"></i> Todos
+            </button>
+            <button class="produto-tab" data-tab="promocao" onclick="switchTab('promocao')">
+                <i class="bi bi-tag-fill me-1"></i> Promoção
+                <% if(produtosPromocao && produtosPromocao.length> 0) { %>
+                    <span class="tab-count">
+                        <%= produtosPromocao.length %>
                     </span>
+                    <% } %>
+            </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute"
+                        style="left:1rem;top:50%;transform:translateY(-50%);color:#aaa;font-size:.85rem"></i>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar produtos..."
+                        style="padding-left:2.5rem" onkeyup="filterProducts()">
                 </div>
             </div>
-            <button class="btn-filter-mobile" id="btnFilterMobile">
-                <i class="bi bi-sliders"></i> Filtros
-            </button>
+            <div class="col-md-3">
+                <select id="categoryFilter" class="form-select" onchange="filterProducts()">
+                    <option value="">Todas as categorias</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select id="sortFilter" class="form-select" onchange="sortProducts()">
+                    <option value="name">Nome A-Z</option>
+                    <option value="name-desc">Nome Z-A</option>
+                    <option value="price-asc">Menor preço</option>
+                    <option value="price-desc">Maior preço</option>
+                </select>
+            </div>
+            <div class="col-md-2 text-end">
+                <button class="btn-filter w-100" onclick="resetFilters()"><i
+                        class="bi bi-arrow-counterclockwise me-1"></i>Limpar</button>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
-<!-- ══ LAYOUT ══ -->
-<div class="container-xl">
-    <div class="products-layout">
-
-        <!-- SIDEBAR -->
-        <aside class="filters-sidebar" id="filtersSidebar">
-            <button class="sidebar-close-btn" id="btnCloseSidebar"><i class="bi bi-x-lg"></i></button>
-
-            <div class="filter-card">
-                <div class="filter-card-body">
-                    <div style="position:relative">
-                        <i class="bi bi-search"
-                            style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:#bbb;font-size:.82rem"></i>
-                        <input type="text" id="searchInput" placeholder="Buscar produto…"
-                            style="width:100%;border:1.5px solid #eee;border-radius:8px;padding:.45rem .75rem .45rem 2.2rem;font-size:.84rem" />
-                    </div>
-                </div>
+<!-- ════════════════════════════════
+     TAB: TODOS OS PRODUTOS
+════════════════════════════════ -->
+<section class="products-section" id="tab-todos">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="products-count">
+                <% if(produtos && produtos.length> 0) { %>
+                    Exibindo <span id="visibleCount">
+                        <%= produtos.length %>
+                    </span> de <span>
+                        <%= produtos.length %>
+                    </span> produtos
+                    <% } %>
             </div>
+        </div>
 
-            <div class="filter-card">
-                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#catFilter">
-                    <span><i class="bi bi-grid-3x3-gap me-2 text-muted"></i>Categorias</span>
-                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
-                </div>
-                <div class="collapse show" id="catFilter">
-                    <div class="filter-card-body">
-                        <div class="filter-check"><input type="checkbox" id="cat1" checked /><label for="cat1">Vitaminas
-                                & Minerais</label><span class="count">48</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat2" /><label
-                                for="cat2">Dermatologia</label><span class="count">36</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat3" /><label
-                                for="cat3">Suplementos</label><span class="count">29</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat4" /><label for="cat4">Higiene
-                                Pessoal</label><span class="count">54</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat5" /><label for="cat5">Bebê &
-                                Mamãe</label><span class="count">22</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat6" /><label for="cat6">Saúde
-                                Cardíaca</label><span class="count">17</span></div>
-                    </div>
-                </div>
+        <% if(!produtos || produtos.length===0) { %>
+            <div class="empty-state">
+                <i class="bi bi-box-seam"></i>
+                <h4>Nenhum produto encontrado</h4>
+                <p>No momento não existem produtos cadastrados no sistema.</p>
+                <a href="/" class="btn btn-hero mt-3" style="text-decoration:none">
+                    <i class="bi bi-house me-1"></i> Voltar ao Início
+                </a>
             </div>
+            <% } else { %>
+                <div class="row g-3" id="productsGrid">
+                    <% for(let i=0; i < produtos.length; i++) { %>
+                        <div class="col-6 col-md-4 col-lg-3" data-product
+                            data-name="<%= produtos[i].nome.toLowerCase() %>"
+                            data-category="<%= produtos[i].categoria %>" data-price="<%= produtos[i].preco %>">
+                            <div class="product-card h-100">
+                                <% if(produtos[i].quantidade <= 0) { %>
+                                    <span class="badge-discount" style="background:#666">Esgotado</span>
+                                    <% } else if(produtos[i].quantidade <=10) { %>
+                                        <span class="badge-discount"
+                                            style="background:var(--accent-yellow);color:#333">Últimas unid.</span>
+                                        <% } %>
 
-            <div class="filter-card">
-                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#priceFilter">
-                    <span><i class="bi bi-tag me-2 text-muted"></i>Faixa de Preço</span>
-                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
-                </div>
-                <div class="collapse show" id="priceFilter">
-                    <div class="filter-card-body">
-                        <div class="price-range-display">
-                            <span id="priceMin">R$ 0</span>
-                            <span id="priceMax">R$ 300</span>
+                                            <button class="wishlist-btn" title="Adicionar à lista de desejos">
+                                                <i class="bi bi-heart"></i>
+                                            </button>
+
+                                            <div class="img-wrap">
+                                                <% if(produtos[i].img && produtos[i].img !== 'Imagem não disponível') { %>
+                                                    <img src="<%= produtos[i].img %>" alt="<%= produtos[i].nome %>"
+                                                        class="product-db-img" />
+                                                    <% } else { %>
+                                                        <i class="bi bi-capsule"
+                                                            style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
+                                                        <% } %>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <% if(produtos[i].marca && produtos[i].marca !== 'Marca não disponível') { %>
+                                                    <div class="brand-tag">
+                                                        <%= produtos[i].marca %>
+                                                    </div>
+                                                    <% } %>
+                                                        <div class="prod-title">
+                                                            <%= produtos[i].nome %>
+                                                        </div>
+                                                        <% if(produtos[i].descricao && produtos[i].descricao !== 'Descrição não disponível') { %>
+                                                            <div class="product-desc">
+                                                                <%= produtos[i].descricao %>
+                                                            </div>
+                                                            <% } %>
+                                                                <div class="product-meta">
+                                                                    <% if(produtos[i].validade && produtos[i].validade !== 'Produto sem validade') { %>
+                                                                        <span class="meta-item">
+                                                                            <i class="bi bi-calendar3"></i>
+                                                                            <%= new Date(produtos[i].validade).toLocaleDateString('pt-BR') %>
+                                                                        </span>
+                                                                        <% } %>
+                                                                            <span class="stock-badge <%= produtos[i].quantidade <= 0 ? 'stock-out' : produtos[i].quantidade <= 10 ? 'stock-low' : 'stock-in' %>">
+                                                                                <%= produtos[i].quantidade <= 0 ? 'Esgotado' : produtos[i].quantidade <= 10 ? 'Últimas unid.' : 'Em estoque' %>
+                                                                            </span>
+                                                                </div>
+                                                                <div class="price-row">
+                                                                    <span class="price-now">R$ <%= produtos[i].preco %></span>
+                                                                </div>
+                                                                <button class="btn-add" <% if(produtos[i].quantidade <= 0) {
+                                                                    %>disabled style="opacity:.5;cursor:not-allowed"<% }
+                                                                        %>>
+                                                                        <i class="bi bi-bag-plus me-1"></i>
+                                                                        <%= produtos[i].quantidade > 0 ? 'Adicionar'
+                                                                            : 'Indisponível' %>
+                                                                </button>
+                                            </div>
+                            </div>
                         </div>
-                        <input type="range" id="priceRange" min="0" max="300" value="300" step="5" />
-                        <div class="d-flex gap-2 mt-2">
-                            <input type="number" placeholder="Mín"
-                                style="width:50%;border:1.5px solid #eee;border-radius:8px;padding:.35rem .6rem;font-size:.8rem" />
-                            <input type="number" placeholder="Máx"
-                                style="width:50%;border:1.5px solid #eee;border-radius:8px;padding:.35rem .6rem;font-size:.8rem" />
+                        <% } %>
+                </div>
+
+                <div id="noFilterResults" class="empty-state" style="display:none">
+                    <i class="bi bi-search"></i>
+                    <h4>Nenhum resultado encontrado</h4>
+                    <p>Tente buscar com outros termos ou limpar os filtros.</p>
+                </div>
+                <% } %>
+    </div>
+</section>
+
+<!-- ════════════════════════════════
+     TAB: PROMOÇÃO (Perto da validade)
+════════════════════════════════ -->
+<section class="products-section" id="tab-promocao" style="display:none">
+    <div class="container">
+        <!-- Promo Banner -->
+        <div class="promo-alert mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="promo-alert-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1">Produtos em Promoção</h5>
+                    <p class="mb-0">Estes produtos estão com validade próxima (até 90 dias) e por isso têm preços
+                        especiais. Aproveite!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="products-count">
+                <% if(produtosPromocao && produtosPromocao.length> 0) { %>
+                    <span>
+                        <%= produtosPromocao.length %>
+                    </span> produto(s) em promoção
+                    <% } %>
+            </div>
+        </div>
+
+        <% if(!produtosPromocao || produtosPromocao.length===0) { %>
+            <div class="empty-state">
+                <i class="bi bi-tags"></i>
+                <h4>Nenhuma promoção no momento</h4>
+                <p>Não há produtos com validade próxima em promoção. Volte em breve!</p>
+                <button class="btn btn-hero mt-3" onclick="switchTab('todos')" style="border:none">
+                    <i class="bi bi-grid me-1"></i> Ver Todos os Produtos
+                </button>
+            </div>
+            <% } else { %>
+                <div class="row g-3" id="promoGrid">
+                    <% for(let i=0; i < produtosPromocao.length; i++) { %>
+                        <div class="col-6 col-md-4 col-lg-3" data-promo-product
+                            data-name="<%= produtosPromocao[i].nome.toLowerCase() %>"
+                            data-category="<%= produtosPromocao[i].categoria %>"
+                            data-price="<%= produtosPromocao[i].preco %>">
+                            <div class="product-card h-100 promo-card">
+                                <span class="badge-discount promo-badge-fire"><i
+                                        class="bi bi-fire me-1"></i>-15%</span>
+
+                                <button class="wishlist-btn" title="Adicionar à lista de desejos">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+
+                                <div class="img-wrap">
+                                    <% if(produtosPromocao[i].img && produtosPromocao[i].img !== 'Imagem não disponível') { %>
+                                        <img src="<%= produtosPromocao[i].img %>" alt="<%= produtosPromocao[i].nome %>"
+                                            class="product-db-img" />
+                                        <% } else { %>
+                                            <i class="bi bi-capsule" style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
+                                            <% } %>
+                                </div>
+
+                                <div class="card-body">
+                                    <% if(produtosPromocao[i].marca && produtosPromocao[i].marca !== 'Marca não disponível') { %>
+                                        <div class="brand-tag">
+                                            <%= produtosPromocao[i].marca %>
+                                        </div>
+                                        <% } %>
+                                            <div class="prod-title">
+                                                <%= produtosPromocao[i].nome %>
+                                            </div>
+                                            <% if(produtosPromocao[i].descricao && produtosPromocao[i].descricao !== 'Descrição não disponível') { %>
+                                                <div class="product-desc">
+                                                    <%= produtosPromocao[i].descricao %>
+                                                </div>
+                                                <% } %>
+                                                    <div class="product-meta">
+                                                        <% if(produtosPromocao[i].validade && produtosPromocao[i].validade !== 'Produto sem validade') { %>
+                                                            <span class="meta-item validade-warn">
+                                                                <i class="bi bi-calendar3"></i> Vence: <%= new Date(produtosPromocao[i].validade).toLocaleDateString('pt-BR') %>
+                                                            </span>
+                                                            <% } %>
+                                                            <span class="stock-badge <%= produtosPromocao[i].quantidade <= 0 ? 'stock-out' : produtosPromocao[i].quantidade <= 10 ? 'stock-low' : 'stock-in' %>">
+                                                                <%= produtosPromocao[i].quantidade <= 0 ? 'Esgotado' : produtosPromocao[i].quantidade <= 10 ? 'Últimas unid.' : 'Em estoque' %>
+                                                            </span>
+                                                    </div>
+                                                    <div class="price-row">
+                                                        <span class="price-now">R$ <%= produtosPromocao[i].preco %></span>
+                                                    </div>
+                                                    <button class="btn-add" <% if(produtosPromocao[i].quantidade <= 0) {
+                                                        %>disabled style="opacity:.5;cursor:not-allowed"<% } %>>
+                                                            <i class="bi bi-bag-plus me-1"></i>
+                                                            <%= produtosPromocao[i].quantidade > 0 ? 'Adicionar'
+                                                                : 'Indisponível' %>
+                                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <% } %>
                 </div>
-            </div>
+                <% } %>
+    </div>
+</section>
 
-            <div class="filter-card">
-                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#brandFilter">
-                    <span><i class="bi bi-award me-2 text-muted"></i>Marcas</span>
-                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
-                </div>
-                <div class="collapse show" id="brandFilter">
-                    <div class="filter-card-body">
-                        <div class="filter-check"><input type="checkbox" id="b1" /><label for="b1">VitaPlus</label><span
-                                class="count">21</span></div>
-                        <div class="filter-check"><input type="checkbox" id="b2" /><label
-                                for="b2">DermaClin</label><span class="count">14</span></div>
-                        <div class="filter-check"><input type="checkbox" id="b3" /><label
-                                for="b3">NaturVital</label><span class="count">18</span></div>
-                        <div class="filter-check"><input type="checkbox" id="b4" /><label for="b4">HelioVit</label><span
-                                class="count">9</span></div>
-                        <div class="filter-check"><input type="checkbox" id="b5" /><label for="b5">OmegaVit</label><span
-                                class="count">12</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-card">
-                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#ratingFilter">
-                    <span><i class="bi bi-star me-2 text-muted"></i>Avaliação</span>
-                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
-                </div>
-                <div class="collapse show" id="ratingFilter">
-                    <div class="filter-card-body">
-                        <div class="star-filter"><span class="stars">★★★★★</span> 5 estrelas <span
-                                class="count ms-auto">12</span></div>
-                        <div class="star-filter"><span class="stars">★★★★☆</span> 4+ estrelas <span
-                                class="count ms-auto">31</span></div>
-                        <div class="star-filter"><span class="stars">★★★☆☆</span> 3+ estrelas <span
-                                class="count ms-auto">48</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn-clear-filters"><i class="bi bi-x-circle me-1"></i>Limpar Filtros</button>
-        </aside>
-
-        <!-- ÁREA DE PRODUTOS -->
-        <div class="products-area">
-
-            <div class="active-filters">
-                <span class="filter-tag">Vitaminas <button>×</button></span>
-                <span class="filter-tag">Até R$ 300 <button>×</button></span>
-            </div>
-
-            <div class="products-toolbar">
-                <span class="toolbar-label">Ordenar por:</span>
-                <select class="toolbar-select">
-                    <option>Relevância</option>
-                    <option>Menor Preço</option>
-                    <option>Maior Preço</option>
-                    <option>Mais Vendidos</option>
-                    <option>Novidades</option>
-                    <option>Melhor Avaliado</option>
-                </select>
-                <span class="toolbar-label ms-2">Exibir:</span>
-                <select class="toolbar-select" style="width:70px">
-                    <option>24</option>
-                    <option>48</option>
-                    <option>96</option>
-                </select>
-                <div class="view-toggle ms-auto">
-                    <button class="view-btn active" id="btnGrid" title="Grade"><i
-                            class="bi bi-grid-3x3-gap-fill"></i></button>
-                    <button class="view-btn" id="btnList" title="Lista"><i class="bi bi-list-ul"></i></button>
-                </div>
-            </div>
-            <!-- parte de grid -->
-            <nav class="mt-4 d-flex justify-content-center" aria-label="Paginação">
-                <ul class="pagination">
-                    <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">…</a></li>
-                    <li class="page-item"><a class="page-link" href="#">8</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
-                </ul>
-            </nav>
-
-        </div><!-- /.products-area -->
-    </div><!-- /.products-layout -->
-</div><!-- /.container-xl -->
-
-<%- include('../partials/footer') %>
-
-    <script>
-        /* ── Sidebar mobile ── */
-        const sidebar = document.getElementById('filtersSidebar');
-        const backdrop = document.getElementById('sidebarBackdrop');
-        const btnOpen = document.getElementById('btnFilterMobile');
-        const btnClose = document.getElementById('btnCloseSidebar');
-
-        const openSidebar = () => { sidebar.classList.add('open'); backdrop.classList.add('show'); };
-        const closeSidebar = () => { sidebar.classList.remove('open'); backdrop.classList.remove('show'); };
-
-        btnOpen?.addEventListener('click', openSidebar);
-        btnClose?.addEventListener('click', closeSidebar);
-        backdrop?.addEventListener('click', closeSidebar);
-
-        /* ── Grade / Lista ── */
-        const grid = document.getElementById('productsGrid');
-        const btnGrid = document.getElementById('btnGrid');
-        const btnList = document.getElementById('btnList');
-
-        btnGrid.addEventListener('click', () => {
-            grid.classList.remove('list-view');
-            btnGrid.classList.add('active'); btnList.classList.remove('active');
-            grid.querySelectorAll('[class*="col-"]').forEach(c => {
-                c.className = c.className.replace(/col-xl-\d+/, 'col-xl-3');
-            });
-        });
-        btnList.addEventListener('click', () => {
-            grid.classList.add('list-view');
-            btnList.classList.add('active'); btnGrid.classList.remove('active');
-            grid.querySelectorAll('[class*="col-"]').forEach(c => {
-                if (!c.id) c.className = c.className.replace(/col-xl-\d+/, 'col-xl-12');
-            });
-        });
-
-        /* ── Wishlist ── */
-        document.querySelectorAll('.wishlist-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const ico = this.querySelector('i');
-                ico.classList.toggle('bi-heart');
-                ico.classList.toggle('bi-heart-fill');
-                this.classList.toggle('active');
-            });
-        });
-
-        /* ── Carrinho ── */
-        document.querySelectorAll('.btn-add-cart').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const orig = this.innerHTML;
-                this.innerHTML = '<i class="bi bi-check-circle"></i> Adicionado!';
-                this.classList.add('added'); this.disabled = true;
-                setTimeout(() => { this.innerHTML = orig; this.classList.remove('added'); this.disabled = false; }, 1800);
-            });
-        });
-
-        /* ── Range de preço ── */
-        const range = document.getElementById('priceRange');
-        const priceMax = document.getElementById('priceMax');
-        range?.addEventListener('input', () => { priceMax.textContent = 'R$ ' + range.value; });
-
-        /* ── Busca client-side ── */
-        document.getElementById('searchInput')?.addEventListener('input', function () {
-            const term = this.value.toLowerCase();
-            const cards = document.querySelectorAll('#productsGrid > [class*="col-"]:not(#emptyState)');
-            let visible = 0;
-            cards.forEach(col => {
-                const show = col.querySelector('.prod-title')?.textContent.toLowerCase().includes(term);
-                col.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-            document.getElementById('emptyState').classList.toggle('d-none', visible > 0);
-        });
-    </script>
+<script src="/js/produtos-user.js"></script>

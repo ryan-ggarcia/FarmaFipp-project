@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(){
     let btn = document.getElementById("btnCadastrar");
     let inputCepEl = document.getElementById("cep");
-    if(inputCepEl){
-        inputCepEl.addEventListener("blur", buscarCep);
-    }
+    inputCepEl.addEventListener("blur", buscarCep);
 
     let inputCpfEl = document.getElementById("cpf");
 
@@ -78,95 +76,111 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
     function cadastrar(){
-        //inputs de cliente
-        let inputNome = document.getElementById("nome").value;
-        let inputCpf = document.getElementById("cpf").value;
-        let inputNascimento = document.getElementById("data").value;
-        let inputTelefone = document.getElementById("telefone").value;
-        let inputEmail = document.getElementById("email").value;
-        let inputSenha = document.getElementById("senha").value;
+        let nome = document.getElementById("nome").value;
+        let cargo = document.getElementById("cargo").value;
+        let cpf = document.getElementById("cpf").value;
+        let telefone = document.getElementById("telefone").value;
+        let email = document.getElementById("email").value;
+        let senha = document.getElementById("senha").value;
+        let matricula = document.getElementById("matricula").value;
+        //input de endereço
         //inputs de endereço
-        let inputRua = document.getElementById("rua").value;
-        let inputNum = document.getElementById("num").value;
-        let inputComplemento = document.getElementById("complemento").value;
-        let inputBairro = document.getElementById("bairro").value;
-        let inputCidade = document.getElementById("cidade").value;
-        let inputEstado = document.getElementById("estado").value;
-        let inputCep = document.getElementById("cep").value;
-        let inputUf = document.getElementById("uf").value;
-        
+        let rua = document.getElementById("rua").value;
+        let num = document.getElementById("num").value;
+        let complemento = document.getElementById("complemento").value;
+        let bairro = document.getElementById("bairro").value;
+        let cidade = document.getElementById("cidade").value;
+        let estado = document.getElementById("estado").value;
+        let cep = document.getElementById("cep").value;
+        let uf = document.getElementById("uf").value;
         let listaValidacao = []
 
-        if(inputNome == "")
-            listaValidacao.push("nome");
-        if(inputCpf == "")
-            listaValidacao.push("cpf");
-        if(inputNascimento == "")
-            listaValidacao.push("data de nascimento");
-        if(inputTelefone == "")
-            listaValidacao.push("telefone");
-        if(inputEmail == "" || !inputEmail.includes("@")) 
-            listaValidacao.push("email");
-        if(inputSenha == "")
-            listaValidacao.push("senha");
-        if(inputRua == "")
-            listaValidacao.push("rua");
-        if(inputNum == "")
-            listaValidacao.push("número");
-        if(inputBairro == "")
-            listaValidacao.push("bairro");
-        if(inputCidade == "")
-            listaValidacao.push("cidade");
-        if(inputEstado == "")
-            listaValidacao.push("estado");
-        if(inputCep == "")
-            listaValidacao.push("cep");
-        if(inputUf == "")
-            listaValidacao.push("uf");
+        if(!nome){
+            listaValidacao.push("Preencha o nome")
+        }
+        if(!cargo){
+            listaValidacao.push("Preencha o cargo")
+        }
+        if(!telefone){
+            listaValidacao.push("Preencha o telefone")
+        }
+        if(!email){
+            listaValidacao.push("Preencha o email")
+        }
+        if(!senha){
+            listaValidacao.push("Preencha a senha")
+        }
+        if(!matricula){
+            listaValidacao.push("Preencha a matrícula")
+        }
+        if(!rua){
+            listaValidacao.push("Preencha a rua")
+        }
+        if(!num){
+            listaValidacao.push("Preencha o número")
+        }
+        if(!bairro){
+            listaValidacao.push("Preencha o bairro")
+        }
+        if(!cidade){
+            listaValidacao.push("Preencha a cidade")
+        }
+        if(!estado){
+            listaValidacao.push("Preencha o estado")
+        }
+        if(!cep){
+            listaValidacao.push("Preencha o CEP")
+        }
+        if(!uf){
+            listaValidacao.push("Preencha a UF")
+        }
 
-        if(inputCpf != "" && !validarCpf(inputCpf)){
+        if(cpf != "" && !validarCpf(cpf)){
             alert("Informe um CPF válido!");
             return;
         }
 
+
         if(listaValidacao.length == 0){
-            fetch("/clientes/cadastrar", {
-                method: "POST",
-                headers:{
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    nome: inputNome,
-                    cpf: inputCpf,
-                    data: inputNascimento,
-                    telefone: inputTelefone,
-                    email: inputEmail,
-                    senha: inputSenha,
-                    rua: inputRua,
-                    numero: inputNum,
-                    bairro: inputBairro,
-                    cidade: inputCidade,
-                    estado: inputEstado,
-                    cep: inputCep,
-                    uf: inputUf,
-                    complemento: inputComplemento
-                })
+        fetch("/funcionarios/cadastrar",{
+            method: "POST",
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nome,
+                cargo,
+                cpf,
+                telefone,
+                email,
+                senha,
+                matricula,
+                rua,
+                num,
+                complemento,
+                bairro,
+                cidade,
+                estado,
+                cep,
+                uf
             })
-            .then(res=>{
-                return res.json();
-            })
-            .then(dados=>{
-                alert(dados.msg)
-                if(dados.ok)
-                    window.location.href = "/"
-            })
+        })
+        .then(res =>{
+            return res.json()
+        })
+        .then(data =>{
+            alert(data.msg)
+             if(data.ok){
+                window.location.href = "/funcionarios/listar"
+             }
+        })
         }
         else{
-            alert("Preencha os seguintes campos: " + listaValidacao.join(", "))
+            alert("Preencha os seguintes campos:\n" + listaValidacao.join("\n"))
         }
     }
 
-    function validarCpf(cpf) {
+        function validarCpf(cpf) {
         cpf = cpf.replace(/[^\d]/g, '');
 
         if (cpf.length !== 11) return false;
@@ -194,4 +208,5 @@ document.addEventListener("DOMContentLoaded", function(){
 
         return true;
     }
+
 })

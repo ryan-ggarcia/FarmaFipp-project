@@ -1,0 +1,301 @@
+DOCUMENTACAO DE FUNCIONALIDADES - PROJETO FARMAFIPP
+
+OBJETIVO DESTE DOCUMENTO
+- Este documento descreve as funcionalidades basicas do sistema com foco em manutencao.
+- Publico alvo: desenvolvedor que vai corrigir bug, evoluir modulo existente ou adicionar funcionalidade.
+- Escopo atual do projeto na raiz: Home, Servicos e Clientes.
+
+
+1) VISAO GERAL DA APLICACAO
+- Stack principal:
+  - Node.js + Express (backend e roteamento)
+  - EJS + express-ejs-layouts (renderizacao server-side)
+  - MySQL via mysql2 (persistencia)
+  - JavaScript no frontend para validacao e chamadas fetch
+- Arquitetura por camadas:
+  - routes/: define endpoints e redireciona para controller
+  - controllers/: valida entrada, aplica regra e decide resposta
+  - models/: executa SQL e converte dados em objetos
+  - views/: paginas EJS
+  - public/js/: comportamento de tela (DOM/fetch/validacao)
+- Padrao de resposta da API interna (rotas POST):
+  - JSON com formato: { ok: boolean, msg: string }
+
+
+2) BOOTSTRAP E PIPELINE DE REQUISICAO
+Arquivo principal: server.js
+- Porta padrao: 5000
+- Middlewares configurados:
+  - express.urlencoded({ extended: true })
+  - express.json()
+  - express.static("public")
+  - express-ejs-layouts
+- View engine:
+  - ejs
+  - layout padrao: ./layout.ejs
+- Rotas montadas:
+  - /            -> HomeRouter
+  - /servicos    -> ServicoRouter
+  - /clientes    -> ClienteRoute
+
+Fluxo completo de uma requisicao com envio de formulario:
+1. Usuario aciona botao na view.
+2. Script em public/js valida dados no navegador.
+3. Script envia fetch para rota Express.
+4. Router chama metodo do controller.
+5. Controller valida novamente e chama model.
+6. Model executa SQL via utils/database.js.
+7. Controller devolve JSON (ok/msg) ou renderiza view.
+8. Frontend alerta usuario e redireciona/recarrega.
+
+
+3) CAMADA DE DADOS (DATABASE E MODELS)
+3.1 utilitario de conexao
+Arquivo: utils/database.js
+- Usa mysql2.createPool com database farmafipp.
+- Metodos genericos:
+  - ExecutaComando(sql, valores): retorna rows para SELECT.
+  - ExecutaComandoNonQuery(sql, valores): retorna boolean de affectedRows > 0.
+  - ExecutaComandoLastInserted(sql, valores): retorna insertId.
+
+3.2 tabelas utilizadas pelo codigo atual
+- Servico
+  - idServico, serv_data, serv_tipo, serv_status, serv_descricao
+- cliente
+  - idClinete, cli_nome, cli_status, cli_cpf, cli_email, cli_senha, cli_telefone, cli_nascimento
+- endereco
+  - end_id, end_rua, end_bairro, end_cidade, end_num, end_estado, end_uf, end_cep, cli_id
+
+Observacao importante:
+- O campo id do cliente esta como idClinete no SQL (grafia original do banco/codigo).
+- Nao corrigir esse nome isoladamente sem migracao de schema e queries.
+
+
+4) MODULO HOME
+4.1 Rotas
+- GET /
+
+4.2 Comportamento
+- Renderiza a view home.
+
+4.3 Arquivos envolvidos
+- routes/HomeRouter.js
+- controllers/HomeController.js
+- views/home.ejs
+
+
+5) MODULO SERVICOS
+5.1 Rotas
+- GET  /servicos                 -> listarView
+- GET  /servicos/cadastrar       -> cadastrarView
+- POST /servicos/cadastrar       -> cadastrar
+- GET  /servicos/alterar/:idAlteracao -> alterarView
+- POST /servicos/alterar         -> alterar
+- POST /servicos/deletar         -> deletar
+
+5.2 Contratos de entrada e saida
+POST /servicos/cadastrar
+- Body esperado:
+  - data: string
+  - tipo: string
+  - status: boolean
+  - descricao: string
+- Resposta:
+  - { ok: true, msg: "Serviço cadastrado!" }
+  - ou { ok: false, msg: "..." }
+
+POST /servicos/alterar
+- Body esperado:
+  - id: string|number
+  - data: string
+  - tipo: string
+  - status: boolean
+  - descricao: string
+- Resposta:
+  - { ok: true, msg: "Serviço alterado!" }
+  - ou { ok: false, msg: "..." }
+
+POST /servicos/deletar
+- Body esperado:
+  - id: string|number
+- Resposta:
+  - { ok: true, msg: "Serviço excluído!" }
+  - ou { ok: false, msg: "..." }
+
+5.3 Regras implementadas no backend
+- Validacao de obrigatoriedade para data/tipo/descricao.
+- Conversao do status vindo do frontend (boolean) para texto no banco:
+  - true  => "aprovado"
+  - false => "nao aprovado"
+- Listagem retorna todos os registros da tabela Servico.
+
+5.4 Comportamento de frontend (public/js/servicos)
+cadastrar.js
+- Valida campos obrigatorios.
+- Marca borda vermelha em campo invalido.
+- Faz POST JSON para /servicos/cadastrar.
+- Em sucesso: alert + redireciona para /servicos.
+
+alterar.js
+- Mesma estrategia de validacao do cadastro.
+- Faz POST JSON para /servicos/alterar.
+- Em sucesso: alert + redireciona para /servicos.
+
+listar.js
+- Acopla evento em botoes .btnExcluir.
+- Pede confirmacao antes de excluir.
+- Faz POST JSON para /servicos/deletar.
+- Em sucesso: recarrega pagina.
+
+5.5 Arquivos-chave para manutencao
+- routes/ServicoRouter.js
+- controllers/ServicoController.js
+- models/ServicoModel.js
+- views/servicos/*.ejs
+- public/js/servicos/*.js
+
+
+6) MODULO CLIENTES
+6.1 Rotas
+- GET  /clientes/cadastrar       -> cadastrarView
+- POST /clientes/cadastrar       -> cadastrar
+- GET  /clientes/listar          -> listarView
+- GET  /clientes/alterar/:id     -> alterarView
+- POST /clientes/alterar         -> alterar
+- POST /clientes/excluir         -> excluir
+
+6.2 Contratos de entrada e saida
+POST /clientes/cadastrar
+- Body esperado (cliente):
+  - nome, cpf, data, telefone, email, senha
+- Body esperado (endereco):
+  - rua, numero, bairro, cidade, estado, cep, uf
+- Respostas comuns:
+  - sucesso: { ok: true, msg: "Cliente e endereço cadastrados com sucesso!" }
+  - erro de validacao: { ok: false, msg: "..." }
+
+POST /clientes/alterar
+- Body esperado:
+  - id, nome, cpf, data, telefone, email, senha, status
+  - endId, rua, num, bairro, cidade, estado, cep, uf
+- Respostas comuns:
+  - sucesso: { ok: true, msg: "Dados do cliente alterados com sucesso!" }
+  - erro: { ok: false, msg: "..." }
+
+POST /clientes/excluir
+- Body esperado:
+  - id
+- Resposta:
+  - { ok: true, msg: "Cliente e endereço excluídos com sucesso!" }
+  - ou { ok: false, msg: "..." }
+
+6.3 Regras implementadas no backend
+Cadastro:
+- Remove mascara do CPF.
+- Valida CPF com cpf-cnpj-validator.
+- Verifica duplicidade de CPF e email.
+- Faz hash de senha com bcrypt (salt rounds 10).
+- Salva cliente primeiro; depois endereco usando cliId retornado.
+
+Listagem:
+- Consulta com LEFT JOIN cliente + endereco.
+- Renderiza view de listagem com dados agrupados.
+
+Alteracao:
+- Exige preenchimento de dados de cliente e endereco.
+- Atualiza cliente e endereco separadamente.
+- Retorna erro especificando qual etapa falhou.
+
+Exclusao:
+- Exclui endereco por cli_id.
+- Exclui cliente por idClinete.
+
+6.4 Comportamento de frontend (public/js/clientes)
+cadastrar.js
+- Mascara CPF em tempo real.
+- Validacao de campos obrigatorios no cliente.
+- Validacao de CPF no navegador (digitos verificadores).
+- Consulta ViaCEP ao sair do campo CEP:
+  - valida 8 digitos
+  - busca em https://viacep.com.br/ws/{cep}/json/
+  - preenche rua/bairro/cidade/estado/uf automaticamente
+- Faz POST JSON para /clientes/cadastrar.
+
+alterar.js
+- Coleta cliente e endereco da tela.
+- Valida obrigatoriedade.
+- Faz POST JSON para /clientes/alterar.
+- Em sucesso redireciona para /clientes/listar.
+
+listar.js
+- Acopla .btnExcluir.
+- Confirmacao antes de excluir.
+- Faz POST JSON para /clientes/excluir.
+- Em sucesso recarrega pagina.
+
+6.5 Arquivos-chave para manutencao
+- routes/ClienteRoute.js
+- controllers/ClienteController.js
+- models/ClienteModel.js
+- models/EnderecoModel.js
+- views/clientes/*.ejs
+- public/js/clientes/*.js
+
+
+7) PADROES DE CODIGO IMPORTANTES PARA QUEM VAI MANTER
+- Sempre validar no frontend e no backend.
+- Sempre responder JSON padrao { ok, msg } nas rotas POST.
+- Evitar logica SQL em controller; manter no model.
+- Evitar alterar nome de campo de banco sem migracao planejada.
+- Em feature nova, seguir ordem:
+  1. criar rota
+  2. criar/ajustar metodo de controller
+  3. criar/ajustar metodo de model
+  4. criar/ajustar view
+  5. criar/ajustar JS da tela
+
+
+8) PONTOS DE ATENCAO (RISCOS TECNICOS JA OBSERVADOS)
+- Nao existe transacao envolvendo cliente + endereco no cadastro.
+  - Risco: cliente ser criado e endereco falhar.
+- Nao existe middleware global de tratamento de erro.
+  - Risco: rejeicoes de Promise sem resposta padronizada.
+- Nao existe autenticacao/controle de acesso nas rotas atuais.
+- Valores sensiveis do banco estao no codigo (localhost/root).
+  - Recomenda-se migrar para variaveis de ambiente.
+
+
+9) CHECKLIST RAPIDO PARA CORRECAO DE BUG
+1. Reproduzir bug na tela e identificar rota atingida.
+2. Conferir payload enviado no fetch (frontend).
+3. Conferir validacoes no controller.
+4. Conferir SQL e nome de campos no model.
+5. Testar resposta JSON esperada (ok/msg).
+6. Validar fluxo completo tela -> backend -> banco.
+
+
+10) RESUMO EXECUTIVO
+- O sistema atual esta funcionalmente centrado em dois CRUDs:
+  - Servicos
+  - Clientes (com endereco)
+- A manutencao deve priorizar consistencia entre:
+  - nomes de campo no frontend
+  - validacoes no controller
+  - colunas reais no banco
+- Para evolucao segura, manter padrao de resposta e separacao por camadas.
+
+
+11) NOVAS FUNCIONALIDADES IMPLEMENTADAS
+- Foi adicionado o modulo de Funcionarios com fluxo de cadastro, listagem, alteracao e exclusao.
+- A tela de alteracao de funcionarios foi alinhada ao mesmo padrao de arquitetura usado no modulo de clientes.
+- O carregamento dos dados de funcionario agora considera tambem os dados de endereco no fluxo da camada model/controller.
+- O fluxo de alteracao foi padronizado para validar dados principais e dados de endereco antes de persistir.
+
+Atualizacao importante de banco de dados:
+- Foram criadas mais 2 tabelas de endereco para separar responsabilidades por modulo:
+  - endereco_cliente
+  - endereco_funcionario
+- Com essa separacao, cada entidade passa a manter seu proprio relacionamento de endereco, reduzindo conflito de colunas e simplificando manutencao.
+
+
+Fim da documentacao.

@@ -1,3 +1,4 @@
+require('dotenv').config()
 const mysql = require('mysql2')
 
 class Database {
@@ -9,12 +10,12 @@ class Database {
     constructor() {
 
         this.#conexao = mysql.createPool({
-            host: '132.226.245.178', //endereço do nosso banco de dados na nuvem
-            database: 'PFS1_10442519210', //a database de cada um de vocês possui a nomenclatura PFS2_(RA)
-            user: '10442519210', // usuario e senha de cada um de vocês é o RA
-            password: '10442519210', // usuario e senha de cada um de vocês é o RA
-            idleTimeout: 30000,
-            connectionLimit: 50
+            host: process.env.DB_HOST,
+            database: process.env.DB_DATABASE,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            idleTimeout: parseInt(process.env.DB_IDLE_TIMEOUT),
+            connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT)
         });
     }
 
