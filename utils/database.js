@@ -1,4 +1,5 @@
-require('dotenv').config()
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const mysql = require('mysql2')
 
 class Database {
@@ -9,7 +10,7 @@ class Database {
 
     constructor() {
 
-        this.#conexao = mysql.createPool({
+         this.#conexao = mysql.createPool({
             host: process.env.DB_HOST,
             database: process.env.DB_DATABASE,
             user: process.env.DB_USER,

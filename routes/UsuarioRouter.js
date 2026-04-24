@@ -1,13 +1,15 @@
 const LoginController = require("../controllers/LoginController");
 const UsuarioController = require("../controllers/UsuarioController");
+const AuthMiddleware = require('../middleware/AuthMiddleware');
 const express = require("express")
 
 let controller = new UsuarioController()
 let loginController = new LoginController()
 const router = express.Router()
 
-router.get("/", controller.homeView)
-router.get("/produtos",controller.produtosView)
-router.get("/login",loginController.loginView)
+let auth = new AuthMiddleware()
+
+router.get("/",  controller.homeView)
+router.get("/produtos",  controller.produtosView)
 
 module.exports = router
