@@ -9,9 +9,9 @@ class ProdutoModel{
     #preco
     #quantidade
     #marca
-    #lote
     #categoria
     #fornecedor
+    #lote
     #img
 
     get id() { return this.#id; } set id(value) { this.#id = value; }
@@ -41,31 +41,13 @@ class ProdutoModel{
         this.#img = img;
     }
 
-    async #CreateLote(id){
-        const sql = 'insert into Lote (lot_qnt, prod_id, lot_name, lot_validade) values (?, ?, ?, ?)';
-        const values = [this.#quantidade, id, this.#lote, this.#validade];
-        const banco = new Database();
-        let result =  await banco.ExecutaComandoLastInserted(sql, values);
-        return result;
-    }
 
-    async GetLote(){
-        const sql = 'select * from Lote where prod_id = ?';
-        const values = [id];
-        const banco = new Database();
-        let result =  await banco.ExecutaComando(sql, values);
-        return result;
-    }
 
     async Create() {
         const sql = 'insert into produto (pro_nome, descricao,  pro_preco, pro_quantidade,  Categoria_Produto, marca, idFornecedor, pro_img) values (?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [this.#nome, this.#descricao, this.#preco, this.#quantidade, this.#categoria, this.#marca,  this.#fornecedor, this.#img];
         const banco = new Database();
         let result =  await banco.ExecutaComandoLastInserted(sql, values);
-        let resultLote = await this.#CreateLote(result);
-        if(!resultLote) {
-            return 'Erro ao criar o lote do produto!';
-        }
         return result;
     }
 
@@ -75,6 +57,18 @@ class ProdutoModel{
         let result =  await banco.ExecutaComando(sql);
         return result;
     }
+
+    async GetLote(){
+        const sql = `SELECT l.* FROM Lote l
+                     INNER JOIN produto_lote pl ON l.lot_id = pl.lote_lot_id
+                     WHERE pl.produto_idProduto = ?`;
+        const values = [this.#id];
+        const banco = new Database();
+        let result = await banco.ExecutaComando(sql, values);
+        return result;
+    }
+
+
     async Read(){
         const sql = `SELECT p.*, c.cat_nome, l.lot_name, l.lot_validade, l.lot_qnt, f.forn_nome
                     FROM produto p
@@ -111,10 +105,6 @@ class ProdutoModel{
         return lista
     }
 
-    async AddNewLot(id){
-        let resultLote = await this.#CreateLote(id);
-        return resultLote;
-    }
 }
 
 module.exports = ProdutoModel;

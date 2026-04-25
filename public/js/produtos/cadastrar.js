@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     const cadastrar = document.getElementById('cadastrar');
-
     cadastrar.addEventListener('click', cadastrarProduto);
 
     const img = document.getElementById('img');
@@ -9,82 +8,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function changeImg() {
     let arquivo = this.files[0];
+    if (!arquivo) return;
     let extensao = arquivo.type.split('/')[1];
-    if (extensao == 'jpeg' || extensao == 'jpg' || extensao == 'png') {
+    if (extensao === 'jpeg' || extensao === 'jpg' || extensao === 'png' || extensao === 'webp') {
         let url = URL.createObjectURL(arquivo);
         document.getElementById("previaImagem").src = url;
         document.getElementById("divPrevia").style.display = "block";
-    }else{
-        alert("Imagem com formato inválido! Selecione JPG ou PNG");
+    } else {
+        alert("Imagem com formato inválido! Selecione JPG, PNG ou WebP");
         document.getElementById("divPrevia").style.display = "none";
+        this.value = '';
     }
 }
 
 function cadastrarProduto() {
-        const nome = document.getElementById('nome');
-        nome.style.borderColor = '#ced4da';
-        const descricao = document.getElementById('descricao');
-        descricao.style.borderColor = '#ced4da';
-        const validade = document.getElementById('validade');
-        validade.style.borderColor = '#ced4da';
-        const preco = document.getElementById('preco');
-        preco.style.borderColor = '#ced4da';
-        const quantidade = document.getElementById('quantidade');
-        quantidade.style.borderColor = '#ced4da';
-        const marca = document.getElementById('marca');
-        marca.style.borderColor = '#ced4da';
-        const lote = document.getElementById('Lote');
-        lote.style.borderColor = '#ced4da';
-        const categoria = document.getElementById('categoria');
-        categoria.style.borderColor = '#ced4da';
-        const fornecedor = document.getElementById('fornecedor');
-        fornecedor.style.borderColor = '#ced4da';
-        const img = document.getElementById('img');
-        img.style.borderColor = '#ced4da';
+    const campos = ['nome', 'descricao', 'preco', 'quantidade', 'marca', 'categoria', 'fornecedor'];
 
-        let listaValidacao = [];
+    // Reset border colors
+    campos.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.borderColor = '#ced4da';
+    });
 
-        if (nome.value == '') listaValidacao.push('nome');
-        if (descricao.value == '') listaValidacao.push('descrição');
-        if (validade.value == '') listaValidacao.push('validade');
-        if (preco.value == '' || preco.value <= 0) listaValidacao.push('preço');
-        if (quantidade.value == '' || quantidade.value < 0) listaValidacao.push('quantidade');
-        if (lote.value == '') listaValidacao.push('lote');
-        if (categoria.value == '') listaValidacao.push('categoria');
-        if (fornecedor.value == '') listaValidacao.push('fornecedor');
+    let listaValidacao = [];
 
+    const nome = document.getElementById('nome');
+    const descricao = document.getElementById('descricao');
+    const preco = document.getElementById('preco');
+    const quantidade = document.getElementById('quantidade');
+    const marca = document.getElementById('marca');
+    const categoria = document.getElementById('categoria');
+    const fornecedor = document.getElementById('fornecedor');
+    const img = document.getElementById('img');
+
+    if (!nome.value.trim()) listaValidacao.push('nome');
+    if (!descricao.value.trim()) listaValidacao.push('descricao');
+    if (!preco.value || parseFloat(preco.value) <= 0) listaValidacao.push('preco');
+    if (!quantidade.value || parseInt(quantidade.value) < 0) listaValidacao.push('quantidade');
+    if (!marca.value.trim()) listaValidacao.push('marca');
+    if (!categoria.value) listaValidacao.push('categoria');
+    if (!fornecedor.value) listaValidacao.push('fornecedor');
+
+    if (listaValidacao.length === 0) {
         let formData = new FormData();
-        formData.append('nome', nome.value);
-        formData.append('descricao', descricao.value);
-        formData.append('validade', validade.value);
+        formData.append('nome', nome.value.trim());
+        formData.append('descricao', descricao.value.trim());
         formData.append('preco', preco.value);
         formData.append('quantidade', quantidade.value);
-        formData.append('marca', marca.value);
-        formData.append('lote', lote.value);  
+        formData.append('marca', marca.value.trim());
         formData.append('categoria', categoria.value);
         formData.append('fornecedor', fornecedor.value);
-        formData.append('img', img.files[0]);
-
-        if(listaValidacao.length == 0) {
-            fetch('/produtos/cadastrar', {
-                method: 'POST',
-                body: formData
-            }).then(response => {
-                return response.json();
-            }).then(data => {
-
-                alert(data.msg);
-                if(data.ok) {
-                    window.location.href = '/produtos/listar';
-                }
-            }). catch(error => {
-                console.error('Erro:', error);
-            });
-        }else{
-            alert('Preencha os dados corretamente!');
-            for (let i = 0; i < listaValidacao.length; i++) {
-                let campo = document.getElementById(listaValidacao[i]);
-                campo.style.borderColor = 'red';
-            }
+        if (img.files[0]) {
+            formData.append('img', img.files[0]);
         }
+
+        fetch('/produtos/cadastrar', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            alert(data.msg);
+            if (data.ok) {
+                window.location.href = '/produtos/';
+            }
+        }).catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao cadastrar o produto!');
+        });
+    } else {
+        alert('Preencha os dados corretamente!');
+        listaValidacao.forEach(id => {
+            let campo = document.getElementById(id);
+            if (campo) campo.style.borderColor = 'red';
+        });
     }
+}

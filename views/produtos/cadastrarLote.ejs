@@ -1,0 +1,40 @@
+<form>
+
+    <label for="nome" class="form-label">Lote:</label>
+    <input type="text" class="form-control" id="nome" name="nome" required>
+
+    <label for="validade" class="form-label">Validade:</label>
+    <input type="date" class="form-control" id="validade" name="validade" required>
+
+    <label for="quantidade" class="form-label">Quantidade:</label>
+    <input type="number" class="form-control" id="quantidade" name="quantidade" min="0" required>
+
+  
+    <label for="fornecedor" class="form-label">Fornecedor:</label>
+    <select class="form-control" id="fornecedor" name="fornecedor" required>
+        <option value="">Selecione um fornecedor</option>
+        <% for(let i=0; i < fornecedores.length; i++) { %>
+            <option value="<%= fornecedores[i].id %>">
+                <%= fornecedores[i].nome %>
+            </option>
+            <% } %>
+    </select>
+
+    <label for="produto" class="form-label">Produto:</label>
+    <select class="form-control" id="produto" name="produto" required>
+        <option value="">Selecione um produto</option>
+        <% for(let i=0; i < produtos.length; i++) { %>
+            <option value="<%= produtos[i].id %>">
+                <%= produtos[i].nome %>
+            </option>
+            <% } %>
+    </select>
+
+    <div>
+        <button type="button" id="cadastrarLote" class="btn btn-primary">Cadastrar Lote</button>
+        <a href="/produtos">Voltar</a>
+    </div>
+
+</form>
+
+<script src="/js/produtos/cadastrarLote.js"></script>

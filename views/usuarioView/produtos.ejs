@@ -199,20 +199,20 @@
         const btnGrid = document.getElementById('btnGrid');
         const btnList = document.getElementById('btnList');
 
-        btnGrid.addEventListener('click', () => {
-            grid.classList.remove('list-view');
-            btnGrid.classList.add('active'); btnList.classList.remove('active');
+            btnGrid.addEventListener('click', () => {
+                grid.classList.remove('list-view');
+                btnGrid.classList.add('active'); btnList.classList.remove('active');
             grid.querySelectorAll('[class*="col-"]').forEach(c => {
-                c.className = c.className.replace(/col-xl-\d+/, 'col-xl-3');
+                    c.className = c.className.replace(/col-xl-\d+/, 'col-xl-3');
+                });
             });
-        });
-        btnList.addEventListener('click', () => {
-            grid.classList.add('list-view');
-            btnList.classList.add('active'); btnGrid.classList.remove('active');
+            btnList.addEventListener('click', () => {
+                grid.classList.add('list-view');
+                btnList.classList.add('active'); btnGrid.classList.remove('active');
             grid.querySelectorAll('[class*="col-"]').forEach(c => {
                 if (!c.id) c.className = c.className.replace(/col-xl-\d+/, 'col-xl-12');
+                });
             });
-        });
 
         /* ── Wishlist ── */
         document.querySelectorAll('.wishlist-btn').forEach(btn => {

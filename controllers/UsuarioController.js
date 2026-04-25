@@ -1,4 +1,4 @@
-
+const ProdutoModel = require('../models/ProdutoModel');
 
 class UsuarioController {
     homeView(req, res) {

@@ -2,11 +2,8 @@
     <label for="nome" class="form-label">Nome do Produto:</label>
     <input type="text" class="form-control" id="nome" name="nome" required>
 
-    <label for="validade" class="form-label">Validade:</label>
-    <input type="date" class="form-control" id="validade" name="validade" required>
-
     <label for="preco" class="form-label">Preço:</label>
-    <input type="number" class="form-control" id="preco" name="preco" step="0.01" required>
+    <input type="number" class="form-control" id="preco" name="preco" step="0.01" min="0.01" required>
 
     <label for="quantidade" class="form-label">Quantidade:</label>
     <input type="number" class="form-control" id="quantidade" name="quantidade" min="0" required>
@@ -16,9 +13,6 @@
 
     <label for="marca" class="form-label">Marca:</label>
     <input type="text" class="form-control" id="marca" name="marca" required>
-
-    <label for="Lote">Lote do Produto:</label>
-    <input type="text" class="form-control" id="Lote" name="Lote" required>
 
     <label for="categoria" class="form-label">Categoria:</label>
     <select class="form-control" id="categoria" name="categoria" required>
@@ -40,10 +34,8 @@
             <% } %>
     </select>
 
-
-
-    <label for="img" class="form-label">imagem do produto:</label>
-    <input type="file" class="form-control" id="img" name="img">
+    <label for="img" class="form-label">Imagem do produto:</label>
+    <input type="file" class="form-control" id="img" name="img" accept="image/jpeg,image/png,image/webp">
 
     <div class="form-group" id="divPrevia" style="display:none;">
         <label>Prévia da Imagem:</label>
@@ -52,7 +44,7 @@
 
     <div>
         <button type="button" id="cadastrar" class="btn btn-primary">Cadastrar Produto</button>
-        <a href="produtos/listar">Voltar</a>
+        <a href="/produtos">Voltar</a>
     </div>
 
 </form>
