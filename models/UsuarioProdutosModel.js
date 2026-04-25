@@ -35,8 +35,8 @@ class UsuarioProdutosModel extends ProdutoModel {
         const sql = `SELECT p.*, c.cat_nome AS categoria_nome 
                     FROM produto p 
                     LEFT JOIN categoria c ON p.Categoria_Produto = c.idCategoria 
-                    WHERE p.pro_validade <= DATE_ADD(CURDATE(), INTERVAL 90 DAY) 
-                    AND p.pro_validade >= CURDATE()`;
+                    left join produto_lote pl on p.idProduto = pl.produto_idProduto
+                    left join Lote l on pl.lote_lot_id = l.lot_id`;
         const banco = new Database();
         let rows = await banco.ExecutaComando(sql);
         let produto = [];
@@ -45,7 +45,7 @@ class UsuarioProdutosModel extends ProdutoModel {
                 row.idProduto,
                 row.pro_nome,
                 row.descricao,
-                row.pro_validade,
+                row.lot_validade,
                 row.pro_preco,
                 row.pro_quantidade,
                 row.categoria_nome || 'Sem categoria',
