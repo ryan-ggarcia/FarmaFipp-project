@@ -33,6 +33,8 @@ function cadastrarProduto() {
         quantidade.style.borderColor = '#ced4da';
         const marca = document.getElementById('marca');
         marca.style.borderColor = '#ced4da';
+        const lote = document.getElementById('Lote');
+        lote.style.borderColor = '#ced4da';
         const categoria = document.getElementById('categoria');
         categoria.style.borderColor = '#ced4da';
         const fornecedor = document.getElementById('fornecedor');
@@ -47,6 +49,7 @@ function cadastrarProduto() {
         if (validade.value == '') listaValidacao.push('validade');
         if (preco.value == '' || preco.value <= 0) listaValidacao.push('preço');
         if (quantidade.value == '' || quantidade.value < 0) listaValidacao.push('quantidade');
+        if (lote.value == '') listaValidacao.push('lote');
         if (categoria.value == '') listaValidacao.push('categoria');
         if (fornecedor.value == '') listaValidacao.push('fornecedor');
 
@@ -57,6 +60,7 @@ function cadastrarProduto() {
         formData.append('preco', preco.value);
         formData.append('quantidade', quantidade.value);
         formData.append('marca', marca.value);
+        formData.append('lote', lote.value);  
         formData.append('categoria', categoria.value);
         formData.append('fornecedor', fornecedor.value);
         formData.append('img', img.files[0]);
@@ -68,7 +72,11 @@ function cadastrarProduto() {
             }).then(response => {
                 return response.json();
             }).then(data => {
+
                 alert(data.msg);
+                if(data.ok) {
+                    window.location.href = '/produtos/listar';
+                }
             }). catch(error => {
                 console.error('Erro:', error);
             });
