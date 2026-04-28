@@ -20,7 +20,7 @@ class LoteController {
     async CadastroLote(req, res) {
         const { validade, quantidade, produto, fornecedor, nome } = req.body;
 
-        if (!nome?.trim() || !validade || !quantidade || !produto || !fornecedor) {
+        if (!nome?.trim() || !validade || !quantidade || !produto || (Array.isArray(produto) && produto.length === 0) || !fornecedor) {
             return res.send({ ok: false, msg: 'Preencha os dados corretamente!' });
         }
 

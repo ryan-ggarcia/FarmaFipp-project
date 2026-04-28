@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
         validade.style.borderColor = '#ced4da';
         const quantidade = document.getElementById('quantidade');
         quantidade.style.borderColor = '#ced4da';
-        const produto = document.getElementById('produto');
-        produto.style.borderColor = '#ced4da';
+        const produtoVal = $('#produto').val();
+        // Remove style update on the hidden select, handled via select2 containers if needed.
         const fornecedor = document.getElementById('fornecedor');
         fornecedor.style.borderColor = '#ced4da';
         
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nome.value == '') listaValidacao.push('nome');
         if (validade.value == '') listaValidacao.push('validade');
         if (quantidade.value == '' || quantidade.value < 0) listaValidacao.push('quantidade');
-        if (produto.value == '') listaValidacao.push('produto');
+        if (!produtoVal || produtoVal.length === 0) listaValidacao.push('produto');
         if (fornecedor.value == '') listaValidacao.push('fornecedor');
         if(listaValidacao.length == 0) {
             fetch('/produtos/cadastrarLote',{
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     nome: nome.value,
                     validade: validade.value,
                     quantidade: quantidade.value,
-                    produto: produto.value,
+                    produto: produtoVal,
                     fornecedor: fornecedor.value
                 })
             })
@@ -53,5 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    $(document).ready(function() {
+        $('#produto').select2({
+            placeholder: 'Selecione um produto',
+            width: '100%'
+        });
+        $('#fornecedor').select2({
+            placeholder: 'Selecione um fornecedor',
+            width: '100%'
+        });
+    });
 
 });

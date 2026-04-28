@@ -25,17 +25,22 @@ class LoteModel {
     }
 
     async #CreateRelationWithProduto(id) {
-        const sql = 'insert into produto_lote (produto_idProduto, lote_lot_id) values (?, ?)';
-        const values = [this.#prod_id, id];
         const banco = new Database();
-        let result =  await banco.ExecutaComandoLastInserted(sql, values);
-        return result;
+        let prod_ids = Array.isArray(this.#prod_id) ? this.#prod_id : [this.#prod_id];
+        
+        for (let prod of prod_ids) {
+            const sql = 'insert into produto_lote (produto_idProduto, lote_lot_id) values (?, ?)';
+            const values = [prod, id];
+            let result = await banco.ExecutaComandoNonQuery(sql, values);
+            if (!result) return false;
+        }
+        return true;
     }
     async #CreateRelationWithFornecedor(id) {
         const sql = 'insert into fornecedor_lote (idFornecedor, lot_id) values (?, ?)';
         const values = [this.#forn_id, id];
         const banco = new Database();
-        let result =  await banco.ExecutaComandoLastInserted(sql, values);   
+        let result =  await banco.ExecutaComandoNonQuery(sql, values);   
         return result;
     }
 
@@ -52,6 +57,27 @@ class LoteModel {
         return result;
     }
 
+
+    async List() {
+        const sql = 'select * from Lote';
+        const banco = new Database();
+        let rows = await banco.ExecutaComando(sql);
+        if (rows.length > 0) {
+            rows.forEach(row => {
+                let lote = new LoteModel(row.lot_id, row.prod_id, row.lot_validade, row.lot_qnt, row.forn_id, row.lot_name);
+                lote.id = row.lot_id;
+                lote.prod_id = row.prod_id;
+                lote.validade = row.lot_validade;
+                lote.quantidade = row.lot_qnt;
+                lote.forn_id = row.forn_id;
+                lote.lot_name = row.lot_name;
+            });
+            return rows;
+        } else {
+            return false;
+        }
+        
+    }
 }
 
 module.exports = LoteModel;

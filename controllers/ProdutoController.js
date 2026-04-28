@@ -9,7 +9,9 @@ class ProdutoController {
             let lista = await listaPro.Read()
             let categoria = new ProdutoModel()
             categoria = await categoria.ListCategorias()
-            res.render('produtos/listar', { lista, categoria })
+            let lote = new LoteModel()
+            lote = await lote.List()
+            res.render('produtos/listar', { lista, categoria, lote });
         } catch (error) {
             console.error('Erro ao listar produtos:', error);
             res.status(500).send({ ok: false, msg: 'Erro ao listar produtos!' });

@@ -21,8 +21,7 @@
     </select>
 
     <label for="produto" class="form-label">Produto:</label>
-    <select class="form-control" id="produto" name="produto" required>
-        <option value="">Selecione um produto</option>
+    <select class="form-control" id="produto" name="produto" multiple="multiple" required>
         <% for(let i=0; i < produtos.length; i++) { %>
             <option value="<%= produtos[i].id %>">
                 <%= produtos[i].nome %>
