@@ -8,9 +8,11 @@ class UsuarioProdutosModel extends ProdutoModel {
     }
 
     async ReadAllProducts(){
-        const sql = `SELECT p.*, c.cat_nome AS categoria_nome 
+        const sql = `SELECT p.*, c.cat_nome AS categoria_nome, l.lot_validade, l.lot_qnt 
                     FROM produto p 
-                    LEFT JOIN categoria c ON p.Categoria_Produto = c.idCategoria`;
+                    LEFT JOIN categoria c ON p.Categoria_Produto = c.idCategoria
+                    left join produto_lote pl on p.idProduto = pl.produto_idProduto
+                    left join Lote l on pl.lote_lot_id = l.lot_id`;
         const banco = new Database();
         let rows =  await banco.ExecutaComando(sql);
         let produto = [];
@@ -19,9 +21,9 @@ class UsuarioProdutosModel extends ProdutoModel {
                 row.idProduto,
                 row.pro_nome,
                 row.descricao,
-                row.pro_validade,
+                row.lot_validade,
                 row.pro_preco,
-                row.pro_quantidade,
+                row.lot_qnt || 0,
                 row.categoria_nome || 'Sem categoria',
                 row.idFornecedor,
                 row.marca,
@@ -30,33 +32,6 @@ class UsuarioProdutosModel extends ProdutoModel {
         });
         return rows ? produto : false; 
     }
-
-    async ReadProductExpirationDateNear(){
-        const sql = `SELECT p.*, c.cat_nome AS categoria_nome 
-                    FROM produto p 
-                    LEFT JOIN categoria c ON p.Categoria_Produto = c.idCategoria 
-                    WHERE p.pro_validade <= DATE_ADD(CURDATE(), INTERVAL 90 DAY) 
-                    AND p.pro_validade >= CURDATE()`;
-        const banco = new Database();
-        let rows = await banco.ExecutaComando(sql);
-        let produto = [];
-        rows.forEach((row) => {
-            produto.push(new UsuarioProdutosModel(
-                row.idProduto,
-                row.pro_nome,
-                row.descricao,
-                row.pro_validade,
-                row.pro_preco,
-                row.pro_quantidade,
-                row.categoria_nome || 'Sem categoria',
-                row.idFornecedor,
-                row.marca,
-                row.pro_img
-            ));
-        });
-        return rows ? produto : false;
-    }
-
     
 
 }

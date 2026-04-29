@@ -89,12 +89,24 @@
             </div>
             <% } else { %>
                 <div class="row g-3" id="productsGrid">
-                    <% for(let i=0; i < produtos.length; i++) { %>
+                    <% 
+                        const promoMap = {};
+                        if (typeof produtosPromocao !== 'undefined' && produtosPromocao) {
+                            produtosPromocao.forEach(p => {
+                                promoMap[p.id] = p.preco;
+                            });
+                        }
+                        for(let i=0; i < produtos.length; i++) { 
+                            let isPromo = promoMap.hasOwnProperty(produtos[i].id);
+                            let displayPrice = isPromo ? promoMap[produtos[i].id] : produtos[i].preco;
+                    %>
                         <div class="col-6 col-md-4 col-lg-3" data-product
                             data-name="<%= produtos[i].nome.toLowerCase() %>"
-                            data-category="<%= produtos[i].categoria %>" data-price="<%= produtos[i].preco %>">
-                            <div class="product-card h-100">
-                                <% if(produtos[i].quantidade <= 0) { %>
+                            data-category="<%= produtos[i].categoria %>" data-price="<%= displayPrice %>">
+                            <div class="product-card h-100 <%= isPromo ? 'promo-card' : '' %>">
+                                <% if(isPromo) { %>
+                                    <span class="badge-discount promo-badge-fire"><i class="bi bi-fire me-1"></i>-15%</span>
+                                <% } else if(produtos[i].quantidade <= 0) { %>
                                     <span class="badge-discount" style="background:#666">Esgotado</span>
                                     <% } else if(produtos[i].quantidade <=10) { %>
                                         <span class="badge-discount"
@@ -131,9 +143,9 @@
                                                             <% } %>
                                                                 <div class="product-meta">
                                                                     <% if(produtos[i].validade && produtos[i].validade !== 'Produto sem validade') { %>
-                                                                        <span class="meta-item">
+                                                                        <span class="meta-item <%= isPromo ? 'validade-warn' : '' %>">
                                                                             <i class="bi bi-calendar3"></i>
-                                                                            <%= new Date(produtos[i].validade).toLocaleDateString('pt-BR') %>
+                                                                            <%= isPromo ? 'Vence: ' : '' %><%= new Date(produtos[i].validade).toLocaleDateString('pt-BR') %>
                                                                         </span>
                                                                         <% } %>
                                                                             <span class="stock-badge <%= produtos[i].quantidade <= 0 ? 'stock-out' : produtos[i].quantidade <= 10 ? 'stock-low' : 'stock-in' %>">
@@ -141,7 +153,7 @@
                                                                             </span>
                                                                 </div>
                                                                 <div class="price-row">
-                                                                    <span class="price-now">R$ <%= produtos[i].preco %></span>
+                                                                    <span class="price-now">R$ <%= displayPrice %></span>
                                                                 </div>
                                                                 <button class="btn-add" <% if(produtos[i].quantidade <= 0) {
                                                                     %>disabled style="opacity:.5;cursor:not-allowed"<% }
