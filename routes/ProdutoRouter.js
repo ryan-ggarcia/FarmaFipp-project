@@ -36,5 +36,6 @@ router.get('/cadastrar', ctrl.cadastrarView);
 router.post('/cadastrar', upload.single('img'), ctrl.cadastrar);
 router.get('/cadastrarLote', loteCtrl.CadastroLoteView);
 router.post('/cadastrarLote', loteCtrl.CadastroLote);
+router.get('/listar', ctrl.listar);
 
 module.exports = router;

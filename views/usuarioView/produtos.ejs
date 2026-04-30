@@ -1,3 +1,5 @@
+<script src="/js/produtos/cartService.js"></script>
+
 <link rel="stylesheet" href="/css/style-produtos.css" />
 <div class="page-header">
     <div class="container-xl">
@@ -11,9 +13,7 @@
                 </nav>
                 <div class="d-flex align-items-baseline gap-3">
                     <h1 class="page-title">Todos os Produtos</h1>
-                    <span class="result-count">
-                        <!-- result aqui -->
-                    </span>
+                    <span class="result-count" id="resultCount"><%= lista.length %> resultado<%= lista.length !== 1 ? 's' : '' %></span>
                 </div>
             </div>
             <button class="btn-filter-mobile" id="btnFilterMobile">
@@ -51,18 +51,16 @@
                 </div>
                 <div class="collapse show" id="catFilter">
                     <div class="filter-card-body">
-                        <div class="filter-check"><input type="checkbox" id="cat1" checked /><label for="cat1">Vitaminas
-                                & Minerais</label><span class="count">48</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat2" /><label
-                                for="cat2">Dermatologia</label><span class="count">36</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat3" /><label
-                                for="cat3">Suplementos</label><span class="count">29</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat4" /><label for="cat4">Higiene
-                                Pessoal</label><span class="count">54</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat5" /><label for="cat5">Bebê &
-                                Mamãe</label><span class="count">22</span></div>
-                        <div class="filter-check"><input type="checkbox" id="cat6" /><label for="cat6">Saúde
-                                Cardíaca</label><span class="count">17</span></div>
+                        <% if (categorias.length === 0) { %>
+                            <span class="text-muted small">Sem categorias cadastradas</span>
+                        <% } %>
+                        <% categorias.forEach((categoria, index) => { %>
+                            <div class="filter-check">
+                                <input type="checkbox" id="cat<%= index %>" data-filter-category="<%= categoria.nome %>" />
+                                <label for="cat<%= index %>"><%= categoria.nome %></label>
+                                <span class="count"><%= categoria.total %></span>
+                            </div>
+                        <% }) %>
                     </div>
                 </div>
             </div>
@@ -75,16 +73,10 @@
                 <div class="collapse show" id="priceFilter">
                     <div class="filter-card-body">
                         <div class="price-range-display">
-                            <span id="priceMin">R$ 0</span>
-                            <span id="priceMax">R$ 300</span>
+                            <span id="priceMin">R$ <%= faixaPreco.min %></span>
+                            <span id="priceMax">R$ <%= faixaPreco.max %></span>
                         </div>
-                        <input type="range" id="priceRange" min="0" max="300" value="300" step="5" />
-                        <div class="d-flex gap-2 mt-2">
-                            <input type="number" placeholder="Mín"
-                                style="width:50%;border:1.5px solid #eee;border-radius:8px;padding:.35rem .6rem;font-size:.8rem" />
-                            <input type="number" placeholder="Máx"
-                                style="width:50%;border:1.5px solid #eee;border-radius:8px;padding:.35rem .6rem;font-size:.8rem" />
-                        </div>
+                        <input type="range" id="priceRange" min="<%= faixaPreco.min %>" max="<%= faixaPreco.max %>" value="<%= faixaPreco.max %>" step="1" />
                     </div>
                 </div>
             </div>
@@ -96,33 +88,16 @@
                 </div>
                 <div class="collapse show" id="brandFilter">
                     <div class="filter-card-body">
-                        <div class="filter-check"><input type="checkbox" id="b1" /><label for="b1">VitaPlus</label><span
-                                class="count">21</span></div>
-                        <div class="filter-check"><input type="checkbox" id="b2" /><label
-                                for="b2">DermaClin</label><span class="count">14</span></div>
-                        <div class="filter-check"><input type="checkbox" id="b3" /><label
-                                for="b3">NaturVital</label><span class="count">18</span></div>
-                        <div class="filter-check"><input type="checkbox" id="b4" /><label for="b4">HelioVit</label><span
-                                class="count">9</span></div>
-                        <div class="filter-check"><input type="checkbox" id="b5" /><label for="b5">OmegaVit</label><span
-                                class="count">12</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-card">
-                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#ratingFilter">
-                    <span><i class="bi bi-star me-2 text-muted"></i>Avaliação</span>
-                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
-                </div>
-                <div class="collapse show" id="ratingFilter">
-                    <div class="filter-card-body">
-                        <div class="star-filter"><span class="stars">★★★★★</span> 5 estrelas <span
-                                class="count ms-auto">12</span></div>
-                        <div class="star-filter"><span class="stars">★★★★☆</span> 4+ estrelas <span
-                                class="count ms-auto">31</span></div>
-                        <div class="star-filter"><span class="stars">★★★☆☆</span> 3+ estrelas <span
-                                class="count ms-auto">48</span></div>
+                        <% if (marcas.length === 0) { %>
+                            <span class="text-muted small">Sem marcas cadastradas</span>
+                        <% } %>
+                        <% marcas.forEach((marca, index) => { %>
+                            <div class="filter-check">
+                                <input type="checkbox" id="brand<%= index %>" data-filter-brand="<%= marca.nome %>" />
+                                <label for="brand<%= index %>"><%= marca.nome %></label>
+                                <span class="count"><%= marca.total %></span>
+                            </div>
+                        <% }) %>
                     </div>
                 </div>
             </div>
@@ -133,10 +108,7 @@
         <!-- ÁREA DE PRODUTOS -->
         <div class="products-area">
 
-            <div class="active-filters">
-                <span class="filter-tag">Vitaminas <button>×</button></span>
-                <span class="filter-tag">Até R$ 300 <button>×</button></span>
-            </div>
+            <div class="active-filters" id="activeFilters"></div>
 
             <div class="products-toolbar">
                 <span class="toolbar-label">Ordenar por:</span>
@@ -149,7 +121,7 @@
                     <option>Melhor Avaliado</option>
                 </select>
                 <span class="toolbar-label ms-2">Exibir:</span>
-                <select class="toolbar-select" style="width:70px">
+                <select class="toolbar-select" id="itemsPerPage" style="width:70px">
                     <option>24</option>
                     <option>48</option>
                     <option>96</option>
@@ -160,7 +132,81 @@
                     <button class="view-btn" id="btnList" title="Lista"><i class="bi bi-list-ul"></i></button>
                 </div>
             </div>
-            <!-- parte de grid -->
+
+            <div class="row g-3 products-grid" id="productsGrid">
+                <% if (lista.length === 0) { %>
+                    <div class="col-12" id="emptyState">
+                        <div class="empty-state">
+                            <div class="icon"><i class="bi bi-box-seam"></i></div>
+                            <h5>Nenhum produto disponível</h5>
+                            <p>Não há produtos cadastrados no momento.</p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <% lista.forEach((produto) => { %>
+                    <div
+                        class="col-12 col-sm-6 col-lg-4 col-xl-3 product-col"
+                        data-product-name="<%= (produto.nome || '').toLowerCase() %>"
+                        data-product-category="<%= (produto.categoria || '').toLowerCase() %>"
+                        data-product-brand="<%= (produto.marca || '').toLowerCase() %>"
+                        data-product-price="<%= Number(produto.preco || 0) %>">
+                        <article class="product-card">
+                            <button class="wishlist-btn" type="button" aria-label="Adicionar aos favoritos">
+                                <i class="bi bi-heart"></i>
+                            </button>
+
+                            <div class="card-img-wrap">
+                                <img src="<%= produto.img %>" alt="<%= produto.nome %>" loading="lazy" />
+                            </div>
+
+                            <div class="card-body-inner">
+                                <span class="brand-tag"><%= produto.marca || 'Sem marca' %></span>
+                                <h3 class="prod-title"><%= produto.nome %></h3>
+
+                                <% if (produto.descricao) { %>
+                                    <p class="prod-description"><%= produto.descricao %></p>
+                                <% } %>
+
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <span class="prod-brand"><i class="bi bi-grid me-1"></i><%= produto.categoria || 'Sem categoria' %></span>
+                                    <span class="prod-brand"><i class="bi bi-boxes me-1"></i>Estoque: <%= produto.quantidade %></span>
+                                    <% if (produto.lote) { %>
+                                        <span class="prod-brand"><i class="bi bi-upc-scan me-1"></i>Lote: <%= produto.lote %></span>
+                                    <% } %>
+                                    <% if (produto.fornecedor) { %>
+                                        <span class="prod-brand"><i class="bi bi-building me-1"></i><%= produto.fornecedor %></span>
+                                    <% } %>
+                                </div>
+
+                                <div class="product-card-footer">
+                                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                                        <span class="product-price">R$ <%= Number(produto.preco).toFixed(2) %></span>
+                                        <% if (produto.validade) { %>
+                                            <small class="text-muted">Val: <%= new Date(produto.validade).toLocaleDateString('pt-BR') %></small>
+                                        <% } else { %>
+                                            <small class="text-muted">Val: --</small>
+                                        <% } %>
+                                    </div>
+
+                                    <button
+                                        class="btn-add-cart add-to-cart"
+                                        type="button"
+                                        data-id="<%= produto.id %>"
+                                        data-nome="<%= produto.nome %>"
+                                        data-preco="<%= Number(produto.preco || 0) %>"
+                                        data-quantidade="<%= Number(produto.quantidade || 0) %>"
+                                        data-descricao="<%= produto.descricao || '' %>"
+                                        data-imagem="<%= produto.img %>">
+                                        <i class="bi bi-bag-plus"></i> Adicionar ao carrinho
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                <% }) %>
+            </div>
+
             <nav class="mt-4 d-flex justify-content-center" aria-label="Paginação">
                 <ul class="pagination">
                     <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
@@ -178,9 +224,7 @@
     </div><!-- /.products-layout -->
 </div><!-- /.container-xl -->
 
-<%- include('../partials/footer') %>
-
-    <script>
+    <!-- <script>
         /* ── Sidebar mobile ── */
         const sidebar = document.getElementById('filtersSidebar');
         const backdrop = document.getElementById('sidebarBackdrop');
@@ -198,19 +242,31 @@
         const grid = document.getElementById('productsGrid');
         const btnGrid = document.getElementById('btnGrid');
         const btnList = document.getElementById('btnList');
+        const resultCount = document.getElementById('resultCount');
+        const emptyState = document.getElementById('emptyState');
 
-            btnGrid.addEventListener('click', () => {
+        const updateResultCount = () => {
+            const visible = [...document.querySelectorAll('.product-col')].filter(col => col.style.display !== 'none').length;
+            if (resultCount) {
+                resultCount.textContent = `${visible} resultado${visible !== 1 ? 's' : ''}`;
+            }
+            if (emptyState && document.querySelectorAll('.product-col').length > 0) {
+                emptyState.classList.toggle('d-none', visible > 0);
+            }
+        };
+
+            btnGrid?.addEventListener('click', () => {
                 grid.classList.remove('list-view');
                 btnGrid.classList.add('active'); btnList.classList.remove('active');
-            grid.querySelectorAll('[class*="col-"]').forEach(c => {
-                    c.className = c.className.replace(/col-xl-\d+/, 'col-xl-3');
+            grid.querySelectorAll('.product-col').forEach(c => {
+                    c.className = c.className.replace(/col-xl-\d+/, 'col-xl-3').replace(/col-lg-\d+/, 'col-lg-4');
                 });
             });
-            btnList.addEventListener('click', () => {
+            btnList?.addEventListener('click', () => {
                 grid.classList.add('list-view');
                 btnList.classList.add('active'); btnGrid.classList.remove('active');
-            grid.querySelectorAll('[class*="col-"]').forEach(c => {
-                if (!c.id) c.className = c.className.replace(/col-xl-\d+/, 'col-xl-12');
+            grid.querySelectorAll('.product-col').forEach(c => {
+                c.className = c.className.replace(/col-xl-\d+/, 'col-xl-12').replace(/col-lg-\d+/, 'col-lg-12');
                 });
             });
 
@@ -237,18 +293,70 @@
         /* ── Range de preço ── */
         const range = document.getElementById('priceRange');
         const priceMax = document.getElementById('priceMax');
-        range?.addEventListener('input', () => { priceMax.textContent = 'R$ ' + range.value; });
+
+        const categoryFilters = document.querySelectorAll('[data-filter-category]');
+        const brandFilters = document.querySelectorAll('[data-filter-brand]');
+        const clearFiltersButton = document.querySelector('.btn-clear-filters');
+
+        const applyFilters = () => {
+            const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
+            const selectedCategories = [...categoryFilters].filter(c => c.checked).map(c => c.dataset.filterCategory.toLowerCase());
+            const selectedBrands = [...brandFilters].filter(c => c.checked).map(c => c.dataset.filterBrand.toLowerCase());
+            const maxPrice = Number(range?.value || 0);
+
+            document.querySelectorAll('.product-col').forEach(col => {
+                const name = col.dataset.productName || '';
+                const category = col.dataset.productCategory || '';
+                const brand = col.dataset.productBrand || '';
+                const price = Number(col.dataset.productPrice || 0);
+
+                const matchesSearch = !term || name.includes(term) || category.includes(term) || brand.includes(term);
+                const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
+                const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(brand);
+                const matchesPrice = price <= maxPrice;
+
+                col.style.display = matchesSearch && matchesCategory && matchesBrand && matchesPrice ? '' : 'none';
+            });
+
+            const activeFilterTags = document.getElementById('activeFilters');
+            if (activeFilterTags) {
+                const tags = [
+                    ...selectedCategories.map(item => `<span class="filter-tag">${item}</span>`),
+                    ...selectedBrands.map(item => `<span class="filter-tag">${item}</span>`),
+                    `<span class="filter-tag">Até R$ ${maxPrice}</span>`
+                ];
+                activeFilterTags.innerHTML = tags.join('');
+            }
+
+            updateResultCount();
+        };
+
+        range?.addEventListener('input', () => {
+            priceMax.textContent = 'R$ ' + range.value;
+            applyFilters();
+        });
+
+        categoryFilters.forEach(filter => filter.addEventListener('change', applyFilters));
+        brandFilters.forEach(filter => filter.addEventListener('change', applyFilters));
+
+        clearFiltersButton?.addEventListener('click', () => {
+            categoryFilters.forEach(filter => { filter.checked = false; });
+            brandFilters.forEach(filter => { filter.checked = false; });
+            if (range) {
+                range.value = range.max;
+                priceMax.textContent = 'R$ ' + range.max;
+            }
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            applyFilters();
+        });
 
         /* ── Busca client-side ── */
         document.getElementById('searchInput')?.addEventListener('input', function () {
-            const term = this.value.toLowerCase();
-            const cards = document.querySelectorAll('#productsGrid > [class*="col-"]:not(#emptyState)');
-            let visible = 0;
-            cards.forEach(col => {
-                const show = col.querySelector('.prod-title')?.textContent.toLowerCase().includes(term);
-                col.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-            document.getElementById('emptyState').classList.toggle('d-none', visible > 0);
+            applyFilters();
         });
-    </script>
+
+        applyFilters();
+    </script> -->

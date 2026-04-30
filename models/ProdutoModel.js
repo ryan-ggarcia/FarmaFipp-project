@@ -105,6 +105,19 @@ class ProdutoModel{
         return lista
     }
 
+    async Update(){
+        let sql = "update produto set pro_nome = ?, descricao = ?, pro_preco = ?, pro_quantidade = ?, Categoria_Produto = ?, marca = ?, idFornecedor = ? where idProduto = ?";
+        let values = [this.#nome, this.#descricao, this.#preco, this.#quantidade, this.#categoria, this.#marca,  this.#fornecedor, this.#id];
+
+        const banco = new Database();
+
+        return result = await banco.ExecutaComando(sql, values);
+    }
+
+    async Delete(){
+        
+    }
+
 }
 
 module.exports = ProdutoModel;

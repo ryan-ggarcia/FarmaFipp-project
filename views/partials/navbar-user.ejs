@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-lg site-navbar py-2">
     <div class="container">
 
-        <a class="navbar-brand me-4" href="/usuarioView/home">Farma<span>fipp</span></a>
+        <a class="navbar-brand me-4" href="/usuario">Farma<span>fipp</span></a>
 
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
             data-bs-target="#mainNav">
@@ -11,8 +11,8 @@
 
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto gap-1">
-                <li class="nav-item"><a class="nav-link active" href="/usuarioView/home">Início</a></li>
-                <li class="nav-item"><a class="nav-link" href="/usuarioView/produtos">Produtos</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/usuario">Início</a></li>
+                <li class="nav-item"><a class="nav-link" href="/usuario/produtos">Produtos</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categorias</a>
                     <ul class="dropdown-menu border-0 shadow-sm">
@@ -32,12 +32,13 @@
                     <input type="text" placeholder="Buscar produto…" />
                 </div>
                 <a href="/conta" class="text-muted fs-5" title="Minha Conta"><i class="bi bi-person-circle"></i></a>
-                <button class="btn-cart position-relative">
+                <a href="/usuario/carrinho" class="btn-cart position-relative">
                     <i class="bi bi-bag me-1"></i> Carrinho
                     <span
+                        id="cartBadgeCount"
                         class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
-                        style="font-size:.65rem">3</span>
-                </button>
+                        style="font-size:.65rem">0</span>
+                </a>
             </div>
         </div>
 

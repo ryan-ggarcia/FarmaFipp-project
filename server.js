@@ -22,7 +22,7 @@ server.use(express.static(__dirname + "/public"));
 server.use(express.urlencoded({extended:true}));
 server.use(express.json());
 server.use("/", homeRouter);
-server.use("/usuarioView",usuarioRouter)
+server.use("/usuario",usuarioRouter)
 server.use("/servicos", ServicoRouter);
 server.use("/clientes", ClienteRouter);
 server.use("/fornecedores", FornecedorRouter);
