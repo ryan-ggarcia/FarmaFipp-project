@@ -165,6 +165,7 @@
                   <div class="acoes-wrap">
                     <button data-id="<%= lista[i].id%>" class="btn btn-sm btn-action btn-delete btnExcluir"
                       title="Excluir"><i class="fas fa-trash"></i></button>
+                      <a href="/produtos/alterar/<%= lista[i].id %>" class="btn btn-sm btn-action btn-edit" title="Alterar"><i class="fas fa-edit"></i></a>
                   </div>
                 </td>
               </tr>
@@ -192,3 +193,4 @@
 </div>
 
 <script src="/js/produtos/listar.js"></script>
+<script src="/js/produtos/deletar.js"></script>

@@ -1,5 +1,5 @@
 const Database = require('../utils/database')
-
+const fs = require('fs')
 class ProdutoModel{
 
     #id
@@ -75,7 +75,8 @@ class ProdutoModel{
                     LEFT JOIN categoria c ON p.Categoria_Produto = c.idCategoria
                     left join produto_lote pl on p.idProduto = pl.produto_idProduto
                     left join Lote l on pl.lote_lot_id = l.lot_id
-                    left join fornecedor f on p.idFornecedor = f.idFornecedor`;
+                    left join fornecedor f on p.idFornecedor = f.idFornecedor
+                    where coalesce(p.prod_status, 'Ativo') = 'Ativo'`;
         const banco = new Database()
         let result = await banco.ExecutaComando(sql)
         let lista = []
@@ -105,17 +106,70 @@ class ProdutoModel{
         return lista
     }
 
+    async Get(id){
+        const sql = "select * from produto where idProduto = ? and coalesce(prod_status, 'Ativo') = 'Ativo'";
+
+        let values = [id];
+        const banco = new Database();
+
+        let rows = await banco.ExecutaComando(sql, values);
+
+        if(rows.length > 0){
+            const caminhoImgAbs = global.CAMINHO_IMG_ABS || 'public/img/produtos/';
+            const caminhoImgNavegador = global.CAMINHO_IMG_NAVEGADOR || '/img/produtos/';
+            let img = ""
+            let produto = null;
+
+            rows.forEach(row =>{
+                if(row.pro_img != null && fs.existsSync(caminhoImgAbs + row.pro_img)){
+                    img = caminhoImgNavegador + row.pro_img
+                }
+                else{
+                    img = '/img/produtos/barra-de-imagem.png'
+                }
+
+                produto = new ProdutoModel(
+                    row.idProduto,
+                    row.pro_nome,
+                    row.descricao,
+                    row.pro_validade,
+                    row.pro_preco,
+                    row.pro_quantidade,
+                    row.Categoria_Produto,
+                    row.idFornecedor,
+                    row.marca,
+                    null,
+                    img
+                )
+            })
+            return produto;
+        }
+
+        return false;
+    }
+
     async Update(){
-        let sql = "update produto set pro_nome = ?, descricao = ?, pro_preco = ?, pro_quantidade = ?, Categoria_Produto = ?, marca = ?, idFornecedor = ? where idProduto = ?";
-        let values = [this.#nome, this.#descricao, this.#preco, this.#quantidade, this.#categoria, this.#marca,  this.#fornecedor, this.#id];
+        let sql = "update produto set pro_nome = ?, descricao = ?, pro_preco = ?, pro_quantidade = ?, Categoria_Produto = ?, marca = ?, idFornecedor = ?";
+        let values = [this.#nome, this.#descricao, this.#preco, this.#quantidade, this.#categoria, this.#marca, this.#fornecedor];
+
+        if(this.#img != null && this.#img !== ""){
+            sql += ", pro_img = ?";
+            values.push(this.#img);
+        }
+
+        sql += " where idProduto = ?";
+        values.push(this.#id);
 
         const banco = new Database();
 
-        return result = await banco.ExecutaComando(sql, values);
+        return await banco.ExecutaComando(sql, values);
     }
 
-    async Delete(){
-        
+    async Delete(id){
+        let sql = "update produto set prod_status = 'Inativo' where idProduto = ?";
+        let values = [id];
+        const banco = new Database();
+        return await banco.ExecutaComando(sql, values);
     }
 
 }

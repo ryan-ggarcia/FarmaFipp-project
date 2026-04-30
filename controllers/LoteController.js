@@ -25,11 +25,11 @@ class LoteController {
         }
 
         const qtdNum = parseInt(quantidade, 10);
-        if (isNaN(qtdNum) || qtdNum < 0) {
-            return res.send({ ok: false, msg: 'A quantidade não pode ser negativa!' });
+        if (isNaN(qtdNum) || qtdNum <= 0) {
+            return res.send({ ok: false, msg: 'A quantidade deve ser maior que zero!' });
         }
 
-        if (validade < new Date().toISOString().split('T')[0]) {
+        if (validade <= new Date().toISOString().split('T')[0]) {
             return res.send({ ok: false, msg: 'A validade deve ser uma data futura!' });
         }
 

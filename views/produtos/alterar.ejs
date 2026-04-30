@@ -1,0 +1,104 @@
+
+<script src="/js/produtos/alterar.js"></script>
+
+<%
+  const produtoAtual = typeof produto !== 'undefined' && produto
+    ? produto
+    : (typeof produtoAlter !== 'undefined' ? produtoAlter : {});
+
+  const listaCategoriasView = typeof categorias !== 'undefined' && categorias
+    ? categorias
+    : (typeof listaCategorias !== 'undefined' ? listaCategorias : []);
+
+  const listaFornecedoresView = typeof fornecedores !== 'undefined' && fornecedores
+    ? fornecedores
+    : (typeof listaFornecedores !== 'undefined' ? listaFornecedores : []);
+
+  const produtoId = produtoAtual.id || produtoAtual.produtoId || '';
+  const produtoNome = produtoAtual.nome || produtoAtual.produtoNome || '';
+  const produtoDescricao = produtoAtual.descricao || produtoAtual.produtoDescricao || '';
+  const produtoPreco = produtoAtual.preco || produtoAtual.produtoValor || '';
+  const produtoQuantidade = produtoAtual.quantidade || produtoAtual.produtoQuantidade || 0;
+  const produtoMarca = produtoAtual.marca || produtoAtual.marcaNome || '';
+  const produtoCategoria = produtoAtual.categoria || produtoAtual.categoriaId || '';
+  const produtoFornecedor = produtoAtual.fornecedor || produtoAtual.fornecedorId || '';
+  const produtoImagem = produtoAtual.img || produtoAtual.produtoImagem || '/img/produtos/barra-de-imagem.png';
+%>
+
+<div>
+  <h1>Alterar Produto</h1>
+</div>
+
+<div>
+  <form>
+    <input type="hidden" id="id" value="<%= produtoId %>">
+
+    <div class="form-group">
+      <label for="nome">Nome</label>
+      <input type="text" value="<%= produtoNome %>" class="form-control" id="nome">
+    </div>
+
+    <div class="form-group">
+      <label for="descricao">Descricao</label>
+      <textarea class="form-control" id="descricao" rows="3"><%= produtoDescricao %></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="preco">Preco</label>
+      <input value="<%= produtoPreco %>" type="number" step="0.01" min="0.01" class="form-control" id="preco">
+    </div>
+
+    <div class="form-group">
+      <label for="quantidade">Quantidade</label>
+      <input type="number" value="<%= produtoQuantidade %>" min="0" class="form-control" id="quantidade">
+    </div>
+
+    <div class="form-group">
+      <label for="marca">Marca</label>
+      <input type="text" value="<%= produtoMarca %>" class="form-control" id="marca">
+    </div>
+
+    <div class="form-group">
+      <label for="categoria">Categoria</label>
+      <select class="form-control" id="categoria">
+        <option value="">Selecione uma categoria</option>
+        <% for (let i = 0; i < listaCategoriasView.length; i++) { %>
+          <% const categoriaId = listaCategoriasView[i].idCategoria || listaCategoriasView[i].categoriaId; %>
+          <% const categoriaNome = listaCategoriasView[i].cat_nome || listaCategoriasView[i].categoriaNome; %>
+          <option value="<%= categoriaId %>" <%= String(categoriaId) === String(produtoCategoria) ? 'selected' : '' %>>
+            <%= categoriaNome %>
+          </option>
+        <% } %>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="fornecedor">Fornecedor</label>
+      <select class="form-control" id="fornecedor">
+        <option value="">Selecione um fornecedor</option>
+        <% for (let i = 0; i < listaFornecedoresView.length; i++) { %>
+          <% const fornecedorId = listaFornecedoresView[i].id || listaFornecedoresView[i].idFornecedor || listaFornecedoresView[i].fornecedorId; %>
+          <% const fornecedorNome = listaFornecedoresView[i].nome || listaFornecedoresView[i].forn_nome || listaFornecedoresView[i].fornecedorNome; %>
+          <option value="<%= fornecedorId %>" <%= String(fornecedorId) === String(produtoFornecedor) ? 'selected' : '' %>>
+            <%= fornecedorNome %>
+          </option>
+        <% } %>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="img">Imagem</label>
+      <input type="file" class="form-control" id="img" accept="image/jpeg,image/png,image/webp">
+    </div>
+
+    <div class="form-group" id="divPrevia">
+      <label>Previa da Imagem:</label>
+      <img src="<%= produtoImagem %>" id="previaImg" width="200">
+    </div>
+
+    <div>
+      <button class="btn btn-primary" type="button" id="btnAlterar">Alterar</button>
+      <a href="/produtos" class="btn btn-default">Voltar</a>
+    </div>
+  </form>
+</div>

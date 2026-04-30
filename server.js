@@ -28,7 +28,8 @@ server.use("/clientes", ClienteRouter);
 server.use("/fornecedores", FornecedorRouter);
 server.use("/produtos", ProdutoRouter);
 
-    
+global.CAMINHO_IMG_ABS = __dirname + "/public/img/produtos/";  
+global.CAMINHO_IMG_NAVEGADOR = "/img/produtos/";  
 
 
 server.listen(5000, function(){
