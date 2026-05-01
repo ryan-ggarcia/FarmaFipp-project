@@ -1,43 +1,19 @@
-<!-- ════════════════════════════════
-     PAGE: PRODUTOS – USER VIEW
-════════════════════════════════ -->
-<link rel="stylesheet" href="/css/style-produtos-user.css">
+<script src="/js/produtos/cartService.js"></script>
 
-<!-- Hero Banner -->
-<div class="produtos-hero">
-    <div class="container position-relative" style="z-index:2">
-        <span class="hero-badge"><i class="bi bi-bag-heart me-1"></i> Nosso Catálogo</span>
-        <h1>Nossos Produtos</h1>
-        <p>Encontre medicamentos, suplementos, dermocosméticos e muito mais com os melhores preços.</p>
-    </div>
-</div>
-
-<!-- Tabs + Filter Bar -->
-<div class="container">
-    <div class="filter-bar">
-        <!-- Tabs -->
-        <div class="produto-tabs mb-3">
-            <button class="produto-tab active" data-tab="todos" onclick="switchTab('todos')">
-                <i class="bi bi-grid me-1"></i> Todos
-            </button>
-            <button class="produto-tab" data-tab="promocao" onclick="switchTab('promocao')">
-                <i class="bi bi-tag-fill me-1"></i> Promoção
-                <% if(produtosPromocao && produtosPromocao.length> 0) { %>
-                    <span class="tab-count">
-                        <%= produtosPromocao.length %>
-                    </span>
-                    <% } %>
-            </button>
-        </div>
-
-        <!-- Filters -->
-        <div class="row g-2 align-items-center">
-            <div class="col-md-5">
-                <div class="position-relative">
-                    <i class="bi bi-search position-absolute"
-                        style="left:1rem;top:50%;transform:translateY(-50%);color:#aaa;font-size:.85rem"></i>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar produtos..."
-                        style="padding-left:2.5rem" onkeyup="filterProducts()">
+<link rel="stylesheet" href="/css/style-produtos.css" />
+<div class="page-header">
+    <div class="container-xl">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Início</a></li>
+                        <li class="breadcrumb-item active">Produtos</li>
+                    </ol>
+                </nav>
+                <div class="d-flex align-items-baseline gap-3">
+                    <h1 class="page-title">Todos os Produtos</h1>
+                    <span class="result-count" id="resultCount"><%= lista.length %> resultado<%= lista.length !== 1 ? 's' : '' %></span>
                 </div>
             </div>
             <div class="col-md-3">
@@ -127,51 +103,39 @@
                                                         <% } %>
                                             </div>
 
-                                            <div class="card-body">
-                                                <% if(produtos[i].marca && produtos[i].marca !== 'Marca não disponível') { %>
-                                                    <div class="brand-tag">
-                                                        <%= produtos[i].marca %>
-                                                    </div>
-                                                    <% } %>
-                                                        <div class="prod-title">
-                                                            <%= produtos[i].nome %>
-                                                        </div>
-                                                        <% if(produtos[i].descricao && produtos[i].descricao !== 'Descrição não disponível') { %>
-                                                            <div class="product-desc">
-                                                                <%= produtos[i].descricao %>
-                                                            </div>
-                                                            <% } %>
-                                                                <div class="product-meta">
-                                                                    <% if(produtos[i].validade && produtos[i].validade !== 'Produto sem validade') { %>
-                                                                        <span class="meta-item <%= isPromo ? 'validade-warn' : '' %>">
-                                                                            <i class="bi bi-calendar3"></i>
-                                                                            <%= isPromo ? 'Vence: ' : '' %><%= new Date(produtos[i].validade).toLocaleDateString('pt-BR') %>
-                                                                        </span>
-                                                                        <% } %>
-                                                                            <span class="stock-badge <%= produtos[i].quantidade <= 0 ? 'stock-out' : produtos[i].quantidade <= 10 ? 'stock-low' : 'stock-in' %>">
-                                                                                <%= produtos[i].quantidade <= 0 ? 'Esgotado' : produtos[i].quantidade <= 10 ? 'Últimas unid.' : 'Em estoque' %>
-                                                                            </span>
-                                                                </div>
-                                                                <div class="price-row">
-                                                                    <span class="price-now">R$ <%= displayPrice %></span>
-                                                                </div>
-                                                                <button class="btn-add" <% if(produtos[i].quantidade <= 0) {
-                                                                    %>disabled style="opacity:.5;cursor:not-allowed"<% }
-                                                                        %>>
-                                                                        <i class="bi bi-bag-plus me-1"></i>
-                                                                        <%= produtos[i].quantidade > 0 ? 'Adicionar'
-                                                                            : 'Indisponível' %>
-                                                                </button>
-                                            </div>
-                            </div>
-                        </div>
+            <div class="filter-card">
+                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#catFilter">
+                    <span><i class="bi bi-grid-3x3-gap me-2 text-muted"></i>Categorias</span>
+                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
+                </div>
+                <div class="collapse show" id="catFilter">
+                    <div class="filter-card-body">
+                        <% if (categorias.length === 0) { %>
+                            <span class="text-muted small">Sem categorias cadastradas</span>
                         <% } %>
+                        <% categorias.forEach((categoria, index) => { %>
+                            <div class="filter-check">
+                                <input type="checkbox" id="cat<%= index %>" data-filter-category="<%= categoria.nome %>" />
+                                <label for="cat<%= index %>"><%= categoria.nome %></label>
+                                <span class="count"><%= categoria.total %></span>
+                            </div>
+                        <% }) %>
+                    </div>
                 </div>
 
-                <div id="noFilterResults" class="empty-state" style="display:none">
-                    <i class="bi bi-search"></i>
-                    <h4>Nenhum resultado encontrado</h4>
-                    <p>Tente buscar com outros termos ou limpar os filtros.</p>
+            <div class="filter-card">
+                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#priceFilter">
+                    <span><i class="bi bi-tag me-2 text-muted"></i>Faixa de Preço</span>
+                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
+                </div>
+                <div class="collapse show" id="priceFilter">
+                    <div class="filter-card-body">
+                        <div class="price-range-display">
+                            <span id="priceMin">R$ <%= faixaPreco.min %></span>
+                            <span id="priceMax">R$ <%= faixaPreco.max %></span>
+                        </div>
+                        <input type="range" id="priceRange" min="<%= faixaPreco.min %>" max="<%= faixaPreco.max %>" value="<%= faixaPreco.max %>" step="1" />
+                    </div>
                 </div>
                 <% } %>
     </div>
@@ -188,21 +152,20 @@
                 <div class="promo-alert-icon">
                     <i class="bi bi-clock-history"></i>
                 </div>
-                <div>
-                    <h5 class="mb-1">Produtos em Promoção</h5>
-                    <p class="mb-0">Estes produtos estão com validade próxima (até 90 dias) e por isso têm preços
-                        especiais. Aproveite!</p>
+                <div class="collapse show" id="brandFilter">
+                    <div class="filter-card-body">
+                        <% if (marcas.length === 0) { %>
+                            <span class="text-muted small">Sem marcas cadastradas</span>
+                        <% } %>
+                        <% marcas.forEach((marca, index) => { %>
+                            <div class="filter-check">
+                                <input type="checkbox" id="brand<%= index %>" data-filter-brand="<%= marca.nome %>" />
+                                <label for="brand<%= index %>"><%= marca.nome %></label>
+                                <span class="count"><%= marca.total %></span>
+                            </div>
+                        <% }) %>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="products-count">
-                <% if(produtosPromocao && produtosPromocao.length> 0) { %>
-                    <span>
-                        <%= produtosPromocao.length %>
-                    </span> produto(s) em promoção
-                    <% } %>
             </div>
         </div>
 
@@ -230,55 +193,255 @@
                                     <i class="bi bi-heart"></i>
                                 </button>
 
-                                <div class="img-wrap">
-                                    <% if(produtosPromocao[i].img && produtosPromocao[i].img !== 'Imagem não disponível') { %>
-                                        <img src="<%= produtosPromocao[i].img %>" alt="<%= produtosPromocao[i].nome %>"
-                                            class="product-db-img" />
-                                        <% } else { %>
-                                            <i class="bi bi-capsule" style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
-                                            <% } %>
+            <div class="active-filters" id="activeFilters"></div>
+
+            <div class="products-toolbar">
+                <span class="toolbar-label">Ordenar por:</span>
+                <select class="toolbar-select">
+                    <option>Relevância</option>
+                    <option>Menor Preço</option>
+                    <option>Maior Preço</option>
+                    <option>Mais Vendidos</option>
+                    <option>Novidades</option>
+                    <option>Melhor Avaliado</option>
+                </select>
+                <span class="toolbar-label ms-2">Exibir:</span>
+                <select class="toolbar-select" id="itemsPerPage" style="width:70px">
+                    <option>24</option>
+                    <option>48</option>
+                    <option>96</option>
+                </select>
+                <div class="view-toggle ms-auto">
+                    <button class="view-btn active" id="btnGrid" title="Grade"><i
+                            class="bi bi-grid-3x3-gap-fill"></i></button>
+                    <button class="view-btn" id="btnList" title="Lista"><i class="bi bi-list-ul"></i></button>
+                </div>
+            </div>
+
+            <div class="row g-3 products-grid" id="productsGrid">
+                <% if (lista.length === 0) { %>
+                    <div class="col-12" id="emptyState">
+                        <div class="empty-state">
+                            <div class="icon"><i class="bi bi-box-seam"></i></div>
+                            <h5>Nenhum produto disponível</h5>
+                            <p>Não há produtos cadastrados no momento.</p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <% lista.forEach((produto) => { %>
+                    <div
+                        class="col-12 col-sm-6 col-lg-4 col-xl-3 product-col"
+                        data-product-name="<%= (produto.nome || '').toLowerCase() %>"
+                        data-product-category="<%= (produto.categoria || '').toLowerCase() %>"
+                        data-product-brand="<%= (produto.marca || '').toLowerCase() %>"
+                        data-product-price="<%= Number(produto.preco || 0) %>">
+                        <article class="product-card">
+                            <button class="wishlist-btn" type="button" aria-label="Adicionar aos favoritos">
+                                <i class="bi bi-heart"></i>
+                            </button>
+
+                            <div class="card-img-wrap">
+                                <img src="<%= produto.img %>" alt="<%= produto.nome %>" loading="lazy" />
+                            </div>
+
+                            <div class="card-body-inner">
+                                <span class="brand-tag"><%= produto.marca || 'Sem marca' %></span>
+                                <h3 class="prod-title"><%= produto.nome %></h3>
+
+                                <% if (produto.descricao) { %>
+                                    <p class="prod-description"><%= produto.descricao %></p>
+                                <% } %>
+
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <span class="prod-brand"><i class="bi bi-grid me-1"></i><%= produto.categoria || 'Sem categoria' %></span>
+                                    <span class="prod-brand"><i class="bi bi-boxes me-1"></i>Estoque: <%= produto.quantidade %></span>
+                                    <% if (produto.lote) { %>
+                                        <span class="prod-brand"><i class="bi bi-upc-scan me-1"></i>Lote: <%= produto.lote %></span>
+                                    <% } %>
+                                    <% if (produto.fornecedor) { %>
+                                        <span class="prod-brand"><i class="bi bi-building me-1"></i><%= produto.fornecedor %></span>
+                                    <% } %>
                                 </div>
 
-                                <div class="card-body">
-                                    <% if(produtosPromocao[i].marca && produtosPromocao[i].marca !== 'Marca não disponível') { %>
-                                        <div class="brand-tag">
-                                            <%= produtosPromocao[i].marca %>
-                                        </div>
+                                <div class="product-card-footer">
+                                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                                        <span class="product-price">R$ <%= Number(produto.preco).toFixed(2) %></span>
+                                        <% if (produto.validade) { %>
+                                            <small class="text-muted">Val: <%= new Date(produto.validade).toLocaleDateString('pt-BR') %></small>
+                                        <% } else { %>
+                                            <small class="text-muted">Val: --</small>
                                         <% } %>
-                                            <div class="prod-title">
-                                                <%= produtosPromocao[i].nome %>
-                                            </div>
-                                            <% if(produtosPromocao[i].descricao && produtosPromocao[i].descricao !== 'Descrição não disponível') { %>
-                                                <div class="product-desc">
-                                                    <%= produtosPromocao[i].descricao %>
-                                                </div>
-                                                <% } %>
-                                                    <div class="product-meta">
-                                                        <% if(produtosPromocao[i].validade && produtosPromocao[i].validade !== 'Produto sem validade') { %>
-                                                            <span class="meta-item validade-warn">
-                                                                <i class="bi bi-calendar3"></i> Vence: <%= new Date(produtosPromocao[i].validade).toLocaleDateString('pt-BR') %>
-                                                            </span>
-                                                            <% } %>
-                                                            <span class="stock-badge <%= produtosPromocao[i].quantidade <= 0 ? 'stock-out' : produtosPromocao[i].quantidade <= 10 ? 'stock-low' : 'stock-in' %>">
-                                                                <%= produtosPromocao[i].quantidade <= 0 ? 'Esgotado' : produtosPromocao[i].quantidade <= 10 ? 'Últimas unid.' : 'Em estoque' %>
-                                                            </span>
-                                                    </div>
-                                                    <div class="price-row">
-                                                        <span class="price-now">R$ <%= produtosPromocao[i].preco %></span>
-                                                    </div>
-                                                    <button class="btn-add" <% if(produtosPromocao[i].quantidade <= 0) {
-                                                        %>disabled style="opacity:.5;cursor:not-allowed"<% } %>>
-                                                            <i class="bi bi-bag-plus me-1"></i>
-                                                            <%= produtosPromocao[i].quantidade > 0 ? 'Adicionar'
-                                                                : 'Indisponível' %>
-                                                    </button>
+                                    </div>
+
+                                    <button
+                                        class="btn-add-cart add-to-cart"
+                                        type="button"
+                                        data-id="<%= produto.id %>"
+                                        data-nome="<%= produto.nome %>"
+                                        data-preco="<%= Number(produto.preco || 0) %>"
+                                        data-quantidade="<%= Number(produto.quantidade || 0) %>"
+                                        data-descricao="<%= produto.descricao || '' %>"
+                                        data-imagem="<%= produto.img %>">
+                                        <i class="bi bi-bag-plus"></i> Adicionar ao carrinho
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                        <% } %>
-                </div>
-                <% } %>
-    </div>
-</section>
+                        </article>
+                    </div>
+                <% }) %>
+            </div>
 
-<script src="/js/produtos-user.js"></script>
+            <nav class="mt-4 d-flex justify-content-center" aria-label="Paginação">
+                <ul class="pagination">
+                    <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">…</a></li>
+                    <li class="page-item"><a class="page-link" href="#">8</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+                </ul>
+            </nav>
+
+        </div><!-- /.products-area -->
+    </div><!-- /.products-layout -->
+</div><!-- /.container-xl -->
+
+    <!-- <script>
+        /* ── Sidebar mobile ── */
+        const sidebar = document.getElementById('filtersSidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+        const btnOpen = document.getElementById('btnFilterMobile');
+        const btnClose = document.getElementById('btnCloseSidebar');
+
+        const openSidebar = () => { sidebar.classList.add('open'); backdrop.classList.add('show'); };
+        const closeSidebar = () => { sidebar.classList.remove('open'); backdrop.classList.remove('show'); };
+
+        btnOpen?.addEventListener('click', openSidebar);
+        btnClose?.addEventListener('click', closeSidebar);
+        backdrop?.addEventListener('click', closeSidebar);
+
+        /* ── Grade / Lista ── */
+        const grid = document.getElementById('productsGrid');
+        const btnGrid = document.getElementById('btnGrid');
+        const btnList = document.getElementById('btnList');
+        const resultCount = document.getElementById('resultCount');
+        const emptyState = document.getElementById('emptyState');
+
+        const updateResultCount = () => {
+            const visible = [...document.querySelectorAll('.product-col')].filter(col => col.style.display !== 'none').length;
+            if (resultCount) {
+                resultCount.textContent = `${visible} resultado${visible !== 1 ? 's' : ''}`;
+            }
+            if (emptyState && document.querySelectorAll('.product-col').length > 0) {
+                emptyState.classList.toggle('d-none', visible > 0);
+            }
+        };
+
+            btnGrid?.addEventListener('click', () => {
+                grid.classList.remove('list-view');
+                btnGrid.classList.add('active'); btnList.classList.remove('active');
+            grid.querySelectorAll('.product-col').forEach(c => {
+                    c.className = c.className.replace(/col-xl-\d+/, 'col-xl-3').replace(/col-lg-\d+/, 'col-lg-4');
+                });
+            });
+            btnList?.addEventListener('click', () => {
+                grid.classList.add('list-view');
+                btnList.classList.add('active'); btnGrid.classList.remove('active');
+            grid.querySelectorAll('.product-col').forEach(c => {
+                c.className = c.className.replace(/col-xl-\d+/, 'col-xl-12').replace(/col-lg-\d+/, 'col-lg-12');
+                });
+            });
+
+        /* ── Wishlist ── */
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const ico = this.querySelector('i');
+                ico.classList.toggle('bi-heart');
+                ico.classList.toggle('bi-heart-fill');
+                this.classList.toggle('active');
+            });
+        });
+
+        /* ── Carrinho ── */
+        document.querySelectorAll('.btn-add-cart').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const orig = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-check-circle"></i> Adicionado!';
+                this.classList.add('added'); this.disabled = true;
+                setTimeout(() => { this.innerHTML = orig; this.classList.remove('added'); this.disabled = false; }, 1800);
+            });
+        });
+
+        /* ── Range de preço ── */
+        const range = document.getElementById('priceRange');
+        const priceMax = document.getElementById('priceMax');
+
+        const categoryFilters = document.querySelectorAll('[data-filter-category]');
+        const brandFilters = document.querySelectorAll('[data-filter-brand]');
+        const clearFiltersButton = document.querySelector('.btn-clear-filters');
+
+        const applyFilters = () => {
+            const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
+            const selectedCategories = [...categoryFilters].filter(c => c.checked).map(c => c.dataset.filterCategory.toLowerCase());
+            const selectedBrands = [...brandFilters].filter(c => c.checked).map(c => c.dataset.filterBrand.toLowerCase());
+            const maxPrice = Number(range?.value || 0);
+
+            document.querySelectorAll('.product-col').forEach(col => {
+                const name = col.dataset.productName || '';
+                const category = col.dataset.productCategory || '';
+                const brand = col.dataset.productBrand || '';
+                const price = Number(col.dataset.productPrice || 0);
+
+                const matchesSearch = !term || name.includes(term) || category.includes(term) || brand.includes(term);
+                const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
+                const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(brand);
+                const matchesPrice = price <= maxPrice;
+
+                col.style.display = matchesSearch && matchesCategory && matchesBrand && matchesPrice ? '' : 'none';
+            });
+
+            const activeFilterTags = document.getElementById('activeFilters');
+            if (activeFilterTags) {
+                const tags = [
+                    ...selectedCategories.map(item => `<span class="filter-tag">${item}</span>`),
+                    ...selectedBrands.map(item => `<span class="filter-tag">${item}</span>`),
+                    `<span class="filter-tag">Até R$ ${maxPrice}</span>`
+                ];
+                activeFilterTags.innerHTML = tags.join('');
+            }
+
+            updateResultCount();
+        };
+
+        range?.addEventListener('input', () => {
+            priceMax.textContent = 'R$ ' + range.value;
+            applyFilters();
+        });
+
+        categoryFilters.forEach(filter => filter.addEventListener('change', applyFilters));
+        brandFilters.forEach(filter => filter.addEventListener('change', applyFilters));
+
+        clearFiltersButton?.addEventListener('click', () => {
+            categoryFilters.forEach(filter => { filter.checked = false; });
+            brandFilters.forEach(filter => { filter.checked = false; });
+            if (range) {
+                range.value = range.max;
+                priceMax.textContent = 'R$ ' + range.max;
+            }
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            applyFilters();
+        });
+
+        /* ── Busca client-side ── */
+        document.getElementById('searchInput')?.addEventListener('input', function () {
+            applyFilters();
+        });
+
+        applyFilters();
+    </script> -->

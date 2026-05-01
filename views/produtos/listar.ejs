@@ -1,0 +1,196 @@
+
+<link rel="stylesheet" href="/css/style-listProduto.css">
+<div class="p-3 p-1-25">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <h3 class="mb-0">Produtos cadastrados</h3>
+      <small class="text-muted">Gerencie os produtos registrados no sistema</small>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar produto..." />
+      </div>
+      <a class="btn btn-primary custom btn-rounded" href="/produtos/cadastrarLote"><i class="fas fa-plus me-2"></i>
+        Cadastrar Novo Lote</a>
+      <a class="btn btn-primary custom btn-rounded" href="/produtos/cadastrar"><i class="fas fa-plus me-2"></i>
+        Cadastrar Produtos</a>
+    </div>
+  </div>
+
+  <!-- Stats cards -->
+  <div class="stats-row mb-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-blue"><i class="fas fa-boxes"></i></div>
+      <div>
+        <div class="stat-number"><%= lista.length %></div>
+        <div class="stat-label">Total de Produtos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-saas no-hover">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle table-produtos" id="tabelaProdutos">
+          <thead class="table-light">
+            <tr>
+              <th class="th-id">ID</th>
+              <th class="th-img">Imagem</th>
+              <th class="th-nome">Nome</th>
+              <th class="th-preco">Preço</th>
+              <th class="th-marca">Marca</th>
+              <th class="th-cat">Categoria</th>
+              <th class="th-lote">Lote</th>
+              <th class="th-qtd">Qtd.</th>
+              <th class="th-val">Validade</th>
+              <th class="th-forn">Fornecedor</th>
+              <th class="th-acoes text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(lista.length === 0) { %>
+              <tr>
+                <td colspan="11" class="text-center py-5">
+                  <div class="empty-table">
+                    <i class="fas fa-box-open"></i>
+                    <h5>Nenhum produto cadastrado</h5>
+                    <p>Comece adicionando um novo produto ao sistema.</p>
+                    <a href="/produtos/cadastrar" class="btn btn-primary custom btn-rounded btn-sm">
+                      <i class="fas fa-plus me-1"></i> Cadastrar Produto
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+            <% for(let i=0; i < lista.length; i++) { %>
+              <tr class="produto-row">
+                <td class="td-id"><span class="id-badge">#<%= lista[i].id %></span></td>
+                <td class="td-img">
+                  <%if(lista[i].img != '/img/produtos/barra-de-imagem.png'){%>
+                    <div class="img-thumb-wrap">
+                      <button class="prev-img" data-img="<%= lista[i].img %>" title="Ver imagem">
+                        <img src="<%= lista[i].img %>" alt="<%= lista[i].nome %>" />
+                      </button>
+                    </div>
+                  <%} else{%>
+                    <div class="img-thumb-wrap no-image">
+                      <img src="<%= lista[i].img %>" alt="Sem imagem" />
+                    </div>
+                  <%}%>
+                </td>
+                <td class="td-nome">
+                  <div class="nome-wrap">
+                    <span class="prod-name"><%= lista[i].nome %></span>
+                    <% if(lista[i].descricao) { %>
+                      <span class="prod-desc"><%= lista[i].descricao %></span>
+                    <% } %>
+                  </div>
+                </td>
+                <td class="td-preco">
+                  <span class="preco-value">R$ <%= Number(lista[i].preco).toFixed(2) %></span>
+                </td>
+                <td class="td-marca">
+                  <% if(lista[i].marca) { %>
+                    <span class="marca-badge"><%= lista[i].marca %></span>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td class="td-cat">
+                  <% if(lista[i].categoria) { %>
+                    <span class="cat-badge"><%= lista[i].categoria %></span>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td class="td-lote">
+                  <% if(lista[i].lote) { %>
+                    <span class="lote-badge"><%= lista[i].lote %></span>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td class="td-qtd">
+                  <% if(lista[i].quantidade > 10) { %>
+                    <span class="qtd-badge qtd-ok"><%= lista[i].quantidade %></span>
+                  <% } else if(lista[i].quantidade > 0) { %>
+                    <span class="qtd-badge qtd-low"><%= lista[i].quantidade %></span>
+                  <% } else { %>
+                    <span class="qtd-badge qtd-out">0</span>
+                  <% } %>
+                </td>
+                <td class="td-val">
+                  <%
+                    const validade = lista[i].validade;
+                    let validadeFormatada = '';
+                    let validadeClass = '';
+                    if (validade) {
+                      let dVal;
+                      if (validade instanceof Date) {
+                        dVal = validade;
+                        validadeFormatada = validade.toLocaleDateString('pt-BR');
+                      } else if (typeof validade === 'string') {
+                        dVal = new Date(validade);
+                        let parts = validade.split('T')[0].split('-');
+                        if(parts.length === 3) {
+                          validadeFormatada = parts[2] + '/' + parts[1] + '/' + parts[0];
+                        } else {
+                          validadeFormatada = validade;
+                        }
+                      } else {
+                        validadeFormatada = validade;
+                      }
+                      if(dVal) {
+                        const agora = new Date();
+                        const diff = Math.ceil((dVal - agora) / (1000 * 60 * 60 * 24));
+                        if(diff < 0) validadeClass = 'val-expired';
+                        else if(diff <= 30) validadeClass = 'val-warning';
+                        else validadeClass = 'val-ok';
+                      }
+                    } else {
+                      validadeFormatada = '—';
+                    }
+                  %>
+                  <span class="val-badge <%= validadeClass %>"><%= validadeFormatada %></span>
+                </td>
+                <td class="td-forn">
+                  <% if(lista[i].fornecedor) { %>
+                    <span class="forn-id"><%= lista[i].fornecedor %></span>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td class="td-acoes text-end">
+                  <div class="acoes-wrap">
+                    <button data-id="<%= lista[i].id%>" class="btn btn-sm btn-action btn-delete btnExcluir"
+                      title="Excluir"><i class="fas fa-trash"></i></button>
+                      <a href="/produtos/alterar/<%= lista[i].id %>" class="btn btn-sm btn-action btn-edit" title="Alterar"><i class="fas fa-edit"></i></a>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info footer -->
+  <% if(lista.length > 0) { %>
+    <div class="table-footer mt-2">
+      <small class="text-muted">Exibindo <strong><%= lista.length %></strong> produto<%= lista.length !== 1 ? 's' : '' %></small>
+    </div>
+  <% } %>
+</div>
+
+<!-- Image preview modal -->
+<div class="img-modal-backdrop" id="imgModalBackdrop">
+  <div class="img-modal-content">
+    <button class="img-modal-close" id="imgModalClose"><i class="fas fa-times"></i></button>
+    <img id="imgModalImg" src="" alt="Preview do produto" />
+  </div>
+</div>
+
+<script src="/js/produtos/listar.js"></script>
+<script src="/js/produtos/deletar.js"></script>

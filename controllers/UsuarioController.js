@@ -1,14 +1,61 @@
-const UsuarioProdutosController = require('./UsuarioProdutoController');
+const ProdutoModel = require('../models/ProdutoModel');
 
-const produtosCtrl = new UsuarioProdutosController();
+class UsuarioController {
+    homeView(req, res) {
+        res.render("usuarioView/home", { layout: "layoutPublico" })
+    }
+    async produtosView(req, res) {
+        try {
+            const produtos = new ProdutoModel();
+            const lista = await produtos.Read();
 
-class UsuarioController{
-    homeView(req,res){
-        res.render("usuarioView/home", {layout:"layoutPublico"})
+            const categoriasMap = new Map();
+            const marcasMap = new Map();
+            const precos = [];
+
+            for (const produto of lista) {
+                if (produto.categoria) {
+                    categoriasMap.set(produto.categoria, (categoriasMap.get(produto.categoria) || 0) + 1);
+                }
+
+                if (produto.marca) {
+                    marcasMap.set(produto.marca, (marcasMap.get(produto.marca) || 0) + 1);
+                }
+
+                const preco = Number(produto.preco);
+                if (!Number.isNaN(preco)) {
+                    precos.push(preco);
+                }
+            }
+
+            const categorias = [...categoriasMap.entries()]
+                .map(([nome, total]) => ({ nome, total }))
+                .sort((a, b) => b.total - a.total);
+
+            const marcas = [...marcasMap.entries()]
+                .map(([nome, total]) => ({ nome, total }))
+                .sort((a, b) => b.total - a.total);
+
+            const faixaPreco = {
+                min: precos.length ? Math.floor(Math.min(...precos)) : 0,
+                max: precos.length ? Math.ceil(Math.max(...precos)) : 0
+            };
+
+            res.render("usuarioView/produtos", {
+                layout: "layoutPublico",
+                lista,
+                categorias,
+                marcas,
+                faixaPreco
+            });
+        } catch (error) {
+            console.error('Erro ao carregar produtos para usuário:', error);
+            res.status(500).send({ ok: false, msg: 'Erro ao carregar produtos.' });
+        }
     }
 
-    async produtosView(req, res){
-        await produtosCtrl.UserProductsView(req, res);
+    carrinhoView(req, res) {
+        res.render("usuarioView/carrinho", { layout: "layoutPublico" });
     }
 }
 

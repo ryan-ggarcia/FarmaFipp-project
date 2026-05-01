@@ -7,9 +7,9 @@ let controller = new UsuarioController()
 let loginController = new LoginController()
 const router = express.Router()
 
-let auth = new AuthMiddleware()
-
-router.get("/",  controller.homeView)
-router.get("/produtos",  controller.produtosView)
+router.get("/", controller.homeView)
+router.get("/shop",controller.produtosView)
+router.get("/login",loginController.loginView)
+router.get("/carrinho", controller.carrinhoView)
 
 module.exports = router
