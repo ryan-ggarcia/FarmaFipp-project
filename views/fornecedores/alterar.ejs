@@ -1,0 +1,52 @@
+<body>
+    
+    <h1>Alterar Fornecedor</h1>
+        
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" value="<%= fornecedor.id %>" readonly><br>
+
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" value="<%= fornecedor.nome %>" required><br>
+
+        <label for="cnpj">CNPJ:</label>
+        <input type="text" id="cnpj" name="cnpj" value="<%= fornecedor.cnpj %>" required><br>
+
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" value="<%= fornecedor.telefone %>" required><br>
+
+        <label for="endereco">Endereço:</label>
+        <div class="col-md-4">
+            <label class="form-label">Rua:</label>
+            <input id="rua" type="text" class="form-control" value="<%= endereco.endRua %>">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Número:</label>
+            <input id="num" type="text" class="form-control" value="<%= endereco.endNum %>">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Bairro:</label>
+            <input id="bairro" type="text" class="form-control" value="<%= endereco.endBairro %>">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Cidade:</label>
+            <input id="cidade" type="text" class="form-control" value="<%= endereco.endCidade %>">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Estado:</label>
+            <input id="estado" type="text" class="form-control" value="<%= endereco.endEstado %>">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">CEP:</label>
+            <input id="cep" type="text" class= "form-control" value="<%= endereco.endCep %>">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">UF:</label>
+            <input id="uf" type="text" class="form-control" value="<%= endereco.endUf %>">
+            </div>
+        </div>
+
+        <button type="button" id="alterar">Alterar</button>
+        <script src="/js/fornecedores/alterar.js"></script>
+</body>
+
+

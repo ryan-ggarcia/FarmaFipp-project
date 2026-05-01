@@ -16,33 +16,92 @@
                     <span class="result-count" id="resultCount"><%= lista.length %> resultado<%= lista.length !== 1 ? 's' : '' %></span>
                 </div>
             </div>
-            <button class="btn-filter-mobile" id="btnFilterMobile">
-                <i class="bi bi-sliders"></i> Filtros
-            </button>
+            <div class="col-md-3">
+                <select id="categoryFilter" class="form-select" onchange="filterProducts()">
+                    <option value="">Todas as categorias</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select id="sortFilter" class="form-select" onchange="sortProducts()">
+                    <option value="name">Nome A-Z</option>
+                    <option value="name-desc">Nome Z-A</option>
+                    <option value="price-asc">Menor preço</option>
+                    <option value="price-desc">Maior preço</option>
+                </select>
+            </div>
+            <div class="col-md-2 text-end">
+                <button class="btn-filter w-100" onclick="resetFilters()"><i
+                        class="bi bi-arrow-counterclockwise me-1"></i>Limpar</button>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
-<!-- ══ LAYOUT ══ -->
-<div class="container-xl">
-    <div class="products-layout">
-
-        <!-- SIDEBAR -->
-        <aside class="filters-sidebar" id="filtersSidebar">
-            <button class="sidebar-close-btn" id="btnCloseSidebar"><i class="bi bi-x-lg"></i></button>
-
-            <div class="filter-card">
-                <div class="filter-card-body">
-                    <div style="position:relative">
-                        <i class="bi bi-search"
-                            style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:#bbb;font-size:.82rem"></i>
-                        <input type="text" id="searchInput" placeholder="Buscar produto…"
-                            style="width:100%;border:1.5px solid #eee;border-radius:8px;padding:.45rem .75rem .45rem 2.2rem;font-size:.84rem" />
-                    </div>
-                </div>
+<!-- ════════════════════════════════
+     TAB: TODOS OS PRODUTOS
+════════════════════════════════ -->
+<section class="products-section" id="tab-todos">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="products-count">
+                <% if(produtos && produtos.length> 0) { %>
+                    Exibindo <span id="visibleCount">
+                        <%= produtos.length %>
+                    </span> de <span>
+                        <%= produtos.length %>
+                    </span> produtos
+                    <% } %>
             </div>
+        </div>
+
+        <% if(!produtos || produtos.length===0) { %>
+            <div class="empty-state">
+                <i class="bi bi-box-seam"></i>
+                <h4>Nenhum produto encontrado</h4>
+                <p>No momento não existem produtos cadastrados no sistema.</p>
+                <a href="/" class="btn btn-hero mt-3" style="text-decoration:none">
+                    <i class="bi bi-house me-1"></i> Voltar ao Início
+                </a>
+            </div>
+            <% } else { %>
+                <div class="row g-3" id="productsGrid">
+                    <% 
+                        const promoMap = {};
+                        if (typeof produtosPromocao !== 'undefined' && produtosPromocao) {
+                            produtosPromocao.forEach(p => {
+                                promoMap[p.id] = p.preco;
+                            });
+                        }
+                        for(let i=0; i < produtos.length; i++) { 
+                            let isPromo = promoMap.hasOwnProperty(produtos[i].id);
+                            let displayPrice = isPromo ? promoMap[produtos[i].id] : produtos[i].preco;
+                    %>
+                        <div class="col-6 col-md-4 col-lg-3" data-product
+                            data-name="<%= produtos[i].nome.toLowerCase() %>"
+                            data-category="<%= produtos[i].categoria %>" data-price="<%= displayPrice %>">
+                            <div class="product-card h-100 <%= isPromo ? 'promo-card' : '' %>">
+                                <% if(isPromo) { %>
+                                    <span class="badge-discount promo-badge-fire"><i class="bi bi-fire me-1"></i>-15%</span>
+                                <% } else if(produtos[i].quantidade <= 0) { %>
+                                    <span class="badge-discount" style="background:#666">Esgotado</span>
+                                    <% } else if(produtos[i].quantidade <=10) { %>
+                                        <span class="badge-discount"
+                                            style="background:var(--accent-yellow);color:#333">Últimas unid.</span>
+                                        <% } %>
+
+                                            <button class="wishlist-btn" title="Adicionar à lista de desejos">
+                                                <i class="bi bi-heart"></i>
+                                            </button>
+
+                                            <div class="img-wrap">
+                                                <% if(produtos[i].img && produtos[i].img !== 'Imagem não disponível') { %>
+                                                    <img src="<%= produtos[i].img %>" alt="<%= produtos[i].nome %>"
+                                                        class="product-db-img" />
+                                                    <% } else { %>
+                                                        <i class="bi bi-capsule"
+                                                            style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
+                                                        <% } %>
+                                            </div>
 
             <div class="filter-card">
                 <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#catFilter">
@@ -63,7 +122,6 @@
                         <% }) %>
                     </div>
                 </div>
-            </div>
 
             <div class="filter-card">
                 <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#priceFilter">
@@ -79,12 +137,20 @@
                         <input type="range" id="priceRange" min="<%= faixaPreco.min %>" max="<%= faixaPreco.max %>" value="<%= faixaPreco.max %>" step="1" />
                     </div>
                 </div>
-            </div>
+                <% } %>
+    </div>
+</section>
 
-            <div class="filter-card">
-                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#brandFilter">
-                    <span><i class="bi bi-award me-2 text-muted"></i>Marcas</span>
-                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
+<!-- ════════════════════════════════
+     TAB: PROMOÇÃO (Perto da validade)
+════════════════════════════════ -->
+<section class="products-section" id="tab-promocao" style="display:none">
+    <div class="container">
+        <!-- Promo Banner -->
+        <div class="promo-alert mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="promo-alert-icon">
+                    <i class="bi bi-clock-history"></i>
                 </div>
                 <div class="collapse show" id="brandFilter">
                     <div class="filter-card-body">
@@ -101,12 +167,31 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <button class="btn-clear-filters"><i class="bi bi-x-circle me-1"></i>Limpar Filtros</button>
-        </aside>
+        <% if(!produtosPromocao || produtosPromocao.length===0) { %>
+            <div class="empty-state">
+                <i class="bi bi-tags"></i>
+                <h4>Nenhuma promoção no momento</h4>
+                <p>Não há produtos com validade próxima em promoção. Volte em breve!</p>
+                <button class="btn btn-hero mt-3" onclick="switchTab('todos')" style="border:none">
+                    <i class="bi bi-grid me-1"></i> Ver Todos os Produtos
+                </button>
+            </div>
+            <% } else { %>
+                <div class="row g-3" id="promoGrid">
+                    <% for(let i=0; i < produtosPromocao.length; i++) { %>
+                        <div class="col-6 col-md-4 col-lg-3" data-promo-product
+                            data-name="<%= produtosPromocao[i].nome.toLowerCase() %>"
+                            data-category="<%= produtosPromocao[i].categoria %>"
+                            data-price="<%= produtosPromocao[i].preco %>">
+                            <div class="product-card h-100 promo-card">
+                                <span class="badge-discount promo-badge-fire"><i
+                                        class="bi bi-fire me-1"></i>-15%</span>
 
-        <!-- ÁREA DE PRODUTOS -->
-        <div class="products-area">
+                                <button class="wishlist-btn" title="Adicionar à lista de desejos">
+                                    <i class="bi bi-heart"></i>
+                                </button>
 
             <div class="active-filters" id="activeFilters"></div>
 
