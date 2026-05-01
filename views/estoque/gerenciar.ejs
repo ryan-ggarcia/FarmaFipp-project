@@ -1,0 +1,82 @@
+<div class="p-3 p-1-25">
+	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+		<div>
+			<h4 class="mb-1" style="color: rgba(163,22,33,0.95); font-weight: bold;">Gerenciamento de Estoque</h4>
+			<p class="text-muted mb-0">Acompanhe as movimentações de entrada registradas no sistema.</p>
+		</div>
+		<div class="d-flex gap-2">
+			<a href="/estoque/adicionar" class="btn btn-primary custom btn-rounded">Adicionar ao Estoque</a>
+			<a href="/" class="btn btn-outline-secondary btn-rounded">Início</a>
+		</div>
+	</div>
+
+	<div class="row g-3 mb-3">
+		<div class="col-md-4">
+			<div class="card card-saas no-hover h-100">
+				<div class="card-body">
+					<small class="text-muted d-block">Total de Movimentações</small>
+					<h4 class="mb-0"><%= estoqueList.length %></h4>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card card-saas no-hover h-100">
+				<div class="card-body">
+					<small class="text-muted d-block">Tipo de Fluxo</small>
+					<h4 class="mb-0">Entradas</h4>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card card-saas no-hover h-100">
+				<div class="card-body">
+					<small class="text-muted d-block">Origem Padrão</small>
+					<h4 class="mb-0">Compra</h4>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card card-saas no-hover">
+		<div class="card-body">
+			<h5 class="mb-3">Histórico de Movimentações</h5>
+
+			<% if (estoqueList.length === 0) { %>
+				<div class="alert alert-light border mb-0" role="alert">
+					Nenhuma movimentação encontrada. Clique em <strong>Adicionar ao Estoque</strong> para registrar a primeira entrada.
+				</div>
+			<% } else { %>
+				<div class="table-responsive">
+					<table class="table table-striped align-middle mb-0">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Lote</th>
+								<th>Tipo</th>
+								<th>Origem</th>
+								<th>Quantidade</th>
+                                <th>Data de validade</th>
+								<th>Data</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% for (let i = 0; i < estoqueList.length; i++) { %>
+								<tr>
+									<td><%= estoqueList[i].id %></td>
+									<td>#<%= estoqueList[i].loteId %> - <%= estoqueList[i].lot_name || 'Lote sem nome' %></td>
+									<td><span class="badge bg-success"><%= estoqueList[i].tipo %></span></td>
+									<td><%= estoqueList[i].origem %></td>
+									<td><%= Number(estoqueList[i].quantidade) %></td>
+									<td><%= estoqueList[i].lot_validade ? new Date(estoqueList[i].lot_validade).toLocaleDateString('pt-BR') : 'N/A' %></td>
+                                    <td>
+										<%= new Date(estoqueList[i].dataMov).toLocaleString('pt-BR') %>
+									</td>
+								</tr>
+							<% } %>
+						</tbody>
+					</table>
+				</div>
+			<% } %>
+		</div>
+	</div>
+</div>

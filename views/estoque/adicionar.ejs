@@ -1,0 +1,46 @@
+<div class="p-3 p-1-25">
+	<div class="card card-saas no-hover">
+		<div class="card-body">
+			<h4 class="mb-3" style="color: rgba(163,22,33,0.95); font-weight: bold;">Adicionar ao Estoque</h4>
+
+			<form id="formAdicionarEstoque">
+				<div class="row g-3">
+					<div class="col-md-6">
+						<label for="loteId" class="form-label">Lote</label>
+						<select id="loteId" class="form-control" required>
+							<option value="">Selecione um lote</option>
+							<% for (let i = 0; i < lotes.length; i++) { %>
+								<option value="<%= lotes[i].lot_id %>">
+									#<%= lotes[i].lot_id %> - <%= lotes[i].lot_name %> (Qtd atual: <%= lotes[i].lot_qnt %>)
+								</option>
+							<% } %>
+						</select>
+					</div>
+
+					<div class="col-md-6">
+						<label for="quantidade" class="form-label">Quantidade de Entrada</label>
+						<input id="quantidade" type="number" min="1" class="form-control" required>
+					</div>
+
+					<div class="col-md-6">
+						<label class="form-label">Tipo de Movimentação</label>
+						<input type="text" class="form-control" value="ENTRADA" readonly>
+					</div>
+
+					<div class="col-md-6">
+						<label class="form-label">Origem</label>
+						<input type="text" class="form-control" value="COMPRA" readonly>
+					</div>
+
+					<div class="col-12 d-flex gap-2">
+						<button id="btnAdd" type="button" class="btn btn-primary custom btn-rounded">Adicionar</button>
+						<a href="/estoque/gerenciar" class="btn btn-outline-secondary btn-rounded">Voltar</a>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script src="/js/estoque/adicionar.js"></script>
+
