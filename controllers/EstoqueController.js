@@ -51,8 +51,7 @@ class EstoqueController {
         } catch (error) {
             console.error('Erro ao adicionar estoque:', error);
             return res.status(500).send({ ok: false, msg: 'Erro interno ao atualizar estoque!' });
-        }
-        
+        }  
     }
 }
 

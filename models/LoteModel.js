@@ -57,7 +57,6 @@ class LoteModel {
         return result;
     }
 
-
     async List() {
         const sql = 'select * from Lote';
         const banco = new Database();

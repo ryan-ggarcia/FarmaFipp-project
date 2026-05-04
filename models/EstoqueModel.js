@@ -98,6 +98,16 @@ class EstoqueModel{
         })  
         return lista;
     }
+
+    async ExitFromInventory(){
+        let sql = "insert into movimentacao_estoque (lote_id, tipo, origem, quantidade, data_mov) values (?, ?, ?, ?, ?)";
+
+        let values = [this.#loteId, this.#tipo, this.#origem, this.#quantidade, this.#dataMov];
+
+        let result = await banco.ExecutaComandoNonQuery(sql, values);
+
+        return result;
+    }
 }
 
 module.exports = EstoqueModel;
