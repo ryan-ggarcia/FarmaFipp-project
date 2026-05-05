@@ -172,21 +172,6 @@ class ProdutoModel{
         return await banco.ExecutaComando(sql, values);
     }
 
-    toJSON(){
-        return {
-            id: this.#id,
-            nome: this.#nome,
-            descricao: this.#descricao,
-            validade: this.#validade,
-            preco: this.#preco,
-            quantidade: this.#quantidade,
-            categoria: this.#categoria,
-            fornecedor: this.#fornecedor,
-            marca: this.#marca,
-            lote: this.#lote,
-            img: this.#img
-        }
-    }
 }
 
 module.exports = ProdutoModel;
