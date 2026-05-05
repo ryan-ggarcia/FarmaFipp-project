@@ -40,6 +40,7 @@ router.get('/listar', ctrl.listar);
 router.get('/alterar/:id', ctrl.AlterarView);
 router.post('/alterar', upload.single('img'), ctrl.alterar);
 router.post('/excluir', ctrl.excluir);
+router.get('/obter/:produtoId', ctrl.obterProduto);
 
 
 module.exports = router;
