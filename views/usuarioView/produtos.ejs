@@ -277,7 +277,12 @@
                                     <button
                                         class="btn-add-cart add-to-cart"
                                         type="button"
-                                        data-produto="<%= produto.id %>">
+                                        data-id="<%= produto.id %>"
+                                        data-nome="<%= produto.nome %>"
+                                        data-preco="<%= Number(produto.preco || 0) %>"
+                                        data-quantidade="<%= Number(produto.quantidade || 0) %>"
+                                        data-descricao="<%= produto.descricao || '' %>"
+                                        data-imagem="<%= produto.img %>">
                                         <i class="bi bi-bag-plus"></i> Adicionar ao carrinho
                                     </button>
                                 </div>
