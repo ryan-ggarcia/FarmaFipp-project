@@ -24,21 +24,13 @@
             </tr>
         </thead>
         <tbody>
-            <!-- <% if (typeof fornecedores !== 'undefined' && fornecedores.length > 0) { %> -->
+            
                 <% fornecedores.forEach(fornecedor => { %>
                     <tr>
                         <td><%= fornecedor.id %></td>
                         <td><%= fornecedor.nome %></td>
                         <td><%= fornecedor.cnpj %></td>
                         <td><%= fornecedor.telefone %></td>
-                        <td><%= fornecedor.endereco %></td>
-                        <td><%= fornecedor.status %></td>
-                        <td>
-                            <% if(fornecedor.status()=='Ativo' ) { %>
-                                <span class="badge bg-success">Ativo</span>
-                            <% } else { %>
-                                <span class="badge bg-secondary">Inativo</span>
-                            <% } %>
                         </td>
                         <td>
                             <a href="/fornecedores/alterar/<%= fornecedor.id %>" class="btn btn-primary btn-sm">Alterar</a>
@@ -46,10 +38,9 @@
                         </td>
                     </tr>
                 <% }) %>
-            <!-- <% } %> -->
-        </tbody>
+            </tbody>
     </table>
 </body>
 </html>
 
-<script src="/js/fornecedores.js"></script>
+<script src="/js/fornecedores/listar.js"></script>

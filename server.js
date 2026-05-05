@@ -1,5 +1,7 @@
 //CommonJS
+require('dotenv').config()
 const express = require('express');
+const cookieParser = require("cookie-parser");
 const homeRouter = require("./routes/HomeRouter");
 const usuarioRouter = require("./routes/UsuarioRouter")
 const ServicoRouter = require ('./routes/ServicoRouter');
@@ -14,6 +16,7 @@ const server = express();
 
 server.set('view engine', 'ejs');
 //server.use(brazilianUtils);
+server.use(cookieParser());
 server.use(expressEjsLayouts);
 // set default layout to views/layout.ejs
 
@@ -32,6 +35,6 @@ global.CAMINHO_IMG_ABS = __dirname + "/public/img/produtos/";
 global.CAMINHO_IMG_NAVEGADOR = "/img/produtos/";  
 
 
-server.listen(5000, function(){
+server.listen(process.env.PORT || 5000, function(){
     console.log("Servidor Iniciado.");
 });

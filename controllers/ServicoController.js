@@ -1,5 +1,7 @@
 const ServicoModel = require("../models/ServicoModel");
 const TipoServico = require("../models/TipoServicoModel");
+const ClienteModel = require("../models/ClienteModel")
+const FuncionarioModel = require("../models/FuncionarioModel")
 
 class ServicoController {
     async listarView(req, res) {
@@ -12,14 +14,22 @@ class ServicoController {
     async cadastrarView(req, res) {
         let tipoServico = new TipoServico();
         let listaTipos = await tipoServico.listar();
-        res.render("servicos/cadastrar", { listaTipos, active: 'servicos' });
+        let listaCliente = new ClienteModel()
+        listaCliente = await listaCliente.Read()
+        res.render("servicos/cadastrar", { listaTipos, listaCliente, active: 'servicos' });
     }
 
     async alterarView(req, res) {
         let servico = new ServicoModel();
+        let tipoServico = new TipoServico();
+        let listaTipos = await tipoServico.listar();
+        let listaCliente = new ClienteModel()
+        let listaFunc = new FuncionarioModel()
+        listaCliente = await listaCliente.Read()
+        listaFunc = await listaFunc.Read()
         servico = await servico.obter(req.params.idAlteracao);
 
-        res.render("servicos/alterar", { servico, active: 'servicos' });
+        res.render("servicos/alterar", { servico,listaTipos, listaCliente, listaFunc, active: 'servicos' });
     }
 
     async cadastrar(req, res) {

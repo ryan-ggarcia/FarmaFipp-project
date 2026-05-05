@@ -1,26 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.querySelectorAll('.btnExluir');
+    const btns = document.querySelectorAll('.btnExcluir');
 
-    btn.addEventListener('click', deletar);
+    btns.forEach(btn => {
+        btn.addEventListener("click", excluir);
+    })
 
-    function deletar(){
+    function excluir(){
         const id = this.dataset.id;
         if(confirm('Tem verteza que deseja excluir esse fornecedor?')){
 
-            fetch('/fornecedores/deletar', {
-                method: "POST",
+            fetch('/fornecedores/delete', {
+                method: "DELETE",
                 headers:  {
                     "Content-Type": "application/json"
                 },
-                body: {
+                body: JSON.stringify({
                     id: id
-                }
+                })
             }).then((response) => {
                 return response.json();
             }).then((data) => {
                 alert(data.msg);
                 if(data.ok){
                     window.location.reload();
+                }else{
+                    alert("Erro ao excluir fornecedor!");
                 }
             })
         }
