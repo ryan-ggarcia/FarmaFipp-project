@@ -41,10 +41,34 @@ class ProdutoModel{
         this.#marca = marca;
         this.#lote = lote;
         this.#img = img;
-    this.#id_lote = id_lote;
+        this.#id_lote = id_lote;
     }
 
-
+    async #discardProductsExpired(){
+        const sql = `SELECT 
+                        p.idProduto, 
+                        l.lot_id, 
+                        l.lot_qnt
+                    FROM produto p
+                    INNER JOIN produto_lote pl ON p.idProduto = pl.produto_idProduto
+                    INNER JOIN Lote l ON pl.lote_lot_id = l.lot_id
+                    WHERE l.lot_validade < CURDATE();`
+        const banco = new Database();
+        let listValues = []
+        let rows = await banco.ExecutaComando(sql);
+        if(!rows || rows.length === 0) { return false; }
+        else{
+            rows.forEach(row => {
+                listValues.push([row.idProduto, row.lot_id, row.lot_qnt]);
+            })
+        }
+        const sqlInserted = `insert into tb_descarte(id_produto,id_lote, quantidade, data_descarte, vencido) values(?,?,?,?,?)`
+        for (const row of listValues) {
+            let values = [row[0], row[1], row[2], new Date(), true];
+            await banco.ExecutaComandoNonQuery(sqlInserted, values);
+        }
+        return true;
+    }
 
     async Create() {
         const sql = 'insert into produto (pro_nome, descricao,  pro_preco, pro_quantidade,  Categoria_Produto, marca, idFornecedor, pro_img) values (?, ?, ?, ?, ?, ?, ?, ?)';
@@ -57,6 +81,7 @@ class ProdutoModel{
     async ListCategorias() {
         const sql = 'select * from categoria';
         const banco = new Database();
+        let descarte = await this.#discardProductsExpired();
         let result =  await banco.ExecutaComando(sql);
         return result;
     }
