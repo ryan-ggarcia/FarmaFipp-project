@@ -81,7 +81,7 @@ class ProdutoModel{
     async ListCategorias() {
         const sql = 'select * from categoria';
         const banco = new Database();
-        let descarte = await this.#discardProductsExpired();
+        await this.#discardProductsExpired();
         let result =  await banco.ExecutaComando(sql);
         return result;
     }
