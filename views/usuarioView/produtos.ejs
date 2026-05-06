@@ -1,11 +1,11 @@
-<%
+git <%
 const produtosLista = Array.isArray(lista) ? lista : [];
 const categoriasLista = Array.isArray(categorias) ? categorias : [];
 const totalProdutos = produtosLista.length;
 
 const promoIds = new Set();
 if (Array.isArray(produtosPromocao)) {
-    produtosPromocao.forEach(function(p) {
+    produtosPromocao.forEach(function (p) {
         var pid = p.id != null ? p.id : (p.pro_id != null ? p.pro_id : p.produto_id);
         if (pid != null) promoIds.add(String(pid));
     });
@@ -15,8 +15,6 @@ if (Array.isArray(produtosPromocao)) {
 <link rel="stylesheet" href="/css/style-produtos.css" />
 
 <div class="container-xl py-4">
-
-    <!-- ── Cabeçalho ── -->
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
         <div>
             <nav aria-label="breadcrumb">
@@ -32,17 +30,22 @@ if (Array.isArray(produtosPromocao)) {
         </div>
 
         <div class="d-flex align-items-center gap-2 flex-wrap">
-            <input id="searchInput" class="form-control" style="min-width:220px"
-                   type="search" placeholder="Buscar produto..." />
+            <input
+                id="searchInput"
+                class="form-control"
+                style="min-width: 220px"
+                type="search"
+                placeholder="Buscar produto..."
+            />
 
-            <select id="categoryFilter" class="form-select" style="min-width:200px">
+            <select id="categoryFilter" class="form-select" style="min-width: 200px">
                 <option value="">Todas as categorias</option>
-                <% categoriasLista.forEach(function(categoria) { %>
+                <% categoriasLista.forEach(function (categoria) { %>
                     <option value="<%= (categoria.nome || '').toLowerCase() %>"><%= categoria.nome %></option>
                 <% }); %>
             </select>
 
-            <select id="sortFilter" class="form-select" style="min-width:160px">
+            <select id="sortFilter" class="form-select" style="min-width: 160px">
                 <option value="name">Nome A-Z</option>
                 <option value="name-desc">Nome Z-A</option>
                 <option value="price-asc">Menor preço</option>
@@ -53,86 +56,38 @@ if (Array.isArray(produtosPromocao)) {
         </div>
     </div>
 
-    <!-- ── Grid de produtos ── -->
     <% if (totalProdutos === 0) { %>
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center py-5">
-                <i class="bi bi-box-seam" style="font-size:3rem;color:#ccc"></i>
+                <i class="bi bi-box-seam" style="font-size: 3rem; color: #ccc"></i>
                 <h4 class="mt-3 mb-2">Nenhum produto cadastrado</h4>
                 <p class="text-muted mb-0">Os produtos registrados no sistema aparecerão aqui.</p>
-<script src="/js/produtos/cartService.js"></script>
-<link rel="stylesheet" href="/css/style-produtos.css" />
-
-<div class="page-header">
-    <div class="container-xl">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Início</a></li>
-                        <li class="breadcrumb-item active">Produtos</li>
-                    </ol>
-                </nav>
-                <div class="d-flex align-items-baseline gap-3">
-                    <h1 class="page-title">Todos os Produtos</h1>
-                    <span class="result-count" id="resultCount"><%= lista.length %> resultado<%= lista.length !== 1 ? 's' : '' %></span>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <select id="categoryFilter" class="form-select" onchange="filterProducts()">
-                    <option value="">Todas as categorias</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select id="sortFilter" class="form-select" onchange="sortProducts()">
-                    <option value="name">Nome A-Z</option>
-                    <option value="name-desc">Nome Z-A</option>
-                    <option value="price-asc">Menor preço</option>
-                    <option value="price-desc">Maior preço</option>
-                </select>
-            </div>
-            <div class="col-md-2 text-end">
-                <button class="btn-filter w-100" onclick="resetFilters()">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i>Limpar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<section class="products-section" id="tab-todos">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="products-count">
-                <% if (typeof lista !== 'undefined' && lista.length > 0) { %>
-                    Exibindo <span id="visibleCount"><%= lista.length %></span> de <span><%= lista.length %></span> produtos
-                <% } %>
             </div>
         </div>
     <% } else { %>
         <div class="row g-3" id="productsGrid">
-            <% produtosLista.forEach(function(produto) {
-                var produtoId    = produto.id != null ? produto.id : (produto.pro_id != null ? produto.pro_id : produto.produto_id);
-                var nome         = produto.nome        || 'Produto sem nome';
-                var descricao    = produto.descricao   || '';
-                var categoria    = produto.categoria   || 'Sem categoria';
-                var marca        = produto.marca       || 'Sem marca';
-                var fornecedor   = produto.fornecedor  || '';
-                var lote         = produto.lote        || '';
-                var quantidade   = Number(produto.quantidade || 0);
-                var preco        = Number(produto.preco || 0);
-                var imagem       = (produto.img && produto.img !== 'Imagem não disponível')
-                                     ? produto.img
-                                     : '/img/produtos/imagem.png';
-                var isPromo      = promoIds.has(String(produtoId));
+            <% produtosLista.forEach(function (produto) {
+                var produtoId = produto.id != null ? produto.id : (produto.pro_id != null ? produto.pro_id : produto.produto_id);
+                var nome = produto.nome || 'Produto sem nome';
+                var descricao = produto.descricao || '';
+                var categoria = produto.categoria || 'Sem categoria';
+                var marca = produto.marca || 'Sem marca';
+                var fornecedor = produto.fornecedor || '';
+                var lote = produto.lote || '';
+                var quantidade = Number(produto.quantidade || 0);
+                var preco = Number(produto.preco || 0);
+                var imagem = (produto.img && produto.img !== 'Imagem não disponível')
+                    ? produto.img
+                    : '/img/produtos/imagem.png';
+                var isPromo = promoIds.has(String(produtoId));
             %>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-col"
-                     data-product-name="<%= nome.toLowerCase() %>"
-                     data-product-category="<%= categoria.toLowerCase() %>"
-                     data-product-price="<%= preco %>">
+                <div
+                    class="col-12 col-sm-6 col-lg-4 col-xl-3 product-col"
+                    data-product-name="<%= nome.toLowerCase() %>"
+                    data-product-category="<%= categoria.toLowerCase() %>"
+                    data-product-price="<%= preco %>"
+                >
                     <article class="product-card h-100 p-3 d-flex flex-column position-relative border rounded shadow-sm bg-white">
-
-                        <!-- Badge -->
                         <% if (isPromo) { %>
                             <span class="badge bg-danger position-absolute top-0 start-0 m-2">Promoção</span>
                         <% } else if (quantidade <= 0) { %>
@@ -141,65 +96,22 @@ if (Array.isArray(produtosPromocao)) {
                             <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Últimas unid.</span>
                         <% } %>
 
-                        <!-- Imagem -->
                         <div class="text-center mb-2">
-                            <img src="<%= imagem %>" alt="<%= nome %>"
-                                 class="img-fluid rounded"
-                                 style="height:160px;object-fit:contain;background:#f8f9fa" />
+                            <img
+                                src="<%= imagem %>"
+                                alt="<%= nome %>"
+                                class="img-fluid rounded"
+                                style="height: 160px; object-fit: contain; background: #f8f9fa"
+                            />
                         </div>
-        <div class="active-filters" id="activeFilters"></div>
 
-        <div class="products-toolbar">
-            <span class="toolbar-label">Ordenar por:</span>
-            <select class="toolbar-select">
-                <option>Relevância</option>
-                <option>Menor Preço</option>
-                <option>Maior Preço</option>
-                <option>Mais Vendidos</option>
-                <option>Novidades</option>
-                <option>Melhor Avaliado</option>
-            </select>
-            <span class="toolbar-label ms-2">Exibir:</span>
-            <select class="toolbar-select" id="itemsPerPage" style="width:70px">
-                <option>24</option>
-                <option>48</option>
-                <option>96</option>
-            </select>
-            <div class="view-toggle ms-auto">
-                <button class="view-btn active" id="btnGrid" title="Grade"><i class="bi bi-grid-3x3-gap-fill"></i></button>
-                <button class="view-btn" id="btnList" title="Lista"><i class="bi bi-list-ul"></i></button>
-            </div>
-        </div>
-
-        <div class="row g-3 products-grid" id="productsGridList">
-            <% if (typeof lista !== 'undefined' && lista.length === 0) { %>
-                <div class="col-12" id="emptyState">
-                    <div class="empty-state">
-                        <div class="icon"><i class="bi bi-box-seam"></i></div>
-                        <h5>Nenhum produto disponível</h5>
-                        <p>Não há produtos cadastrados no momento.</p>
-                    </div>
-                </div>
-            <% } else if (typeof lista !== 'undefined') { %>
-                <% lista.forEach((produto) => { %>
-                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-col"
-                        data-product-name="<%= (produto.nome || '').toLowerCase() %>"
-                        data-product-category="<%= (produto.categoria || '').toLowerCase() %>"
-                        data-product-brand="<%= (produto.marca || '').toLowerCase() %>"
-                        data-product-price="<%= Number(produto.preco || 0) %>">
-                        <article class="product-card">
-                            <button class="wishlist-btn" type="button" aria-label="Adicionar aos favoritos">
-                                <i class="bi bi-heart"></i>
-                            </button>
-
-                        <!-- Informações -->
                         <div class="d-flex flex-column flex-grow-1">
                             <small class="text-muted"><%= marca %></small>
                             <h6 class="mb-1 fw-semibold"><%= nome %></h6>
                             <small class="text-muted d-block mb-1"><i class="bi bi-grid me-1"></i><%= categoria %></small>
 
                             <% if (descricao) { %>
-                                <p class="small text-muted mb-2" style="line-height:1.3"><%= descricao %></p>
+                                <p class="small text-muted mb-2" style="line-height: 1.3"><%= descricao %></p>
                             <% } %>
 
                             <div class="small text-muted mb-2">
@@ -212,217 +124,60 @@ if (Array.isArray(produtosPromocao)) {
                                 <% } %>
                             </div>
 
-                                <div class="d-flex flex-wrap gap-2 mb-2">
-                                    <span class="prod-brand"><i class="bi bi-grid me-1"></i><%= produto.categoria || 'Sem categoria' %></span>
-                                    <span class="prod-brand"><i class="bi bi-boxes me-1"></i>Estoque: <%= produto.quantidade %></span>
-                                    <% if (produto.lote) { %>
-                                        <span class="prod-brand"><i class="bi bi-upc-scan me-1"></i>Lote: <%= produto.lote %></span>
-                                    <% } %>
-                                    <% if (produto.fornecedor) { %>
-                                        <span class="prod-brand"><i class="bi bi-building me-1"></i><%= produto.fornecedor %></span>
-                                    <% } %>
-                                </div>
-
-                                <div class="product-card-footer">
-                                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
-                                        <span class="product-price">R$ <%= Number(produto.preco).toFixed(2) %></span>
-                                        <% if (produto.validade) { %>
-                                            <small class="text-muted">Val: <%= new Date(produto.validade).toLocaleDateString('pt-BR') %></small>
-                                        <% } else { %>
-                                            <small class="text-muted">Val: --</small>
-                                        <% } %>
-                                    </div>
-
-                                    <button class="btn-add-cart add-to-cart" type="button" data-produto="<%= produto.id %>">
-                                        <i class="bi bi-bag-plus"></i> Adicionar ao carrinho
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                <% }) %>
-            <% } %>
-        </div>
-
-        <nav class="mt-4 d-flex justify-content-center" aria-label="Paginação">
-            <ul class="pagination">
-                <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">…</a></li>
-                <li class="page-item"><a class="page-link" href="#">8</a></li>
-                <li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
-            </ul>
-        </nav>
-
-    </div>
-</section>
-
-<section class="products-section" id="tab-promocao" style="display:none">
-    <div class="container">
-        <div class="promo-alert mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <div class="promo-alert-icon">
-                    <i class="bi bi-clock-history"></i>
-                </div>
-                <div class="collapse show" id="brandFilter">
-                    <div class="filter-card-body">
-                        <% if (typeof marcas !== 'undefined' && marcas.length === 0) { %>
-                            <span class="text-muted small">Sem marcas cadastradas</span>
-                        <% } else if (typeof marcas !== 'undefined') { %>
-                            <% marcas.forEach((marca, index) => { %>
-                                <div class="filter-check">
-                                    <input type="checkbox" id="brand<%= index %>" data-filter-brand="<%= marca.nome %>" />
-                                    <label for="brand<%= index %>"><%= marca.nome %></label>
-                                    <span class="count"><%= marca.total %></span>
-                                </div>
-                            <% }) %>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <% if(typeof produtosPromocao === 'undefined' || produtosPromocao.length === 0) { %>
-            <div class="empty-state">
-                <i class="bi bi-tags"></i>
-                <h4>Nenhuma promoção no momento</h4>
-                <p>Não há produtos com validade próxima em promoção. Volte em breve!</p>
-                <button class="btn btn-hero mt-3" onclick="switchTab('todos')" style="border:none">
-                    <i class="bi bi-grid me-1"></i> Ver Todos os Produtos
-                </button>
-            </div>
-        <% } else { %>
-            <div class="row g-3" id="promoGrid">
-                <% for(let i=0; i < produtosPromocao.length; i++) { %>
-                    <div class="col-6 col-md-4 col-lg-3" data-promo-product
-                        data-name="<%= produtosPromocao[i].nome.toLowerCase() %>"
-                        data-category="<%= produtosPromocao[i].categoria %>"
-                        data-price="<%= produtosPromocao[i].preco %>">
-                        <div class="product-card h-100 promo-card">
-                            <span class="badge-discount promo-badge-fire"><i class="bi bi-fire me-1"></i>-15%</span>
-                            <button class="wishlist-btn" title="Adicionar à lista de desejos">
-                                <i class="bi bi-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                <% } %>
-            </div>
-        <% } %>
-    </div>
-</section>
-
-    <!-- <script>
-        /* ── Sidebar mobile ── */
-        const sidebar = document.getElementById('filtersSidebar');
-        const backdrop = document.getElementById('sidebarBackdrop');
-        const btnOpen = document.getElementById('btnFilterMobile');
-        const btnClose = document.getElementById('btnCloseSidebar');
-
-        const openSidebar = () => { sidebar.classList.add('open'); backdrop.classList.add('show'); };
-        const closeSidebar = () => { sidebar.classList.remove('open'); backdrop.classList.remove('show'); };
-
-        btnOpen?.addEventListener('click', openSidebar);
-        btnClose?.addEventListener('click', closeSidebar);
-        backdrop?.addEventListener('click', closeSidebar);
-
-        /* ── Grade / Lista ── */
-        const grid = document.getElementById('productsGrid');
-        const btnGrid = document.getElementById('btnGrid');
-        const btnList = document.getElementById('btnList');
-        const resultCount = document.getElementById('resultCount');
-        const emptyState = document.getElementById('emptyState');
-
-        const updateResultCount = () => {
-            const visible = [...document.querySelectorAll('.product-col')].filter(col => col.style.display !== 'none').length;
-            if (resultCount) {
-                resultCount.textContent = `${visible} resultado${visible !== 1 ? 's' : ''}`;
-            }
-            if (emptyState && document.querySelectorAll('.product-col').length > 0) {
-                emptyState.classList.toggle('d-none', visible > 0);
-            }
-        };
-
-            btnGrid?.addEventListener('click', () => {
-                grid.classList.remove('list-view');
-                btnGrid.classList.add('active'); btnList.classList.remove('active');
-            grid.querySelectorAll('.product-col').forEach(c => {
-                    c.className = c.className.replace(/col-xl-\d+/, 'col-xl-3').replace(/col-lg-\d+/, 'col-lg-4');
-                });
-            });
-            btnList?.addEventListener('click', () => {
-                grid.classList.add('list-view');
-                btnList.classList.add('active'); btnGrid.classList.remove('active');
-            grid.querySelectorAll('.product-col').forEach(c => {
-                c.className = c.className.replace(/col-xl-\d+/, 'col-xl-12').replace(/col-lg-\d+/, 'col-lg-12');
-                });
-            });
-
-        /* ── Wishlist ── */
-        document.querySelectorAll('.wishlist-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const ico = this.querySelector('i');
-                ico.classList.toggle('bi-heart');
-                ico.classList.toggle('bi-heart-fill');
-                this.classList.toggle('active');
-            });
-        });
-
                             <div class="mt-auto d-flex align-items-center justify-content-between gap-2">
                                 <span class="fw-bold text-danger">R$ <%= preco.toFixed(2) %></span>
-                                <button
-                                    class="btn btn-sm btn-danger add-to-cart"
-                                    type="button"
-                                    data-id="<%= produtoId %>"
-                                    data-nome="<%= nome %>"
-                                    data-preco="<%= preco %>"
-                                    data-quantidade="<%= quantidade %>"
-                                    data-descricao="<%= descricao %>"
-                                    data-imagem="<%= imagem %>"
-                                    <%= quantidade <= 0 ? 'disabled' : '' %>>
-                                    <i class="bi bi-bag-plus me-1"></i>Adicionar
-                                </button>
+                                <% if (produto.validade) { %>
+                                    <small class="text-muted">Val: <%= new Date(produto.validade).toLocaleDateString('pt-BR') %></small>
+                                <% } else { %>
+                                    <small class="text-muted">Val: --</small>
+                                <% } %>
                             </div>
-                        </div>
 
+                            <button
+                                class="btn btn-sm btn-danger add-to-cart mt-2 w-100"
+                                type="button"
+                                data-produto="<%= produtoId %>"
+                                <%= quantidade <= 0 ? 'disabled' : '' %>
+                            >
+                                <i class="bi bi-bag-plus me-1"></i>Adicionar ao carrinho
+                            </button>
+                        </div>
                     </article>
                 </div>
             <% }); %>
         </div>
     <% } %>
-
 </div>
 
 <script src="/js/produtos/cartService.js"></script>
 <script>
 (function () {
-    var grid           = document.getElementById('productsGrid');
-    var searchInput    = document.getElementById('searchInput');
+    var grid = document.getElementById('productsGrid');
+    var searchInput = document.getElementById('searchInput');
     var categoryFilter = document.getElementById('categoryFilter');
-    var sortFilter     = document.getElementById('sortFilter');
-    var btnReset       = document.getElementById('btnResetFilters');
-    var visibleCount   = document.getElementById('visibleCount');
+    var sortFilter = document.getElementById('sortFilter');
+    var btnReset = document.getElementById('btnResetFilters');
+    var visibleCount = document.getElementById('visibleCount');
 
     if (!grid) return;
 
     var cards = Array.from(grid.querySelectorAll('.product-col'));
 
     function updateCount() {
-        var visible = cards.filter(function(c) { return c.style.display !== 'none'; }).length;
+        var visible = cards.filter(function (c) { return c.style.display !== 'none'; }).length;
         if (visibleCount) visibleCount.textContent = String(visible);
     }
 
     function applyFilters() {
-        var term     = (searchInput ? searchInput.value : '').toLowerCase().trim();
+        var term = (searchInput ? searchInput.value : '').toLowerCase().trim();
         var category = (categoryFilter ? categoryFilter.value : '').toLowerCase();
 
-        cards.forEach(function(card) {
-            var name     = (card.dataset.productName     || '').toLowerCase();
-            var itemCat  = (card.dataset.productCategory || '').toLowerCase();
-            var matchN   = !term     || name.includes(term) || itemCat.includes(term);
-            var matchC   = !category || itemCat === category;
-            card.style.display = (matchN && matchC) ? '' : 'none';
+        cards.forEach(function (card) {
+            var name = (card.dataset.productName || '').toLowerCase();
+            var itemCat = (card.dataset.productCategory || '').toLowerCase();
+            var matchName = !term || name.includes(term) || itemCat.includes(term);
+            var matchCategory = !category || itemCat === category;
+            card.style.display = (matchName && matchCategory) ? '' : 'none';
         });
 
         updateCount();
@@ -430,30 +185,38 @@ if (Array.isArray(produtosPromocao)) {
 
     function sortCards() {
         var mode = sortFilter ? sortFilter.value : 'name';
-        var sorted = cards.slice().sort(function(a, b) {
-            var na = (a.dataset.productName  || '').toLowerCase();
-            var nb = (b.dataset.productName  || '').toLowerCase();
-            var pa = Number(a.dataset.productPrice || 0);
-            var pb = Number(b.dataset.productPrice || 0);
-            if (mode === 'name')       return na.localeCompare(nb);
-            if (mode === 'name-desc')  return nb.localeCompare(na);
-            if (mode === 'price-asc')  return pa - pb;
-            if (mode === 'price-desc') return pb - pa;
+        var sorted = cards.slice().sort(function (a, b) {
+            var nameA = (a.dataset.productName || '').toLowerCase();
+            var nameB = (b.dataset.productName || '').toLowerCase();
+            var priceA = Number(a.dataset.productPrice || 0);
+            var priceB = Number(b.dataset.productPrice || 0);
+
+            if (mode === 'name') return nameA.localeCompare(nameB);
+            if (mode === 'name-desc') return nameB.localeCompare(nameA);
+            if (mode === 'price-asc') return priceA - priceB;
+            if (mode === 'price-desc') return priceB - priceA;
             return 0;
         });
-        sorted.forEach(function(c) { grid.appendChild(c); });
+
+        sorted.forEach(function (card) {
+            grid.appendChild(card);
+        });
     }
 
-    if (searchInput)    searchInput.addEventListener('input', applyFilters);
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
     if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
     if (sortFilter) {
-        sortFilter.addEventListener('change', function() { sortCards(); applyFilters(); });
+        sortFilter.addEventListener('change', function () {
+            sortCards();
+            applyFilters();
+        });
     }
+
     if (btnReset) {
-        btnReset.addEventListener('click', function() {
-            if (searchInput)    searchInput.value    = '';
+        btnReset.addEventListener('click', function () {
+            if (searchInput) searchInput.value = '';
             if (categoryFilter) categoryFilter.value = '';
-            if (sortFilter)     sortFilter.value     = 'name';
+            if (sortFilter) sortFilter.value = 'name';
             sortCards();
             applyFilters();
         });
