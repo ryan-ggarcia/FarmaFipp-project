@@ -1,153 +1,112 @@
-<div class="container py-4 py-lg-5">
-	<div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-		<div>
-			<h1 class="h3 mb-1">Meu Carrinho</h1>
-			<p class="text-muted mb-0">Confira os itens adicionados antes de finalizar a compra.</p>
-		</div>
-		<a href="/usuario/shop" class="btn btn-outline-secondary">
-			<i class="bi bi-arrow-left me-1"></i> Continuar comprando
-		</a>
-	</div>
+<link rel="stylesheet" href="/css/style-carrinho-user.css" />
 
-	<div id="cartEmptyState" class="card border-0 shadow-sm d-none">
-		<div class="card-body text-center py-5">
-			<i class="bi bi-bag-x" style="font-size: 3rem; color: #b9b9b9;"></i>
-			<h2 class="h5 mt-3">Seu carrinho está vazio</h2>
-			<p class="text-muted mb-3">Adicione produtos para visualizar o resumo da compra.</p>
-			<a href="/usuario/shop" class="btn btn-danger">
-				Ver produtos
+<main class="checkout-page py-4 py-lg-5">
+	<div class="container-xl">
+		<div class="checkout-head d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+			<div>
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb mb-2">
+						<li class="breadcrumb-item"><a href="/usuario">Início</a></li>
+						<li class="breadcrumb-item"><a href="/usuario/shop">Produtos</a></li>
+						<li class="breadcrumb-item active" aria-current="page">Finalizar pedido</li>
+					</ol>
+				</nav>
+				<h1 class="checkout-title mb-0">Resumo do Pedido</h1>
+			</div>
+			<a href="/usuario/shop" class="btn btn-outline-secondary btn-back-shop">
+				<i class="bi bi-arrow-left me-1"></i> Continuar comprando
 			</a>
 		</div>
-	</div>
 
-	<div id="cartContent" class="row g-3 g-lg-4">
-		<div class="col-lg-8">
-			<div class="card border-0 shadow-sm">
-				<div class="card-body p-0">
-					<div class="table-responsive">
-						<table class="table align-middle mb-0">
-							<thead class="table-light">
-								<tr>
-									<th>Produto</th>
-									<th class="text-center">Qtd.</th>
-									<th class="text-end">Preço</th>
-									<th class="text-end">Subtotal</th>
-									<th class="text-end">Ação</th>
-								</tr>
-							</thead>
-							<tbody id="cartItemsBody"></tbody>
-						</table>
-					</div>
-				</div>
-			</div>
+		<div id="checkoutEmptyState" class="checkout-empty d-none">
+			<div class="empty-icon"><i class="bi bi-bag-x"></i></div>
+			<h2>Seu carrinho está vazio</h2>
+			<p>Adicione produtos para visualizar o pedido e seguir para o pagamento.</p>
+			<a href="/usuario/shop" class="btn btn-danger px-4">
+				<i class="bi bi-grid me-1"></i> Ver produtos
+			</a>
 		</div>
 
-		<div class="col-lg-4">
-			<div class="card border-0 shadow-sm">
-				<div class="card-body">
-					<h2 class="h5 mb-3">Resumo do Pedido</h2>
-					<div class="d-flex justify-content-between mb-2">
-						<span class="text-muted">Itens</span>
-						<strong id="cartTotalItems">0</strong>
+		<div id="checkoutContent" class="row g-4">
+			<section class="col-12 col-lg-8">
+				<div class="checkout-card">
+					<div class="checkout-card-header d-flex align-items-center justify-content-between">
+						<h3 class="mb-0">Itens no carrinho</h3>
+						<span class="small text-muted" id="checkoutItemsLabel">0 itens</span>
 					</div>
-					<div class="d-flex justify-content-between mb-3">
-						<span class="text-muted">Total</span>
-						<strong id="cartTotalPrice">R$ 0,00</strong>
-					</div>
-					<div class="d-grid gap-2">
-						<button type="button" class="btn btn-danger" id="btnCheckout" disabled>
-							Finalizar compra
-						</button>
-						<button type="button" class="btn btn-outline-secondary" id="btnClearCart">
-							Limpar carrinho
+
+					<div class="checkout-items-list" id="checkoutItemsList"></div>
+
+					<div class="checkout-card-footer d-flex flex-wrap gap-2 justify-content-between align-items-center">
+						<small class="text-muted">Você pode ajustar quantidades antes de finalizar.</small>
+						<button type="button" class="btn btn-outline-secondary btn-sm" id="btnCheckoutClear">
+							<i class="bi bi-trash me-1"></i> Limpar carrinho
 						</button>
 					</div>
 				</div>
-			</div>
-		</div>
-	</div>
-</div>
+			</section>
 
-<script>
-	const cartItemsBody = document.getElementById('cartItemsBody');
-	const cartEmptyState = document.getElementById('cartEmptyState');
-	const cartContent = document.getElementById('cartContent');
-	const cartTotalItems = document.getElementById('cartTotalItems');
-	const cartTotalPrice = document.getElementById('cartTotalPrice');
-	const btnClearCart = document.getElementById('btnClearCart');
-	const btnCheckout = document.getElementById('btnCheckout');
+			<aside class="col-12 col-lg-4">
+				<div class="checkout-card summary-card">
+					<div class="checkout-card-header">
+						<h3 class="mb-0">Resumo</h3>
+					</div>
 
-	function formatCurrency(value) {
-		return Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-	}
-
-	function renderCart() {
-		const cart = window.cartService ? window.cartService.loadCart() : [];
-
-		if (!cart.length) {
-			cartItemsBody.innerHTML = '';
-			cartEmptyState.classList.remove('d-none');
-			cartContent.classList.add('d-none');
-			if (window.updateCartBadge) {
-				window.updateCartBadge();
-			}
-			return;
-		}
-
-		cartEmptyState.classList.add('d-none');
-		cartContent.classList.remove('d-none');
-
-		const rows = cart.map((item) => {
-			const subtotal = Number(item.preco || 0) * Number(item.quantidade || 0);
-			const imagem = item.imagem || '/img/produtos/barra-de-imagem.png';
-			const descricao = item.descricao || 'Sem descrição';
-
-			return `
-				<tr>
-					<td>
-						<div class="d-flex align-items-center gap-3">
-							<img src="${imagem}" alt="${item.nome}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid #eee;" />
-							<div>
-								<div class="fw-semibold">${item.nome}</div>
-								<small class="text-muted">${descricao}</small>
-							</div>
+					<div class="summary-lines">
+						<div class="summary-line">
+							<span>Subtotal</span>
+							<strong id="checkoutSubtotal">R$ 0,00</strong>
 						</div>
-					</td>
-					<td class="text-center">${Number(item.quantidade || 0)}</td>
-					<td class="text-end">${formatCurrency(item.preco)}</td>
-					<td class="text-end fw-semibold">${formatCurrency(subtotal)}</td>
-					<td class="text-end">
-						<button class="btn btn-sm btn-outline-danger btn-remove-item" data-id="${item.id}" type="button">
-							<i class="bi bi-trash"></i>
+						<div class="summary-line">
+							<span>Entrega</span>
+							<strong id="checkoutShipping">R$ 0,00</strong>
+						</div>
+						<div class="summary-line discount-line">
+							<span>Desconto</span>
+							<strong id="checkoutDiscount">- R$ 0,00</strong>
+						</div>
+					</div>
+
+					<div class="total-line mt-2">
+						<span>Total</span>
+						<strong id="checkoutTotal">R$ 0,00</strong>
+					</div>
+
+					<div class="payment-section mt-4">
+						<h4 class="payment-title">Forma de pagamento</h4>
+						<div class="payment-grid" id="paymentMethods">
+							<button type="button" class="payment-option active" data-payment="pix">
+								<i class="bi bi-qr-code"></i>
+								<span>PIX</span>
+							</button>
+							<button type="button" class="payment-option" data-payment="card">
+								<i class="bi bi-credit-card"></i>
+								<span>Cartão</span>
+							</button>
+							<button type="button" class="payment-option" data-payment="boleto">
+								<i class="bi bi-receipt"></i>
+								<span>Boleto</span>
+							</button>
+						</div>
+					</div>
+
+					<div class="d-grid gap-2 mt-4">
+						<button type="button" class="btn btn-danger btn-lg" id="btnConfirmOrder">
+							<i class="bi bi-check2-circle me-1"></i> Finalizar pagamento
 						</button>
-					</td>
-				</tr>
-			`;
-		}).join('');
+						<button type="button" class="btn btn-light btn-lg border" id="btnSimulateBack">
+							Voltar para revisão
+						</button>
+					</div>
 
-		cartItemsBody.innerHTML = rows;
-		cartTotalItems.textContent = String(window.cartService.getTotalItems());
-		cartTotalPrice.textContent = formatCurrency(window.cartService.getTotalPrice());
-		btnCheckout.disabled = false;
+					<p class="secure-note mt-3 mb-0">
+						<i class="bi bi-shield-check me-1"></i>
+						Fluxo de pagamento apenas demonstrativo (front-end).
+					</p>
+				</div>
+			</aside>
+		</div>
+	</div>
+</main>
 
-		document.querySelectorAll('.btn-remove-item').forEach((button) => {
-			button.addEventListener('click', () => {
-				window.cartService.removeFromCart(button.dataset.id);
-				if (window.updateCartBadge) {
-					window.updateCartBadge();
-				}
-				renderCart();
-			});
-		});
-	}
-
-	btnClearCart.addEventListener('click', () => {
-		window.cartService.clearCart();
-		if (window.updateCartBadge) {
-			window.updateCartBadge();
-		}
-		renderCart();
-	});
-
-	document.addEventListener('DOMContentLoaded', renderCart);
-</script>
+<script src="/js/produtos/checkout.js"></script>

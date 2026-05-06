@@ -1,6 +1,6 @@
 <script src="/js/produtos/cartService.js"></script>
-
 <link rel="stylesheet" href="/css/style-produtos.css" />
+
 <div class="page-header">
     <div class="container-xl">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -30,208 +30,60 @@
                 </select>
             </div>
             <div class="col-md-2 text-end">
-                <button class="btn-filter w-100" onclick="resetFilters()"><i
-                        class="bi bi-arrow-counterclockwise me-1"></i>Limpar</button>
+                <button class="btn-filter w-100" onclick="resetFilters()">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Limpar
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ════════════════════════════════
-     TAB: TODOS OS PRODUTOS
-════════════════════════════════ -->
 <section class="products-section" id="tab-todos">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="products-count">
-                <% if(produtos && produtos.length> 0) { %>
-                    Exibindo <span id="visibleCount">
-                        <%= produtos.length %>
-                    </span> de <span>
-                        <%= produtos.length %>
-                    </span> produtos
-                    <% } %>
+                <% if (typeof lista !== 'undefined' && lista.length > 0) { %>
+                    Exibindo <span id="visibleCount"><%= lista.length %></span> de <span><%= lista.length %></span> produtos
+                <% } %>
             </div>
         </div>
 
-        <% if(!produtos || produtos.length===0) { %>
-            <div class="empty-state">
-                <i class="bi bi-box-seam"></i>
-                <h4>Nenhum produto encontrado</h4>
-                <p>No momento não existem produtos cadastrados no sistema.</p>
-                <a href="/" class="btn btn-hero mt-3" style="text-decoration:none">
-                    <i class="bi bi-house me-1"></i> Voltar ao Início
-                </a>
-            </div>
-            <% } else { %>
-                <div class="row g-3" id="productsGrid">
-                    <% 
-                        const promoMap = {};
-                        if (typeof produtosPromocao !== 'undefined' && produtosPromocao) {
-                            produtosPromocao.forEach(p => {
-                                promoMap[p.id] = p.preco;
-                            });
-                        }
-                        for(let i=0; i < produtos.length; i++) { 
-                            let isPromo = promoMap.hasOwnProperty(produtos[i].id);
-                            let displayPrice = isPromo ? promoMap[produtos[i].id] : produtos[i].preco;
-                    %>
-                        <div class="col-6 col-md-4 col-lg-3" data-product
-                            data-name="<%= produtos[i].nome.toLowerCase() %>"
-                            data-category="<%= produtos[i].categoria %>" data-price="<%= displayPrice %>">
-                            <div class="product-card h-100 <%= isPromo ? 'promo-card' : '' %>">
-                                <% if(isPromo) { %>
-                                    <span class="badge-discount promo-badge-fire"><i class="bi bi-fire me-1"></i>-15%</span>
-                                <% } else if(produtos[i].quantidade <= 0) { %>
-                                    <span class="badge-discount" style="background:#666">Esgotado</span>
-                                    <% } else if(produtos[i].quantidade <=10) { %>
-                                        <span class="badge-discount"
-                                            style="background:var(--accent-yellow);color:#333">Últimas unid.</span>
-                                        <% } %>
+        <div class="active-filters" id="activeFilters"></div>
 
-                                            <button class="wishlist-btn" title="Adicionar à lista de desejos">
-                                                <i class="bi bi-heart"></i>
-                                            </button>
-
-                                            <div class="img-wrap">
-                                                <% if(produtos[i].img && produtos[i].img !== 'Imagem não disponível') { %>
-                                                    <img src="<%= produtos[i].img %>" alt="<%= produtos[i].nome %>"
-                                                        class="product-db-img" />
-                                                    <% } else { %>
-                                                        <i class="bi bi-capsule"
-                                                            style="font-size:3.5rem;color:rgba(0,0,0,.15)"></i>
-                                                        <% } %>
-                                            </div>
-
-            <div class="filter-card">
-                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#catFilter">
-                    <span><i class="bi bi-grid-3x3-gap me-2 text-muted"></i>Categorias</span>
-                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
-                </div>
-                <div class="collapse show" id="catFilter">
-                    <div class="filter-card-body">
-                        <% if (categorias.length === 0) { %>
-                            <span class="text-muted small">Sem categorias cadastradas</span>
-                        <% } %>
-                        <% categorias.forEach((categoria, index) => { %>
-                            <div class="filter-check">
-                                <input type="checkbox" id="cat<%= index %>" data-filter-category="<%= categoria.nome %>" />
-                                <label for="cat<%= index %>"><%= categoria.nome %></label>
-                                <span class="count"><%= categoria.total %></span>
-                            </div>
-                        <% }) %>
-                    </div>
-                </div>
-
-            <div class="filter-card">
-                <div class="filter-card-header" data-bs-toggle="collapse" data-bs-target="#priceFilter">
-                    <span><i class="bi bi-tag me-2 text-muted"></i>Faixa de Preço</span>
-                    <i class="bi bi-chevron-down text-muted" style="font-size:.8rem"></i>
-                </div>
-                <div class="collapse show" id="priceFilter">
-                    <div class="filter-card-body">
-                        <div class="price-range-display">
-                            <span id="priceMin">R$ <%= faixaPreco.min %></span>
-                            <span id="priceMax">R$ <%= faixaPreco.max %></span>
-                        </div>
-                        <input type="range" id="priceRange" min="<%= faixaPreco.min %>" max="<%= faixaPreco.max %>" value="<%= faixaPreco.max %>" step="1" />
-                    </div>
-                </div>
-                <% } %>
-    </div>
-</section>
-
-<!-- ════════════════════════════════
-     TAB: PROMOÇÃO (Perto da validade)
-════════════════════════════════ -->
-<section class="products-section" id="tab-promocao" style="display:none">
-    <div class="container">
-        <!-- Promo Banner -->
-        <div class="promo-alert mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <div class="promo-alert-icon">
-                    <i class="bi bi-clock-history"></i>
-                </div>
-                <div class="collapse show" id="brandFilter">
-                    <div class="filter-card-body">
-                        <% if (marcas.length === 0) { %>
-                            <span class="text-muted small">Sem marcas cadastradas</span>
-                        <% } %>
-                        <% marcas.forEach((marca, index) => { %>
-                            <div class="filter-check">
-                                <input type="checkbox" id="brand<%= index %>" data-filter-brand="<%= marca.nome %>" />
-                                <label for="brand<%= index %>"><%= marca.nome %></label>
-                                <span class="count"><%= marca.total %></span>
-                            </div>
-                        <% }) %>
-                    </div>
-                </div>
+        <div class="products-toolbar">
+            <span class="toolbar-label">Ordenar por:</span>
+            <select class="toolbar-select">
+                <option>Relevância</option>
+                <option>Menor Preço</option>
+                <option>Maior Preço</option>
+                <option>Mais Vendidos</option>
+                <option>Novidades</option>
+                <option>Melhor Avaliado</option>
+            </select>
+            <span class="toolbar-label ms-2">Exibir:</span>
+            <select class="toolbar-select" id="itemsPerPage" style="width:70px">
+                <option>24</option>
+                <option>48</option>
+                <option>96</option>
+            </select>
+            <div class="view-toggle ms-auto">
+                <button class="view-btn active" id="btnGrid" title="Grade"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+                <button class="view-btn" id="btnList" title="Lista"><i class="bi bi-list-ul"></i></button>
             </div>
         </div>
 
-        <% if(!produtosPromocao || produtosPromocao.length===0) { %>
-            <div class="empty-state">
-                <i class="bi bi-tags"></i>
-                <h4>Nenhuma promoção no momento</h4>
-                <p>Não há produtos com validade próxima em promoção. Volte em breve!</p>
-                <button class="btn btn-hero mt-3" onclick="switchTab('todos')" style="border:none">
-                    <i class="bi bi-grid me-1"></i> Ver Todos os Produtos
-                </button>
-            </div>
-            <% } else { %>
-                <div class="row g-3" id="promoGrid">
-                    <% for(let i=0; i < produtosPromocao.length; i++) { %>
-                        <div class="col-6 col-md-4 col-lg-3" data-promo-product
-                            data-name="<%= produtosPromocao[i].nome.toLowerCase() %>"
-                            data-category="<%= produtosPromocao[i].categoria %>"
-                            data-price="<%= produtosPromocao[i].preco %>">
-                            <div class="product-card h-100 promo-card">
-                                <span class="badge-discount promo-badge-fire"><i
-                                        class="bi bi-fire me-1"></i>-15%</span>
-
-                                <button class="wishlist-btn" title="Adicionar à lista de desejos">
-                                    <i class="bi bi-heart"></i>
-                                </button>
-
-            <div class="active-filters" id="activeFilters"></div>
-
-            <div class="products-toolbar">
-                <span class="toolbar-label">Ordenar por:</span>
-                <select class="toolbar-select">
-                    <option>Relevância</option>
-                    <option>Menor Preço</option>
-                    <option>Maior Preço</option>
-                    <option>Mais Vendidos</option>
-                    <option>Novidades</option>
-                    <option>Melhor Avaliado</option>
-                </select>
-                <span class="toolbar-label ms-2">Exibir:</span>
-                <select class="toolbar-select" id="itemsPerPage" style="width:70px">
-                    <option>24</option>
-                    <option>48</option>
-                    <option>96</option>
-                </select>
-                <div class="view-toggle ms-auto">
-                    <button class="view-btn active" id="btnGrid" title="Grade"><i
-                            class="bi bi-grid-3x3-gap-fill"></i></button>
-                    <button class="view-btn" id="btnList" title="Lista"><i class="bi bi-list-ul"></i></button>
-                </div>
-            </div>
-
-            <div class="row g-3 products-grid" id="productsGrid">
-                <% if (lista.length === 0) { %>
-                    <div class="col-12" id="emptyState">
-                        <div class="empty-state">
-                            <div class="icon"><i class="bi bi-box-seam"></i></div>
-                            <h5>Nenhum produto disponível</h5>
-                            <p>Não há produtos cadastrados no momento.</p>
-                        </div>
+        <div class="row g-3 products-grid" id="productsGridList">
+            <% if (typeof lista !== 'undefined' && lista.length === 0) { %>
+                <div class="col-12" id="emptyState">
+                    <div class="empty-state">
+                        <div class="icon"><i class="bi bi-box-seam"></i></div>
+                        <h5>Nenhum produto disponível</h5>
+                        <p>Não há produtos cadastrados no momento.</p>
                     </div>
-                <% } %>
-
+                </div>
+            <% } else if (typeof lista !== 'undefined') { %>
                 <% lista.forEach((produto) => { %>
-                    <div
-                        class="col-12 col-sm-6 col-lg-4 col-xl-3 product-col"
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 product-col"
                         data-product-name="<%= (produto.nome || '').toLowerCase() %>"
                         data-product-category="<%= (produto.categoria || '').toLowerCase() %>"
                         data-product-brand="<%= (produto.marca || '').toLowerCase() %>"
@@ -274,10 +126,7 @@
                                         <% } %>
                                     </div>
 
-                                    <button
-                                        class="btn-add-cart add-to-cart"
-                                        type="button"
-                                        data-produto="<%= produto.id %>">
+                                    <button class="btn-add-cart add-to-cart" type="button" data-produto="<%= produto.id %>">
                                         <i class="bi bi-bag-plus"></i> Adicionar ao carrinho
                                     </button>
                                 </div>
@@ -285,24 +134,77 @@
                         </article>
                     </div>
                 <% }) %>
+            <% } %>
+        </div>
+
+        <nav class="mt-4 d-flex justify-content-center" aria-label="Paginação">
+            <ul class="pagination">
+                <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">…</a></li>
+                <li class="page-item"><a class="page-link" href="#">8</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </nav>
+
+    </div>
+</section>
+
+<section class="products-section" id="tab-promocao" style="display:none">
+    <div class="container">
+        <div class="promo-alert mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="promo-alert-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="collapse show" id="brandFilter">
+                    <div class="filter-card-body">
+                        <% if (typeof marcas !== 'undefined' && marcas.length === 0) { %>
+                            <span class="text-muted small">Sem marcas cadastradas</span>
+                        <% } else if (typeof marcas !== 'undefined') { %>
+                            <% marcas.forEach((marca, index) => { %>
+                                <div class="filter-check">
+                                    <input type="checkbox" id="brand<%= index %>" data-filter-brand="<%= marca.nome %>" />
+                                    <label for="brand<%= index %>"><%= marca.nome %></label>
+                                    <span class="count"><%= marca.total %></span>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <nav class="mt-4 d-flex justify-content-center" aria-label="Paginação">
-                <ul class="pagination">
-                    <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">…</a></li>
-                    <li class="page-item"><a class="page-link" href="#">8</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
-                </ul>
-            </nav>
-
-        </div><!-- /.products-area -->
-    </div><!-- /.products-layout -->
-</div><!-- /.container-xl -->
+        <% if(typeof produtosPromocao === 'undefined' || produtosPromocao.length === 0) { %>
+            <div class="empty-state">
+                <i class="bi bi-tags"></i>
+                <h4>Nenhuma promoção no momento</h4>
+                <p>Não há produtos com validade próxima em promoção. Volte em breve!</p>
+                <button class="btn btn-hero mt-3" onclick="switchTab('todos')" style="border:none">
+                    <i class="bi bi-grid me-1"></i> Ver Todos os Produtos
+                </button>
+            </div>
+        <% } else { %>
+            <div class="row g-3" id="promoGrid">
+                <% for(let i=0; i < produtosPromocao.length; i++) { %>
+                    <div class="col-6 col-md-4 col-lg-3" data-promo-product
+                        data-name="<%= produtosPromocao[i].nome.toLowerCase() %>"
+                        data-category="<%= produtosPromocao[i].categoria %>"
+                        data-price="<%= produtosPromocao[i].preco %>">
+                        <div class="product-card h-100 promo-card">
+                            <span class="badge-discount promo-badge-fire"><i class="bi bi-fire me-1"></i>-15%</span>
+                            <button class="wishlist-btn" title="Adicionar à lista de desejos">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</section>
 
     <!-- <script>
         /* ── Sidebar mobile ── */
