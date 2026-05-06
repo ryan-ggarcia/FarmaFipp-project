@@ -66,6 +66,36 @@ class ProdutoController {
         }
     }
 
+    async obterProduto(req, res){
+        try{
+            const { produtoId } = req.params;
+            if(!produtoId){
+                return res.status(400).send({ ok: false, msg: 'ID do produto não informado!' });
+            }
+            else{
+                let produtoModel = new ProdutoModel();
+                let produto = await produtoModel.Get(produtoId);
+
+                if(!produto){
+                    return res.status(404).send({ ok: false, msg: 'Produto não encontrado!' });
+                }
+
+                res.send({ ok: true, produto: {
+                    id: produto.id,
+                    nome: produto.nome,
+                    descricao: produto.descricao,
+                    preco: produto.preco,
+                    quantidade: produto.quantidade,
+                    img: produto.img
+                }});
+            }
+        }
+        catch(error){
+            console.error('Erro ao obter produto:', error);
+            return res.status(500).send({ ok: false, msg: 'Erro ao obter produto!' });
+        }
+    }
+
     async cadastrar(req, res) {
         const { nome, descricao, preco, quantidade, marca, categoria, fornecedor } = req.body;
         const img = req.file?.filename || null;
