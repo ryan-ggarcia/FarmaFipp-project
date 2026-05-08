@@ -2,7 +2,7 @@
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 		<div>
 			<h4 class="mb-1" style="color: rgba(163,22,33,0.95); font-weight: bold;">Gerenciamento de Estoque</h4>
-			<p class="text-muted mb-0">Acompanhe as movimentações de entrada registradas no sistema.</p>
+			<p class="text-muted mb-0">Acompanhe as movimentações de entrada e saída registradas no sistema.</p>
 		</div>
 		<div class="d-flex gap-2">
 			<a href="/estoque/adicionar" class="btn btn-primary custom btn-rounded">Adicionar ao Estoque</a>
@@ -23,7 +23,7 @@
 			<div class="card card-saas no-hover h-100">
 				<div class="card-body">
 					<small class="text-muted d-block">Tipo de Fluxo</small>
-					<h4 class="mb-0">Entradas</h4>
+					<h4 class="mb-0">Entradas e Saídas</h4>
 				</div>
 			</div>
 		</div>
@@ -64,7 +64,11 @@
 								<tr>
 									<td><%= estoqueList[i].id %></td>
 									<td>#<%= estoqueList[i].loteId %> - <%= estoqueList[i].lot_name || 'Lote sem nome' %></td>
-									<td><span class="badge bg-success"><%= estoqueList[i].tipo %></span></td>
+									<td>
+										<span class="badge <%= String(estoqueList[i].tipo || '').toUpperCase() === 'SAIDA' ? 'bg-danger' : 'bg-success' %>">
+											<%= estoqueList[i].tipo %>
+										</span>
+									</td>
 									<td><%= estoqueList[i].origem %></td>
 									<td><%= Number(estoqueList[i].quantidade) %></td>
 									<td><%= estoqueList[i].lot_validade ? new Date(estoqueList[i].lot_validade).toLocaleDateString('pt-BR') : 'N/A' %></td>

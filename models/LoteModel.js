@@ -77,6 +77,55 @@ class LoteModel {
         }
         
     }
+
+    async HasAvailableStock(quantidade) {
+        const quantidadeNum = Number(quantidade);
+
+        if (!this.#id || Number.isNaN(quantidadeNum) || quantidadeNum <= 0) {
+            return false;
+        }
+
+        const sql = 'select lot_qnt from Lote where lot_id = ? limit 1';
+        const values = [this.#id];
+        const banco = new Database();
+        const rows = await banco.ExecutaComando(sql, values);
+
+        if (!rows || !rows.length) {
+            return false;
+        }
+
+        return Number(rows[0].lot_qnt) >= quantidadeNum;
+    }
+
+    async DecreaseStock(quantidade) {
+        const quantidadeNum = Number(quantidade);
+
+        if (!this.#id || Number.isNaN(quantidadeNum) || quantidadeNum <= 0) {
+            return false;
+        }
+
+        const sql = 'update Lote set lot_qnt = lot_qnt - ? where lot_id = ? and lot_qnt >= ?';
+        const values = [quantidadeNum, this.#id, quantidadeNum];
+        const banco = new Database();
+        const result = await banco.ExecutaComando(sql, values);
+
+        return !!(result && result.affectedRows > 0);
+    }
+
+    async IncreaseStock(quantidade) {
+        const quantidadeNum = Number(quantidade);
+
+        if (!this.#id || Number.isNaN(quantidadeNum) || quantidadeNum <= 0) {
+            return false;
+        }
+
+        const sql = 'update Lote set lot_qnt = lot_qnt + ? where lot_id = ?';
+        const values = [quantidadeNum, this.#id];
+        const banco = new Database();
+        const result = await banco.ExecutaComando(sql, values);
+
+        return !!(result && result.affectedRows > 0);
+    }
 }
 
 module.exports = LoteModel;

@@ -51,9 +51,9 @@ class ItemVendaModel{
 
         let values = [this.id_venda, this.id_produto, this.id_lote]
 
-        let result = await banco.ExecutaComandoNonQuery(sql, values)
+        let result = await banco.ExecutaComando(sql, values)
 
-        return result
+        return result?.insertId || null
     }
 }
 

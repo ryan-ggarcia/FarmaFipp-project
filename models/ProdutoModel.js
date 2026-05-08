@@ -12,6 +12,7 @@ class ProdutoModel{
     #categoria
     #fornecedor
     #lote
+    #id_lote
     #img
 
     get id() { return this.#id; } set id(value) { this.#id = value; }
@@ -24,10 +25,11 @@ class ProdutoModel{
     get fornecedor() { return this.#fornecedor; } set fornecedor(value) { this.#fornecedor = value; }
     get marca() { return this.#marca; } set marca(value) { this.#marca = value; }
     get lote() { return this.#lote; } set lote(value) { this.#lote = value; }
+    get id_lote() { return this.#id_lote; } set id_lote(value) { this.#id_lote = value; }
     get img() { return this.#img; } set img(value) { this.#img = value; }
 
 
-    constructor(id, nome, descricao, validade, preco, quantidade, categoria, fornecedor, marca, lote, img){
+    constructor(id, nome, descricao, validade, preco, quantidade, categoria, fornecedor, marca, lote, img, id_lote = null){
         this.#id = id;
         this.#nome = nome;
         this.#descricao = descricao;
@@ -39,6 +41,7 @@ class ProdutoModel{
         this.#marca = marca;
         this.#lote = lote;
         this.#img = img;
+    this.#id_lote = id_lote;
     }
 
 
@@ -100,6 +103,7 @@ class ProdutoModel{
                 result[i]['marca'],
                 result[i]['lot_name'],
                 imagem,
+                result[i]['lot_id'] || null,
             )
             lista.push(produtos)
         }
@@ -184,6 +188,7 @@ class ProdutoModel{
             fornecedor: this.#fornecedor,
             marca: this.#marca,
             lote: this.#lote,
+            id_lote: this.#id_lote,
             img: this.#img
         }
     }
