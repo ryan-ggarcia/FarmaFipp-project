@@ -1,0 +1,58 @@
+<script src="/js/posVenda/cadastrarPresencial.js"></script>
+<div class="p-3 p-1-25">
+  <div class="card card-saas no-hover">
+    <div class="card-body">
+      <h4 class="mb-3" style="color: rgba(163,22,33,0.95); font-weight: bold;">Registrar Devolução/Troca (Presencial)</h4>
+      <form id="formCadastrar">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Tipo</label>
+            <select id="tipo" class="form-control">
+              <option value="">--Selecione--</option>
+              <option value="Compra">Devolução</option>
+              <option value="Venda">Troca</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Cliente</label>
+            <select id="clienteId" class="form-control">
+              <option value="">--Selecione--</option>
+              <% for(let i = 0; i < listaClientes.length; i++) { %>
+                <option value="<%= listaClientes[i].id %>"><%= listaClientes[i].nome %></option>
+              <% } %>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Data da Compra</label>
+            <input id="dataCompra" type="date" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Produto</label>
+            <select id="produtoId" class="form-control select2-produto">
+              <option value="">--Selecione--</option>
+              <% for(let i = 0; i < listaProdutos.length; i++) { %>
+                <option value="<%= listaProdutos[i].id %>"><%= listaProdutos[i].nome %></option>
+              <% } %>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Quantidade</label>
+            <input id="quantidade" type="number" min="1" value="1" class="form-control">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Motivo da Devolução/Troca</label>
+            <textarea id="motivo" class="form-control" rows="3" placeholder="Descreva o motivo..."></textarea>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Observação do Funcionário (opcional)</label>
+            <textarea id="observacao" class="form-control" rows="2" placeholder="Observações adicionais..."></textarea>
+          </div>
+          <div class="col-12 d-flex gap-2">
+            <button id="btnGravar" type="button" style="margin-right: 5px; margin-top: 5px;" class="btn btn-primary custom btn-rounded">Cadastrar</button>
+            <a href="/pos-venda" style="margin-top: 5px;" class="btn btn-outline-secondary btn-rounded">Voltar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

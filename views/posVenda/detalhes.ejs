@@ -1,0 +1,135 @@
+<script src="/js/posVenda/detalhes.js"></script>
+<div class="p-3 p-1-25">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="mb-0">Detalhes da Solicitação #<%= devolucao.getID() %></h3>
+      <small class="text-muted">Visualize e gerencie esta devolução/troca</small>
+    </div>
+    <div>
+      <a href="/pos-venda" class="btn btn-outline-secondary btn-rounded">
+        <i class="fas fa-arrow-left me-2"></i>Voltar
+      </a>
+    </div>
+  </div>
+
+  <!-- Informações da Devolução -->
+  <div class="card card-saas no-hover mb-3">
+    <div class="card-body">
+      <h5 class="mb-3" style="color: rgba(163,22,33,0.95); font-weight: bold;">Informações da Solicitação</h5>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Tipo</label>
+          <p>
+            <% if(devolucao.getTIPO() === 'Compra') { %>
+              <span class="badge bg-info">Devolução</span>
+            <% } else { %>
+              <span class="badge bg-warning text-dark">Troca</span>
+            <% } %>
+          </p>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Origem</label>
+          <p>
+            <% if(devolucao.getORIGEM() === 'presencial') { %>
+              <i class="bi bi-shop me-1"></i>Presencial
+            <% } else { %>
+              <i class="bi bi-globe me-1"></i>Online
+            <% } %>
+          </p>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Status</label>
+          <p>
+            <% if(devolucao.getSTATUS() === 'Aguardando') { %>
+              <span class="badge bg-warning text-dark">Aguardando</span>
+            <% } else if(devolucao.getSTATUS() === 'Aprovado') { %>
+              <span class="badge bg-success">Aprovado</span>
+            <% } else if(devolucao.getSTATUS() === 'Nao Aprovado') { %>
+              <span class="badge bg-danger">Não Aprovado</span>
+            <% } %>
+          </p>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Valor Total</label>
+          <p>R$ <%= devolucao.getVALORTOTAL() ? Number(devolucao.getVALORTOTAL()).toFixed(2) : '0.00' %></p>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Data da Compra</label>
+          <p><%= devolucao.getDATACOMPRA() ? (devolucao.getDATACOMPRA() instanceof Date ? devolucao.getDATACOMPRA().toISOString().split('T')[0] : String(devolucao.getDATACOMPRA()).split('T')[0]) : 'N/A' %></p>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Data da Solicitação</label>
+          <p><%= devolucao.getDATA() ? (devolucao.getDATA() instanceof Date ? devolucao.getDATA().toISOString().split('T')[0] : String(devolucao.getDATA()).split('T')[0]) : 'N/A' %></p>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Cliente</label>
+          <p><%= devolucao.getNOMECLIENTE() || 'N/A (Solicitação Online)' %></p>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Funcionário Responsável</label>
+          <p><%= devolucao.getNOMEFUNCIONARIO() || 'Não atribuído' %></p>
+        </div>
+        <% if(devolucao.getDATAFINALIZACAO()) { %>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Data de Finalização</label>
+            <p><%= devolucao.getDATAFINALIZACAO() instanceof Date ? devolucao.getDATAFINALIZACAO().toISOString().split('T')[0] : String(devolucao.getDATAFINALIZACAO()).split('T')[0] %></p>
+          </div>
+        <% } %>
+        <div class="col-md-12">
+          <label class="form-label fw-bold">Observações</label>
+          <p><%= devolucao.getOBSERVACAO() || 'Sem observações' %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Itens da Devolução -->
+  <div class="card card-saas mb-3">
+    <div class="card-body p-0">
+      <div class="p-3">
+        <h5 class="mb-0" style="color: rgba(163,22,33,0.95); font-weight: bold;">Itens Devolvidos</h5>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Produto</th>
+              <th>Quantidade</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(itens.length === 0) { %>
+              <tr>
+                <td colspan="3" class="text-center text-muted py-3">Nenhum item registrado.</td>
+              </tr>
+            <% } %>
+            <% for(let i = 0; i < itens.length; i++) { %>
+              <tr>
+                <td><%= itens[i].getNOMEPRODUTO() %></td>
+                <td><%= itens[i].getQUANTIDADE() %></td>
+                <td><%= itens[i].getMOTIVO() %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ações do Funcionário -->
+  <% if(devolucao.getSTATUS() === 'Aguardando') { %>
+    <div class="card card-saas no-hover">
+      <div class="card-body">
+        <h5 class="mb-3" style="color: rgba(163,22,33,0.95); font-weight: bold;">Ações</h5>
+        <input type="hidden" id="devolucaoId" value="<%= devolucao.getID() %>">
+        <button id="btnAprovar" class="btn btn-success btn-rounded me-2">
+          <i class="fas fa-check me-2"></i>Aprovar
+        </button>
+        <button id="btnRecusar" class="btn btn-danger btn-rounded">
+          <i class="fas fa-times me-2"></i>Não Aprovar
+        </button>
+      </div>
+    </div>
+  <% } %>
+</div>

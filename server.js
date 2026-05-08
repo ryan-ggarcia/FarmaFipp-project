@@ -12,6 +12,7 @@ const VendaRouter = require('./routes/VendaRouter');
 //const brazilianUtils = require('@brazilian-utils/brazilian-utils');
 const expressEjsLayouts = require('express-ejs-layouts');
 const ProdutoRouter = require('./routes/ProdutoRouter');
+const DevolucaoRouter = require('./routes/DevolucaoRouter');
 const server = express();
 //Preparando o servidor para receber as imagem 
 
@@ -34,6 +35,7 @@ server.use("/fornecedores", FornecedorRouter);
 server.use("/produtos", ProdutoRouter);
 server.use("/estoque", EstoqueRouter);
 server.use('/venda', VendaRouter);
+server.use("/pos-venda", DevolucaoRouter);
 
 global.CAMINHO_IMG_ABS = __dirname + "/public/img/produtos/";  
 global.CAMINHO_IMG_NAVEGADOR = "/img/produtos/";  

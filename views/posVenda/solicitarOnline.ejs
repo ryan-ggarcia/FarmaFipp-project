@@ -1,0 +1,103 @@
+<style>
+  .form-online-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  .form-online-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    padding: 32px;
+  }
+  .form-online-card h4 {
+    color: rgba(163,22,33,0.95);
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  .form-online-card .subtitle {
+    color: #6c757d;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+  }
+  .form-online-card .form-label {
+    font-weight: 500;
+  }
+  .btn-enviar {
+    background: linear-gradient(90deg, rgba(163,22,33,0.95), rgba(78,128,152,0.95));
+    border: none;
+    color: #fff;
+    padding: 10px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .btn-enviar:hover {
+    opacity: 0.9;
+    color: #fff;
+  }
+</style>
+
+<div class="form-online-container">
+  <div class="form-online-card">
+    <h4><i class="bi bi-arrow-return-left me-2"></i>Solicitar Devolução/Troca</h4>
+    <p class="subtitle">Preencha os dados abaixo para solicitar a devolução ou troca de um produto. A solicitação será analisada pela nossa equipe.</p>
+
+    <form id="formOnline">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Tipo de Solicitação</label>
+          <select id="tipo" class="form-control">
+            <option value="">--Selecione--</option>
+            <option value="Compra">Devolução</option>
+            <option value="Venda">Troca</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Data da Compra</label>
+          <input id="dataCompra" type="date" class="form-control">
+        </div>
+        <div class="col-md-8">
+          <label class="form-label">Produto</label>
+          <select id="produtoId" class="form-control">
+            <option value="">--Selecione o produto--</option>
+            <% for(let i = 0; i < listaProdutos.length; i++) { %>
+              <option value="<%= listaProdutos[i].id %>"><%= listaProdutos[i].nome %></option>
+            <% } %>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Quantidade</label>
+          <input id="quantidade" type="number" min="1" value="1" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Seu Nome</label>
+          <input id="nomeCliente" type="text" class="form-control" placeholder="Nome completo">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">E-mail ou Telefone</label>
+          <input id="contato" type="text" class="form-control" placeholder="Para contato">
+        </div>
+        <div class="col-12">
+          <label class="form-label">Motivo</label>
+          <textarea id="motivo" class="form-control" rows="3" placeholder="Descreva o motivo da devolução ou troca..."></textarea>
+        </div>
+        <div class="col-12 mt-3">
+          <button id="btnEnviar" type="button" class="btn btn-enviar w-100">
+            <i class="bi bi-send me-2"></i>Enviar Solicitação
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div class="mt-3 text-center">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        O prazo máximo para solicitação é de 30 dias após a compra.
+      </small>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/posVenda/solicitarOnline.js"></script>
