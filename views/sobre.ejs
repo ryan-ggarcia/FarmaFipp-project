@@ -1,0 +1,292 @@
+<section class="about-hero mb-5">
+  <div class="hero-content">
+    <div>
+      <span class="badge-about">FarmaFipp</span>
+      <h1 class="display-5 fw-bold mt-3">
+        Cuidando da sua saúde com
+        <span style="color: var(--primary-red);">tecnologia</span>,
+        confiança e dedicação.
+      </h1>
+
+      <p class="hero-text mt-3">
+        A FarmaFipp nasceu com o objetivo de unir inovação, praticidade e
+        atendimento humanizado em um único sistema. Nossa missão é facilitar
+        o gerenciamento farmacêutico e proporcionar uma experiência moderna
+        tanto para administradores quanto para clientes.
+      </p>
+
+      <div class="d-flex gap-3 mt-4 flex-wrap">
+        <a href="/produtos" class="btn btn-danger btn-rounded px-4">
+          Conhecer Produtos
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-image">
+      <!-- <img src="/img/sobre-nos.jpg" alt="Sobre nós"> -->
+    </div>
+  </div>
+</section>
+
+<!-- Cards principais -->
+<section class="about-cards mb-5">
+
+  <div class="card card-saas">
+    <div class="card-body">
+      <div class="icon-about red">
+        <i class="bi bi-heart-pulse-fill"></i>
+      </div>
+
+      <h4 class="mt-3">Nossa Missão</h4>
+
+      <p class="text-muted">
+        Garantir soluções inteligentes para farmácias e clientes,
+        oferecendo praticidade, organização e excelência no atendimento.
+      </p>
+    </div>
+  </div>
+
+  <div class="card card-saas">
+    <div class="card-body">
+      <div class="icon-about blue">
+        <i class="bi bi-eye-fill"></i>
+      </div>
+
+      <h4 class="mt-3">Nossa Visão</h4>
+
+      <p class="text-muted">
+        Ser referência em inovação farmacêutica digital,
+        conectando tecnologia e saúde de maneira acessível.
+      </p>
+    </div>
+  </div>
+
+  <div class="card card-saas">
+    <div class="card-body">
+      <div class="icon-about red">
+        <i class="bi bi-shield-check"></i>
+      </div>
+
+      <h4 class="mt-3">Nossos Valores</h4>
+
+      <p class="text-muted">
+        Ética, transparência, responsabilidade, inovação e
+        compromisso com cada pessoa que utiliza nosso sistema.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- Estatísticas -->
+<section class="stats-section mb-5">
+
+  <div class="card card-saas">
+    <div class="card-body text-center">
+      <h2 class="stats-number"><%= (clientes && clientes.length) ? clientes.length : 0 %> +</h2>
+      <p class="text-muted">Clientes cadastrados</p>
+    </div>
+  </div>
+
+  <div class="card card-saas">
+    <div class="card-body text-center">
+      <h2 class="stats-number"><%= (funcionarios && funcionarios.length) ? funcionarios.length : 0 %>+</h2>
+      <p class="text-muted">Funcionários ativos</p>
+    </div>
+  </div>
+
+  <div class="card card-saas">
+    <div class="card-body text-center">
+      <h2 class="stats-number"><%= (fornecedores && fornecedores.length) ? fornecedores.length : 0 %>+</h2>
+      <p class="text-muted">Fornecedores parceiros</p>
+    </div>
+  </div>
+
+  <div class="card card-saas">
+    <div class="card-body text-center">
+      <h2 class="stats-number"><%= (servicos && servicos.length) ? servicos.length : 0 %>+</h2>
+      <p class="text-muted">Serviços disponíveis</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- História -->
+<section class="history-section mb-5">
+
+  <div class="card card-saas">
+    <div class="card-body p-4">
+
+      <div class="row align-items-center">
+
+        <div class="col-lg-6">
+          <img
+            src="/img/farmacia-equipe.jpg"
+            alt="Equipe FarmaFipp"
+            class="img-fluid rounded-4 shadow-sm"
+          >
+        </div>
+
+        <div class="col-lg-6 mt-4 mt-lg-0">
+
+          <span class="badge-about">Nossa História</span>
+
+          <h2 class="fw-bold mt-3">
+            Mais que uma farmácia,
+            uma experiência digital.
+          </h2>
+
+          <p class="text-muted mt-3">
+            A FarmaFipp foi criada pensando nos desafios modernos do setor
+            farmacêutico. Desde o início, buscamos desenvolver uma plataforma
+            intuitiva, eficiente e segura para melhorar a gestão de produtos,
+            serviços, compras e atendimento.
+          </p>
+
+          <p class="text-muted">
+            Nosso foco é facilitar processos e criar conexões mais humanas,
+            utilizando tecnologia como ferramenta principal para transformar
+            o dia a dia de administradores e clientes.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- CTA -->
+<section class="about-cta">
+
+  <div class="card card-saas cta-card">
+    <div class="card-body text-center p-5">
+
+      <h2 class="fw-bold">
+        Pronto para conhecer a FarmaFipp?
+      </h2>
+
+      <p class="text-muted mt-3">
+        Explore nossos produtos, serviços e descubra como podemos
+        transformar sua experiência farmacêutica.
+      </p>
+
+      <div class="mt-4">
+        <a href="/produtos" class="btn btn-danger btn-rounded px-5">
+          Explorar Agora
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<style>
+
+.about-hero {
+  padding: 20px 0;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 450px;
+  gap: 40px;
+  align-items: center;
+}
+
+.hero-image img {
+  width: 100%;
+  border-radius: 24px;
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.hero-text {
+  font-size: 1.05rem;
+  color: #6c757d;
+  line-height: 1.8;
+}
+
+.badge-about {
+  background: rgba(163,22,33,0.1);
+  color: var(--primary-red);
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.about-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.icon-about {
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.icon-about.red {
+  background: rgba(163,22,33,0.1);
+  color: var(--primary-red);
+}
+
+.icon-about.blue {
+  background: rgba(78,128,152,0.1);
+  color: var(--primary-blue);
+}
+
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.stats-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary-red);
+}
+
+.cta-card {
+  background: linear-gradient(
+    135deg,
+    rgba(163,22,33,0.05),
+    rgba(78,128,152,0.05)
+  );
+}
+
+.btn-rounded {
+  border-radius: 50px;
+}
+
+.card-saas {
+  border: none;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  transition: 0.3s ease;
+}
+
+.card-saas:hover {
+  transform: translateY(-5px);
+}
+
+@media(max-width: 992px){
+
+  .hero-content{
+    grid-template-columns: 1fr;
+  }
+
+}
+
+</style>
