@@ -68,6 +68,7 @@ if (Array.isArray(produtosPromocao)) {
         <div class="row g-3" id="productsGrid">
             <% produtosLista.forEach(function (produto) {
                 var produtoId = produto.id != null ? produto.id : (produto.pro_id != null ? produto.pro_id : produto.produto_id);
+                var idLote = produto.id_lote != null ? produto.id_lote : (produto.idLote != null ? produto.idLote : produto.lot_id);
                 var nome = produto.nome || 'Produto sem nome';
                 var descricao = produto.descricao || '';
                 var categoria = produto.categoria || 'Sem categoria';
@@ -137,6 +138,7 @@ if (Array.isArray(produtosPromocao)) {
                                 class="btn btn-sm btn-danger add-to-cart mt-2 w-100"
                                 type="button"
                                 data-produto="<%= produtoId %>"
+                                data-lote="<%= idLote || '' %>"
                                 <%= quantidade <= 0 ? 'disabled' : '' %>
                             >
                                 <i class="bi bi-bag-plus me-1"></i>Adicionar ao carrinho

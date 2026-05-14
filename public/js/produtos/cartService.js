@@ -20,6 +20,11 @@ document.addEventListener("DOMContentLoaded", function() {
         return Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
+    function getItemKey(item) {
+        const lote = item.id_lote || item.idLote || '';
+        return `${item.id}::${lote}`;
+    }
+
     function updateBadge() {
         const badge = document.getElementById('cartBadgeCount');
         if (!badge) return;
@@ -53,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const subtotal = Number(item.preco || 0) * Number(item.quantidade || 0);
             const imagem   = item.imagem || '/img/produtos/barra-de-imagem.png';
             const descricao = item.descricao || 'Sem descrição';
+            const itemKey = getItemKey(item);
             return `
                 <tr>
                     <td>
@@ -68,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <td class="text-end small">${formatCurrency(item.preco)}</td>
                     <td class="text-end fw-semibold small">${formatCurrency(subtotal)}</td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-danger btn-modal-remove" data-id="${item.id}" type="button">
+                        <button class="btn btn-sm btn-outline-danger btn-modal-remove" data-key="${itemKey}" type="button">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -87,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         document.querySelectorAll('.btn-modal-remove').forEach(btn => {
             btn.addEventListener('click', () => {
-                cartList = cartList.filter(item => String(item.id) !== String(btn.dataset.id));
+                cartList = cartList.filter(item => getItemKey(item) !== String(btn.dataset.key));
                 localStorage.setItem("cart", JSON.stringify(cartList));
                 updateBadge();
                 renderCart();
@@ -107,10 +113,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function addToCart(){
         let produto = this.dataset.produto;
+        let loteId = this.dataset.lote;
         let that = this;
 
         if(produto){
-            let target = cartList.find(item => item.id == produto);
+            let target = cartList.find(item => String(item.id) === String(produto) && String(item.id_lote || item.idLote || '') === String(loteId || ''));
             let p = null;
 
         if(target){
@@ -122,6 +129,12 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data =>{
                 data.produto.quantidade = 1;
                 data.produto.imagem = data.produto.img;
+                data.produto.id_lote = loteId || data.produto.id_lote || data.produto.idLote || null;
+
+                if (!data.produto.id_lote) {
+                    throw new Error('Produto sem lote disponível para venda.');
+                }
+
                 cartList.push(data.produto);
             })
         }

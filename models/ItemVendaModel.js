@@ -81,9 +81,9 @@ class ItemVendaModel{
 
         let values = [this.id_venda, this.id_produto, this.id_lote, this.item_quant, this.item_valor, this.item_valor_total]
 
-        let result = await banco.ExecutaComandoNonQuery(sql, values)
+        let result = await banco.ExecutaComando(sql, values)
 
-        return result
+        return result?.insertId || null
     }
 
     async ListarItensPorVenda(id_venda){

@@ -82,13 +82,21 @@ class ProdutoController {
                     return res.status(404).send({ ok: false, msg: 'Produto não encontrado!' });
                 }
 
+                produtoModel.id = produtoId;
+                const lotes = await produtoModel.GetLote();
+                const loteDisponivel = Array.isArray(lotes)
+                    ? lotes.find(l => Number(l.lot_qnt || 0) > 0) || lotes[0]
+                    : null;
+                const idLote = loteDisponivel ? loteDisponivel.lot_id : null;
+
                 res.send({ ok: true, produto: {
                     id: produto.id,
                     nome: produto.nome,
                     descricao: produto.descricao,
                     preco: produto.preco,
                     quantidade: produto.quantidade,
-                    img: produto.img
+                    img: produto.img,
+                    id_lote: idLote
                 }});
             }
         }
