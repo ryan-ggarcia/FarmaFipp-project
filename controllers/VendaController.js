@@ -1,5 +1,7 @@
 const VendaModel = require('../models/VendaModel');
 const ItemVendaModel = require('../models/ItemVendaModel');
+const ProdutoModel = require('../models/ProdutoModel');
+const EstoqueModel = require('../models/EstoqueModel');
 
 function toMySqlDateTime(value) {
     const date = value ? new Date(value) : new Date();
@@ -12,46 +14,52 @@ function toMySqlDateTime(value) {
 
 class VendaController {
     async RegistrarVenda(req, res) {
+        console.log(req.body);
+        const itens = Array.isArray(req.body)
+            ? req.body
+            : (Array.isArray(req.body?.itens)
+                ? req.body.itens
+                : (Array.isArray(req.body?.cart) ? req.body.cart : []));
+        let ok = true;
+        let msg = '';
         try {
-            const { data, status, pagamento, total, itens, cart } = req.body;
-
-            const itensVenda = Array.isArray(itens) ? itens : (Array.isArray(cart) ? cart : []);
-            const totalCalculado = Number(total || 0);
-
-            if (!itensVenda.length) {
-                return res.status(400).send({ ok: false, msg: 'Carrinho vazio para registrar venda.' });
+            if(itens.length === 0){
+                return res.send({ ok: false, msg: 'Nenhum item enviado ao servidor!' });
             }
+            let venda = new VendaModel()
+            let id = await venda.RegistrarVenda();
+            venda.total = 0;
 
-            const dataVenda = toMySqlDateTime(data);
-            const statusVenda = status || 'PENDENTE';
-            const formaPagamento = (pagamento || 'PIX').toString().toUpperCase();
+            if(id){
+                let produto = new ProdutoModel();
+                for(let item of itens){
+                    produto = await produto.Get(item.produtoId || item.id_produto || item.id);
 
-            if (!dataVenda) {
-                return res.status(400).send({ ok: false, msg: 'Data da venda inválida.' });
-            }
+                    if(produto.quantidade < item.quantidade){
+                        return res.send({ ok: false, msg: `Quantidade insuficiente do produto ${produto.nome} no estoque!` });
+                    }
 
-            let venda = new VendaModel(null, dataVenda, statusVenda, formaPagamento, totalCalculado);
-            let vendaId = await venda.RegistrarVenda();
+                    let itemVenda = new ItemVendaModel()
+                    itemVenda.id_venda = id;
+                    itemVenda.id_produto = produto.id;
+                    itemVenda.id_lote = item.id_lote || item.idLote || null;
+                    itemVenda.item_quant = item.quantidade;
+                    itemVenda.item_valor = produto.preco;
+                    itemVenda.item_valor_total = itemVenda.item_quant * itemVenda.item_valor;
+                    await itemVenda.RegistrarItemVenda();
+                    venda.total += itemVenda.item_valor_total;
 
-            if (!vendaId) {
-                return res.status(500).send({ ok: false, msg: 'Falha ao registrar cabeçalho da venda.' });
-            }
-
-            for (let item of itensVenda) {
-                const idProduto = item.id_produto || item.idProduto || item.id;
-                if (!idProduto) {
-                    continue;
+                    let estoque = new EstoqueModel(0, null, 'SAÍDA', "VENDA", itemVenda.item_quant, produto.id, null);
+                    produto.quantidade -= itemVenda.item_quant;
+                    await estoque.AddToInventory();
                 }
-
-                const idLote = item.id_lote || item.idLote || null;
-                let itemVenda = new ItemVendaModel(null, vendaId, idProduto, idLote);
-                await itemVenda.RegistrarItemVenda();
+                await venda.AtualizarVenda();
+                return res.send({ ok: true, msg: 'Venda registrada com sucesso!' });
             }
 
-            return res.send({ ok: true, msg: 'Venda registrada com sucesso.', vendaId });
         } catch (error) {
             console.error('Erro ao registrar venda:', error);
-            return res.status(500).send({ ok: false, msg: 'Erro ao registrar venda.' });
+            return res.status(500).send({ ok: false, msg: 'Erro interno ao registrar venda!' });
         }
     }
 }

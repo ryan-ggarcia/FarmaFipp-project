@@ -1,6 +1,8 @@
 const FornecedorModel = require('../models/FornecedorModel')
 const ProdutoModel = require('../models/ProdutoModel')
 const LoteModel = require('../models/LoteModel')
+const EstoqueModel = require('../models/EstoqueModel')
+
 const fs = require('fs')
 class ProdutoController {
     async listar(req, res) {
@@ -118,7 +120,18 @@ class ProdutoController {
         try {
             let result = await produto.Create();
             if (result) {
-                return res.send({ ok: true, msg: 'Produto cadastrado com sucesso!' });
+                let estoque = new EstoqueModel()
+                estoque.id = 0
+                estoque.loteId = null
+                estoque.tipo = 'ENTRADA'
+                estoque.origem = `Cadastro do produto ${nome}`
+                estoque.produtoId = produto.id
+                estoque.itensId = null
+                estoque.quantidade = produto.quantidade
+
+                await estoque.AddToInventory();
+
+                return res.send({ ok: true, msg: 'Produto registrado no estoque!' });
             } else {
                 return res.send({ ok: false, msg: 'Erro ao cadastrar o produto!' });
             }

@@ -172,6 +172,24 @@ class ProdutoModel{
         return await banco.ExecutaComando(sql, values);
     }
 
+    async DecreaseStock(idProduto, quantidade) {
+        const qtdNum = Number(quantidade || 0);
+        if (!idProduto || Number.isNaN(qtdNum) || qtdNum <= 0) {
+            return false;
+        }
+
+        const sql = `
+            update produto
+            set pro_quantidade = pro_quantidade - ?
+            where idProduto = ?
+              and coalesce(prod_status, 'Ativo') = 'Ativo'
+              and pro_quantidade >= ?`;
+        const values = [qtdNum, idProduto, qtdNum];
+        const banco = new Database();
+
+        return await banco.ExecutaComandoNonQuery(sql, values);
+    }
+
     toJSON(){
         return {
             id: this.#id,

@@ -1,11 +1,17 @@
+<%
+const entradas = estoqueList.filter(m => String(m.tipo || '').toUpperCase() === 'ENTRADA').length;
+const saidas = estoqueList.filter(m => String(m.tipo || '').toUpperCase() === 'SAIDA').length;
+%>
+
 <div class="p-3 p-1-25">
 	<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 		<div>
 			<h4 class="mb-1" style="color: rgba(163,22,33,0.95); font-weight: bold;">Gerenciamento de Estoque</h4>
-			<p class="text-muted mb-0">Acompanhe as movimentações de entrada registradas no sistema.</p>
+			<p class="text-muted mb-0">Acompanhe as movimentações de entrada e saída registradas no sistema.</p>
 		</div>
 		<div class="d-flex gap-2">
 			<a href="/estoque/adicionar" class="btn btn-primary custom btn-rounded">Adicionar ao Estoque</a>
+			<a href="/estoque/baixa" class="btn btn-outline-danger btn-rounded">Registrar Baixa</a>
 			<a href="/" class="btn btn-outline-secondary btn-rounded">Início</a>
 		</div>
 	</div>
@@ -23,15 +29,15 @@
 			<div class="card card-saas no-hover h-100">
 				<div class="card-body">
 					<small class="text-muted d-block">Tipo de Fluxo</small>
-					<h4 class="mb-0">Entradas</h4>
+					<h4 class="mb-0">Entradas: <%= entradas %> | Saídas: <%= saidas %></h4>
 				</div>
 			</div>
 		</div>
 		<div class="col-md-4">
 			<div class="card card-saas no-hover h-100">
 				<div class="card-body">
-					<small class="text-muted d-block">Origem Padrão</small>
-					<h4 class="mb-0">Compra</h4>
+					<small class="text-muted d-block">Origens</small>
+					<h4 class="mb-0">Compra / Venda</h4>
 				</div>
 			</div>
 		</div>
@@ -43,7 +49,7 @@
 
 			<% if (estoqueList.length === 0) { %>
 				<div class="alert alert-light border mb-0" role="alert">
-					Nenhuma movimentação encontrada. Clique em <strong>Adicionar ao Estoque</strong> para registrar a primeira entrada.
+					Nenhuma movimentação encontrada. Clique em <strong>Adicionar ao Estoque</strong> ou <strong>Registrar Baixa</strong> para registrar a primeira movimentação.
 				</div>
 			<% } else { %>
 				<div class="table-responsive">
@@ -61,15 +67,17 @@
 						</thead>
 						<tbody>
 							<% for (let i = 0; i < estoqueList.length; i++) { %>
+								<% const isEntrada = String(estoqueList[i].tipo || '').toUpperCase() === 'ENTRADA'; %>
+								<% const dataMov = estoqueList[i].dataMov ? new Date(estoqueList[i].dataMov) : null; %>
 								<tr>
 									<td><%= estoqueList[i].id %></td>
 									<td>#<%= estoqueList[i].loteId %> - <%= estoqueList[i].lot_name || 'Lote sem nome' %></td>
-									<td><span class="badge bg-success"><%= estoqueList[i].tipo %></span></td>
+									<td><span class="badge <%= isEntrada ? 'bg-success' : 'bg-danger' %>"><%= estoqueList[i].tipo %></span></td>
 									<td><%= estoqueList[i].origem %></td>
 									<td><%= Number(estoqueList[i].quantidade) %></td>
 									<td><%= estoqueList[i].lot_validade ? new Date(estoqueList[i].lot_validade).toLocaleDateString('pt-BR') : 'N/A' %></td>
                                     <td>
-										<%= new Date(estoqueList[i].dataMov).toLocaleString('pt-BR') %>
+										<%= dataMov && !Number.isNaN(dataMov.getTime()) ? dataMov.toLocaleString('pt-BR') : 'N/A' %>
 									</td>
 								</tr>
 							<% } %>

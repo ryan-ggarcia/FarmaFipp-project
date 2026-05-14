@@ -4,10 +4,11 @@ let banco = new Database();
 class EstoqueModel{
     #id
     #loteId
+    #produtoId
     #tipo
     #origem
     #quantidade
-    #dataMov
+    #itensId
 
     get id(){
         return this.#id;
@@ -49,35 +50,45 @@ class EstoqueModel{
         this.#quantidade = value;
     }
 
-    get dataMov(){
-        return this.#dataMov;
+    get produtoId(){
+        return this.#produtoId;
     }
 
-    set dataMov(value){
-        this.#dataMov = value;
+    set produtoId(value){
+        this.#produtoId = value;
     }
 
-    constructor(id, loteId, tipo, origem, quantidade, dataMov){
+    get itensId(){
+        return this.#itensId;
+    }
+
+    set itensId(value){
+        this.#itensId = value;
+    }
+
+    constructor(id, loteId, tipo, origem, quantidade, produtoId, itensId){
         this.#id = id;
         this.#loteId = loteId;
         this.#tipo = tipo;
         this.#origem = origem;
         this.#quantidade = quantidade;
-        this.#dataMov = dataMov;
+        this.#produtoId = produtoId;
+        this.#itensId = itensId;
     }
 
     async AddToInventory(){
-        let sql = 'insert into movimentacao_estoque (lote_id, tipo, origem, quantidade, data_mov) values (?, ?, ?, ?, ?)';
+        let sql = 'insert into movimentacao_estoque (prd_id, lote_id, tipo, origem, quantidade) values (?, ?, ?, ?, ?)';
 
-        const values = [this.#loteId, this.#tipo, this.#origem, this.#quantidade, this.#dataMov];
+        const values = [this.#produtoId, this.#loteId, this.#tipo, this.#origem, this.#quantidade];
 
-        let result = await banco.ExecutaComandoNonQuery(sql, values);
+        let result = await banco.ExecutaComandoLastInserted(sql, values);
+        this.#id = result;
 
         return result;
     }
 
     async ListInventory(){
-        let sql = 'select m.*, l.lot_name, l.lot_validade from movimentacao_estoque m left join Lote l on m.lote_id = l.lot_id order by m.data_mov desc';
+        let sql = 'select m.*, l.lot_name, l.lot_validade from movimentacao_estoque m left join Lote l on m.lote_id = l.lot_id order by m.mov_id desc';
 
         let rows = await banco.ExecutaComando(sql);
 
@@ -90,8 +101,10 @@ class EstoqueModel{
                 row.tipo,
                 row.origem,
                 row.quantidade,
-                row.data_mov
+                row.prd_id,
+                row.itens_id
             );
+            mov.dataMov = row.data_mov || row.mov_data || null;
             mov.lot_name = row.lot_name;
             mov.lot_validade = row.lot_validade;
             lista.push(mov);    
@@ -100,9 +113,9 @@ class EstoqueModel{
     }
 
     async ExitFromInventory(){
-        let sql = "insert into movimentacao_estoque (lote_id, tipo, origem, quantidade, data_mov) values (?, ?, ?, ?, ?)";
+        let sql = "insert into movimentacao_estoque (lote_id, tipo, origem, quantidade) values (?, ?, ?, ?)";
 
-        let values = [this.#loteId, this.#tipo, this.#origem, this.#quantidade, this.#dataMov];
+        let values = [this.#loteId, this.#tipo, this.#origem, this.#quantidade];
 
         let result = await banco.ExecutaComandoNonQuery(sql, values);
 

@@ -1,0 +1,59 @@
+<div class="p-3 p-1-25">
+    <div class="card card-saas no-hover">
+        <div class="card-body">
+            <h4 class="mb-3" style="color: rgba(163,22,33,0.95); font-weight: bold;">Registrar Baixa de Estoque</h4>
+            <p class="text-muted">Escolha uma opção: baixar automaticamente pelos itens de uma venda ou informar lote e quantidade manualmente.</p>
+
+            <form id="formBaixaEstoque">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_venda" class="form-label">Baixa por Venda</label>
+                        <select id="id_venda" class="form-control">
+                            <option value="">Selecione uma venda (opcional)</option>
+                            <% for (let i = 0; i < vendas.length; i++) { %>
+                                <option value="<%= vendas[i].id %>">
+                                    Venda #<%= vendas[i].id %> - <%= new Date(vendas[i].data).toLocaleDateString('pt-BR') %> - <%= String(vendas[i].status || '').toUpperCase() %>
+                                </option>
+                            <% } %>
+                        </select>
+                        <small class="text-muted">Se selecionar uma venda, a baixa será calculada pelos itens vendidos.</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="loteId" class="form-label">Lote (manual)</label>
+                        <select id="loteId" class="form-control">
+                            <option value="">Selecione um lote</option>
+                            <% for (let i = 0; i < lotes.length; i++) { %>
+                                <option value="<%= lotes[i].lot_id %>">
+                                    #<%= lotes[i].lot_id %> - <%= lotes[i].lot_name %> (Qtd atual: <%= lotes[i].lot_qnt %>)
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="quantidade" class="form-label">Quantidade de Saída (manual)</label>
+                        <input id="quantidade" type="number" min="1" class="form-control">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de Movimentação</label>
+                        <input type="text" class="form-control" value="SAIDA" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Origem</label>
+                        <input type="text" class="form-control" value="VENDA" readonly>
+                    </div>
+
+                    <div class="col-12 d-flex gap-2">
+                        <button id="btnBaixa" type="button" class="btn btn-danger btn-rounded">Registrar Baixa</button>
+                        <a href="/estoque/gerenciar" class="btn btn-outline-secondary btn-rounded">Voltar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/estoque/baixa.js"></script>
