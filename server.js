@@ -7,6 +7,8 @@ const usuarioRouter = require("./routes/UsuarioRouter")
 const ServicoRouter = require ('./routes/ServicoRouter');
 const ClienteRouter = require('./routes/ClienteRoute');
 const FornecedorRouter = require('./routes/FornecedorRoute');
+const EstoqueRouter = require('./routes/EstoqueRoute');
+const VendaRouter = require('./routes/VendaRouter');
 //const brazilianUtils = require('@brazilian-utils/brazilian-utils');
 const expressEjsLayouts = require('express-ejs-layouts');
 const ProdutoRouter = require('./routes/ProdutoRouter');
@@ -30,6 +32,8 @@ server.use("/servicos", ServicoRouter);
 server.use("/clientes", ClienteRouter);
 server.use("/fornecedores", FornecedorRouter);
 server.use("/produtos", ProdutoRouter);
+server.use("/estoque", EstoqueRouter);
+server.use('/venda', VendaRouter);
 
 global.CAMINHO_IMG_ABS = __dirname + "/public/img/produtos/";  
 global.CAMINHO_IMG_NAVEGADOR = "/img/produtos/";  

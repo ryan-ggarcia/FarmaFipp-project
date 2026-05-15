@@ -1,4 +1,5 @@
 const ProdutoModel = require('../models/ProdutoModel');
+const ProdutoPromocaoModel = require('../models/ProdutoPromocaoModel');
 
 class UsuarioController {
     homeView(req, res) {
@@ -41,12 +42,14 @@ class UsuarioController {
                 max: precos.length ? Math.ceil(Math.max(...precos)) : 0
             };
 
+            const promProducts = new ProdutoPromocaoModel();
+            const produtosPromocao = await promProducts.ReadProductExpirationDateNear();
+
             res.render("usuarioView/produtos", {
                 layout: "layoutPublico",
                 lista,
                 categorias,
-                marcas,
-                faixaPreco
+                produtosPromocao: Array.isArray(produtosPromocao) ? produtosPromocao : []
             });
         } catch (error) {
             console.error('Erro ao carregar produtos para usuário:', error);

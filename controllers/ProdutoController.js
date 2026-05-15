@@ -1,6 +1,8 @@
 const FornecedorModel = require('../models/FornecedorModel')
 const ProdutoModel = require('../models/ProdutoModel')
 const LoteModel = require('../models/LoteModel')
+const EstoqueModel = require('../models/EstoqueModel')
+
 const fs = require('fs')
 class ProdutoController {
     async listar(req, res) {
@@ -66,6 +68,44 @@ class ProdutoController {
         }
     }
 
+    async obterProduto(req, res){
+        try{
+            const { produtoId } = req.params;
+            if(!produtoId){
+                return res.status(400).send({ ok: false, msg: 'ID do produto não informado!' });
+            }
+            else{
+                let produtoModel = new ProdutoModel();
+                let produto = await produtoModel.Get(produtoId);
+
+                if(!produto){
+                    return res.status(404).send({ ok: false, msg: 'Produto não encontrado!' });
+                }
+
+                produtoModel.id = produtoId;
+                const lotes = await produtoModel.GetLote();
+                const loteDisponivel = Array.isArray(lotes)
+                    ? lotes.find(l => Number(l.lot_qnt || 0) > 0) || lotes[0]
+                    : null;
+                const idLote = loteDisponivel ? loteDisponivel.lot_id : null;
+
+                res.send({ ok: true, produto: {
+                    id: produto.id,
+                    nome: produto.nome,
+                    descricao: produto.descricao,
+                    preco: produto.preco,
+                    quantidade: produto.quantidade,
+                    img: produto.img,
+                    id_lote: idLote
+                }});
+            }
+        }
+        catch(error){
+            console.error('Erro ao obter produto:', error);
+            return res.status(500).send({ ok: false, msg: 'Erro ao obter produto!' });
+        }
+    }
+
     async cadastrar(req, res) {
         const { nome, descricao, preco, quantidade, marca, categoria, fornecedor } = req.body;
         const img = req.file?.filename || null;
@@ -88,7 +128,18 @@ class ProdutoController {
         try {
             let result = await produto.Create();
             if (result) {
-                return res.send({ ok: true, msg: 'Produto cadastrado com sucesso!' });
+                let estoque = new EstoqueModel()
+                estoque.id = 0
+                estoque.loteId = null
+                estoque.tipo = 'ENTRADA'
+                estoque.origem = `Cadastro do produto ${nome}`
+                estoque.produtoId = produto.id
+                estoque.itensId = null
+                estoque.quantidade = produto.quantidade
+
+                await estoque.AddToInventory();
+
+                return res.send({ ok: true, msg: 'Produto registrado no estoque!' });
             } else {
                 return res.send({ ok: false, msg: 'Erro ao cadastrar o produto!' });
             }
