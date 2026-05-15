@@ -45,8 +45,8 @@ class LoteModel {
     }
 
     async Create() {
-        const sql = 'insert into Lote (lot_qnt, lot_name, lot_validade) values (?, ?, ?)';
-        const values = [this.#quantidade, this.#lot_name, this.#validade];
+        const sql = 'insert into Lote (lot_qnt, lot_name, lot_validade, prod_id) values (?, ?, ?, ?)';
+        const values = [this.#quantidade, this.#lot_name, this.#validade, this.#prod_id];
         const banco = new Database();
         let result =  await banco.ExecutaComandoLastInserted(sql, values);
         let relationProduto = await this.#CreateRelationWithProduto(result);
