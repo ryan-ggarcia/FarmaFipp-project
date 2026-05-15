@@ -82,7 +82,7 @@ class DevolucaoController {
         let resultado = await devolucao.obter(req.params.id);
 
         if (!resultado) {
-            return res.redirect("/pos-venda");
+            return res.redirect("/admin/pos-venda");
         }
 
         let itemModel = new ItemDevolucaoModel();
