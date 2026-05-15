@@ -1,23 +1,45 @@
-document.addEventListener("DOMContentLoaded", function() {
-    let cartList = [];
+function CartService(){
+    const CART_KEY = "cart";
 
-    let cart = localStorage.getItem("cart");
-
-    if(cart){
-        cartList = JSON.parse(cart);
+    function loadCart(){
+        try{
+            const data = localStorage.getItem(CART_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+        catch{
+            return [];
+        }
     }
 
-    let btns = document.querySelectorAll(".add-to-cart");
+    function saveCart(cart){
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
 
-    btns.forEach(btn =>{
-        btn.addEventListener("click", addToCart);
-    })
+    function addToCart(produto){
+        const cart = loadCart();
 
-    updateBadge();
-    document.addEventListener("show.bs.modal", renderCart);
+        const item = cart.find(item => String(item.id) === String(produto.id));
 
-    function formatCurrency(value) {
-        return Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        if(item){
+            item.quantidade = Number(item.quantidade || 0) + 1;
+        }
+        else{
+            cart.push({
+                id: produto.id,
+                nome: produto.nome,
+                preco: Number(produto.preco),
+                quantidade: 1,
+                descricao: produto.descricao,
+                imagem: produto.imagem
+            })
+        }
+        saveCart(cart);
+    }
+
+    function removeFromCart(id){
+        const cart = loadCart().filter(item => String(item.id) !== String(id));
+        saveCart(cart);
+        return cart;
     }
 
     function getItemKey(item) {
@@ -33,22 +55,9 @@ document.addEventListener("DOMContentLoaded", function() {
         badge.style.display = total > 0 ? 'inline-block' : 'none';
     }
 
-    function renderCart() {
-        const stored = localStorage.getItem("cart");
-        cartList = stored ? JSON.parse(stored) : [];
-
-        const body   = document.getElementById('cartModalBody');
-        const empty  = document.getElementById('cartModalEmpty');
-        const items  = document.getElementById('cartModalItems');
-        const footer = document.getElementById('cartModalFooter');
-
-        if (!cartList.length) {
-            if (body)   body.innerHTML = '';
-            if (empty)  empty.classList.remove('d-none');
-            if (items)  items.classList.add('d-none');
-            if (footer) footer.classList.add('d-none');
-            return;
-        }
+    function getTotalItems(){
+        return loadCart().reduce((total, item) => total + (item.quantidade || 0), 0);
+    }
 
         if (empty)  empty.classList.add('d-none');
         if (items)  items.classList.remove('d-none');
@@ -178,4 +187,42 @@ document.addEventListener("DOMContentLoaded", function() {
             alert("Produto não encontrado!");
         }
     }
+}
+
+const cartService = CartService();
+window.cartService = cartService;
+
+function updateCartBadge() {
+    const badge = document.getElementById('cartBadgeCount');
+    if (!badge) {
+        return;
+    }
+
+    const total = cartService.getTotalItems();
+    badge.textContent = String(total);
+    badge.style.display = total > 0 ? 'inline-block' : 'none';
+}
+window.updateCartBadge = updateCartBadge;
+
+
+document.addEventListener('DOMContentLoaded', function(){
+    updateCartBadge();
+
+    document.querySelectorAll('.add-to-cart').forEach(btn =>{
+        btn.addEventListener('click', function(){
+            const produto = {
+                id: this.dataset.id,
+                nome: this.dataset.nome,
+                preco: Number(this.dataset.preco),
+                quantidade: Number(this.dataset.quantidade),
+                descricao: this.dataset.descricao,
+                imagem: this.dataset.imagem
+            }
+        
+            cartService.addToCart(produto);
+            updateCartBadge();
+
+            alert(`Produto "${produto.nome}" adicionado ao carrinho!`);
+        })
+    })
 })
