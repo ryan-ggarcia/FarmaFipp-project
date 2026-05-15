@@ -6,7 +6,7 @@
       <small class="text-muted">Gerencie os serviços registrados no sistema</small>
     </div>
     <div>
-      <a class="btn btn-primary custom btn-rounded" href="/servicos/cadastrar"><i class="fas fa-plus me-2"></i>
+      <a class="btn btn-primary custom btn-rounded" href="/admin/servicos/cadastrar"><i class="fas fa-plus me-2"></i>
         Cadastrar Serviço</a>
     </div>
   </div>
@@ -49,7 +49,7 @@
                 <td><%= lista[i].getNOME_CLIE() %></td>
                
                 <td class="text-end">
-                  <a href="/servicos/alterar/<%= lista[i].getID() %>" class="btn btn-sm btn-primary btn-rounded me-2"
+                  <a href="/admin/servicos/alterar/<%= lista[i].getID() %>" class="btn btn-sm btn-primary btn-rounded me-2"
                     title="Alterar"><i class="fas fa-pen"></i></a>
                   <button data-id="<%= lista[i].getID() %>" class="btn btn-sm btn-danger btn-rounded btnExcluir"
                     title="Excluir"><i class="fas fa-trash"></i></button>
