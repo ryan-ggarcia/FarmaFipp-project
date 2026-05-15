@@ -70,7 +70,13 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                         </div>
                     </td>
-                    <td class="text-center">${Number(item.quantidade || 0)}</td>
+                    <td class="text-center">
+                        <div class="d-flex align-items-center justify-content-center gap-1">
+                            <button class="btn btn-sm btn-outline-secondary btn-modal-decrease" data-key="${itemKey}" type="button">-</button>
+                            <span class="px-2">${Number(item.quantidade || 0)}</span>
+                            <button class="btn btn-sm btn-outline-secondary btn-modal-increase" data-key="${itemKey}" type="button">+</button>
+                        </div>
+                    </td>
                     <td class="text-end small">${formatCurrency(item.preco)}</td>
                     <td class="text-end fw-semibold small">${formatCurrency(subtotal)}</td>
                     <td class="text-end">
@@ -97,6 +103,31 @@ document.addEventListener("DOMContentLoaded", function() {
                 localStorage.setItem("cart", JSON.stringify(cartList));
                 updateBadge();
                 renderCart();
+            });
+        });
+
+        document.querySelectorAll('.btn-modal-increase').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = cartList.find(item => getItemKey(item) === String(btn.dataset.key));
+                if(target) {
+                    target.quantidade = (Number(target.quantidade) || 0) + 1;
+                    localStorage.setItem("cart", JSON.stringify(cartList));
+                    updateBadge();
+                    renderCart();
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-modal-decrease').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = cartList.find(item => getItemKey(item) === String(btn.dataset.key));
+                if(target) {
+                    target.quantidade = (Number(target.quantidade) || 0) - 1;
+                    cartList = cartList.filter(item => Number(item.quantidade) > 0);
+                    localStorage.setItem("cart", JSON.stringify(cartList));
+                    updateBadge();
+                    renderCart();
+                }
             });
         });
 
@@ -130,10 +161,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 data.produto.quantidade = 1;
                 data.produto.imagem = data.produto.img;
                 data.produto.id_lote = loteId || data.produto.id_lote || data.produto.idLote || null;
-
-                if (!data.produto.id_lote) {
-                    throw new Error('Produto sem lote disponível para venda.');
-                }
 
                 cartList.push(data.produto);
             })

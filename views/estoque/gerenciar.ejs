@@ -29,11 +29,7 @@ const saidas = estoqueList.filter(m => String(m.tipo || '').toUpperCase() === 'S
 			<div class="card card-saas no-hover h-100">
 				<div class="card-body">
 					<small class="text-muted d-block">Tipo de Fluxo</small>
-<<<<<<< HEAD
 					<h4 class="mb-0">Entradas: <%= entradas %> | Saídas: <%= saidas %></h4>
-=======
-					<h4 class="mb-0">Entradas e Saídas</h4>
->>>>>>> f31fb4a3ea8a5df154bd6d5798911749802a4ac2
 				</div>
 			</div>
 		</div>
@@ -76,15 +72,7 @@ const saidas = estoqueList.filter(m => String(m.tipo || '').toUpperCase() === 'S
 								<tr>
 									<td><%= estoqueList[i].id %></td>
 									<td>#<%= estoqueList[i].loteId %> - <%= estoqueList[i].lot_name || 'Lote sem nome' %></td>
-<<<<<<< HEAD
 									<td><span class="badge <%= isEntrada ? 'bg-success' : 'bg-danger' %>"><%= estoqueList[i].tipo %></span></td>
-=======
-									<td>
-										<span class="badge <%= String(estoqueList[i].tipo || '').toUpperCase() === 'SAIDA' ? 'bg-danger' : 'bg-success' %>">
-											<%= estoqueList[i].tipo %>
-										</span>
-									</td>
->>>>>>> f31fb4a3ea8a5df154bd6d5798911749802a4ac2
 									<td><%= estoqueList[i].origem %></td>
 									<td><%= Number(estoqueList[i].quantidade) %></td>
 									<td><%= estoqueList[i].lot_validade ? new Date(estoqueList[i].lot_validade).toLocaleDateString('pt-BR') : 'N/A' %></td>
