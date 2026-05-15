@@ -62,7 +62,7 @@ class ProdutoModel{
                 listValues.push([row.idProduto, row.lot_id, row.lot_qnt]);
             })
         }
-        const sqlInserted = `insert into tb_descarte(id_produto,id_lote, quantidade, data_descarte, vencido) values(?,?,?,?,?)`
+        const sqlInserted = `insert into descarte(id_produto,id_lote, quantidade, data_descarte, vencido) values(?,?,?,?,?)`
         for (const row of listValues) {
             let values = [row[0], row[1], row[2], new Date(), true];
             await banco.ExecutaComandoNonQuery(sqlInserted, values);
