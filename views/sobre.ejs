@@ -23,7 +23,7 @@
     </div>
 
     <div class="hero-image">
-      <!-- <img src="/img/sobre-nos.jpg" alt="Sobre nós"> -->
+      <img src="/img/sobre-nos.jpg" alt="Sobre nós">
     </div>
   </div>
 </section>
@@ -288,5 +288,170 @@
   }
 
 }
+.support-section .card-saas {
+  background: #fff;
+}
+
+.custom-input {
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid #dee2e6;
+  transition: 0.3s ease;
+}
+
+.custom-input:focus {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 0.15rem rgba(163,22,33,0.15);
+}
+
+textarea.custom-input {
+  resize: none;
+}
+
+.sucesso-visual{
+  text-align: center;
+  padding: 40px 20px;
+  animation: aparecer 0.5s ease;
+}
+
+.sucesso-img{
+  width: 220px;
+  max-width: 100%;
+}
+
+@keyframes aparecer{
+
+  from{
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+#supportForm,
+#sucessoVisual{
+  transition: 0.4s ease;
+}
 
 </style>
+
+<!-- SAQ / SAV -->
+<section class="support-section mt-5 mb-5">
+
+  <div class="card card-saas">
+    <div class="card-body p-5">
+
+      <div class="text-center mb-5">
+        <span class="badge-about">SAQ • SAV</span>
+
+        <h2 class="fw-bold mt-3">
+          Atendimento e Suporte
+        </h2>
+
+        <p class="text-muted">
+          Possui dúvidas, sugestões ou encontrou algum problema?
+          Nossa equipe está pronta para ajudar você.
+        </p>
+      </div>
+
+      <form id="supportForm">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-4">
+            <label class="form-label fw-semibold">
+              Nome
+            </label>
+
+            <input
+              type="text"
+              class="form-control custom-input"
+              id="nome"
+              placeholder="Digite seu nome"
+            >
+          </div>
+
+          <div class="col-md-6 mb-4">
+            <label class="form-label fw-semibold">
+              Email
+            </label>
+
+            <input
+              type="email"
+              class="form-control custom-input"
+              id="email"
+              placeholder="Digite seu email"
+            >
+          </div>
+
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">
+            Assunto
+          </label>
+
+          <input
+            type="text"
+            class="form-control custom-input"
+            id="assunto"
+            placeholder="Digite o assunto"
+          >
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">
+            Comentário
+          </label>
+
+          <textarea
+            class="form-control custom-input"
+            id="comentario"
+            rows="6"
+            placeholder="Digite sua mensagem..."
+          ></textarea>
+        </div>
+
+        <div class="text-center">
+          <button
+            type="submit"
+            class="btn btn-danger btn-rounded px-5 py-2"
+          >
+            Enviar Mensagem
+          </button>
+        </div>
+
+        <div
+          id="mensagemRetorno"
+          class="alert mt-4 text-center d-none"
+        ></div>
+        <div id="sucessoVisual" class="sucesso-visual d-none">
+
+        <img
+            src="/img/email-enviado.png"
+            alt="Email enviado"
+            class="sucesso-img"
+        >
+
+        <h3 class="mt-4 fw-bold">
+            Mensagem enviada com sucesso!
+        </h3>
+
+        <p class="text-muted">
+            Nossa equipe recebeu sua solicitação e responderá em breve.
+        </p>
+
+    </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</section>
+<script src="/js/sobre/sobre.js"></script>
