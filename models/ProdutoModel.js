@@ -62,9 +62,9 @@ class ProdutoModel{
                 listValues.push([row.idProduto, row.lot_id, row.lot_qnt]);
             })
         }
-        const sqlInserted = `insert into descarte(id_produto,id_lote, quantidade, data_descarte, vencido) values(?,?,?,?,?)`
+        const sqlInserted = `INSERT INTO efetuar_descarte (desc_data, desc_quantidade, Produto_Descarte) VALUES (?, ?, ?)`
         for (const row of listValues) {
-            let values = [row[0], row[1], row[2], new Date(), true];
+            let values = [new Date(), row[2], row[0]];
             await banco.ExecutaComandoNonQuery(sqlInserted, values);
         }
         return true;

@@ -77,17 +77,22 @@ class ItemVendaModel{
     }
 
     async RegistrarItemVenda(){
-        let sql = "insert into venda_item_teste (id_venda, id_produto, id_lote, vitem_quant, vitem_valoruni, vitem_valortotal) values (?,?,?,?,?,?)"
+        let sql = `INSERT INTO venda_item_leste 
+            (id_venda, id_produto, id_lote, vitem_quant, vitem_valorindividual, vitem_valortotal) 
+            VALUES (?, ?, ?, ?, ?, ?)`
 
         let values = [this.id_venda, this.id_produto, this.id_lote, this.item_quant, this.item_valor, this.item_valor_total]
 
-        let result = await banco.ExecutaComando(sql, values)
+        let result = await banco.ExecutaComandoNonQuery(sql, values)
 
-        return result?.insertId || null
+        return result
     }
 
     async ListarItensPorVenda(id_venda){
-        let sql = "select * from venda_item_teste where id_venda = ?"
+        let sql = `SELECT vil.*, p.pro_nome 
+                   FROM venda_item_leste vil
+                   INNER JOIN produto p ON vil.id_produto = p.idProduto
+                   WHERE vil.id_venda = ?`
 
         let values = [id_venda]
 
@@ -96,14 +101,23 @@ class ItemVendaModel{
         let lista = []
 
         for (let item of result){
-            let itemVenda = new ItemVendaModel(item.id_item, item.id_venda, item.id_produto, item.id_lote, item.vitem_quant, item.vitem_valoruni, item.vitem_valortotal)
+            let itemVenda = new ItemVendaModel(
+                item.id_venda_item, 
+                item.id_venda, 
+                item.id_produto, 
+                item.id_lote, 
+                item.vitem_quant, 
+                item.vitem_valorindividual, 
+                item.vitem_valortotal
+            )
+            itemVenda.nomeProduto = item.pro_nome || null
             lista.push(itemVenda)
         }
         return lista
     }
 
     async GetItemVenda(id_item){
-        let sql = "select * from venda_item_teste where id_item = ?"
+        let sql = "SELECT * FROM venda_item_leste WHERE id_venda_item = ?"
 
         let values = [id_item]
 
@@ -111,7 +125,15 @@ class ItemVendaModel{
 
         if (rows.length > 0){
             let item = rows[0]
-            let itemVenda = new ItemVendaModel(item.id_item, item.id_venda, item.id_produto, item.id_lote, item.vitem_quant, item.vitem_valoruni, item.vitem_valortotal)
+            let itemVenda = new ItemVendaModel(
+                item.id_venda_item, 
+                item.id_venda, 
+                item.id_produto, 
+                item.id_lote, 
+                item.vitem_quant, 
+                item.vitem_valorindividual, 
+                item.vitem_valortotal
+            )
             return itemVenda
         }
         return null

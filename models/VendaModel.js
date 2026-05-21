@@ -5,8 +5,10 @@ class VendaModel{
     #id
     #data
     #status
-    #pagamento
-    #total
+    #tipo
+    #quantidade
+    #valorFinal
+    #funcionarioId
 
     get id(){
         return this.#id
@@ -32,34 +34,54 @@ class VendaModel{
         this.#status = value
     }
 
-    get pagamento(){
-        return this.#pagamento
+    get tipo(){
+        return this.#tipo
     }
 
-    set pagamento(value){
-        this.#pagamento = value
+    set tipo(value){
+        this.#tipo = value
     }
 
-    get total(){
-        return this.#total
+    get quantidade(){
+        return this.#quantidade
     }
 
-    set total(value){
-        this.#total = value
+    set quantidade(value){
+        this.#quantidade = value
     }
 
-    constructor(id, data, status, pagamento, total){
+    get valorFinal(){
+        return this.#valorFinal
+    }
+
+    set valorFinal(value){
+        this.#valorFinal = value
+    }
+
+    get funcionarioId(){
+        return this.#funcionarioId
+    }
+
+    set funcionarioId(value){
+        this.#funcionarioId = value
+    }
+
+    constructor(id, data, status, tipo, quantidade, valorFinal, funcionarioId){
         this.id = id
         this.data = data
         this.status = status
-        this.pagamento = pagamento
-        this.total = total
+        this.tipo = tipo
+        this.quantidade = quantidade
+        this.valorFinal = valorFinal
+        this.funcionarioId = funcionarioId
     }
 
     async RegistrarVenda(){
-        let sql = "insert into venda_teste (ven_data) values (now())"
+        let sql = `INSERT INTO efetuar_venda 
+            (vend_dataEfetivar, vend_status, vend_tipo, vend_quantidade, vend_valorFinal, Funcionario_EfetuarVenda) 
+            VALUES (NOW(), ?, ?, ?, ?, ?)`
 
-        let values = [this.data, this.status, this.pagamento, this.total]
+        let values = [this.status, this.tipo, this.quantidade, this.valorFinal, this.funcionarioId]
 
         let result = await banco.ExecutaComandoLastInserted(sql, values)
         
@@ -69,39 +91,58 @@ class VendaModel{
     }
 
     async ListarVendas(){
-        let sql = "select * from venda_teste"
+        let sql = `SELECT ev.*, f.func_nome 
+                   FROM efetuar_venda ev
+                   LEFT JOIN funcionario f ON ev.Funcionario_EfetuarVenda = f.idFuncionario
+                   ORDER BY ev.idEfetuar_Venda DESC`
 
         let result = await banco.ExecutaComando(sql)
 
         let lista = []
 
         for (let item of result){
-            let venda = new VendaModel(item.id_venda, item.ven_data, item.ven_status, item.ven_forma_pagamento, item.ven_total)
+            let venda = new VendaModel(
+                item.idEfetuar_Venda, 
+                item.vend_dataEfetivar, 
+                item.vend_status, 
+                item.vend_tipo, 
+                item.vend_quantidade,
+                item.vend_valorFinal,
+                item.Funcionario_EfetuarVenda
+            )
+            venda.funcNome = item.func_nome || null
             lista.push(venda)
         }
         return lista
     }
 
     async Get(id){
-        let sql = "select * from venda_teste where id_venda = ?"
+        let sql = "SELECT * FROM efetuar_venda WHERE idEfetuar_Venda = ?"
         
         let values = [id]
 
-       let rows = await banco.ExecutaComando(sql, values)
+        let rows = await banco.ExecutaComando(sql, values)
 
-       if(rows.length > 0){
-            rows.forEach(item => {
-                let venda = new VendaModel(item.id_venda, item.ven_data, item.ven_status, item.ven_forma_pagamento, item.ven_total)
-                return venda
-            })
-       }
-       return null
+        if(rows.length > 0){
+            let item = rows[0]
+            let venda = new VendaModel(
+                item.idEfetuar_Venda, 
+                item.vend_dataEfetivar, 
+                item.vend_status, 
+                item.vend_tipo, 
+                item.vend_quantidade,
+                item.vend_valorFinal,
+                item.Funcionario_EfetuarVenda
+            )
+            return venda
+        }
+        return null
     }
 
     async AtualizarVenda(){
-        let sql = "update venda_teste set ven_total = ? where id_venda = ?"
+        let sql = "UPDATE efetuar_venda SET vend_valorFinal = ?, vend_status = ? WHERE idEfetuar_Venda = ?"
 
-        let values = [this.total, this.id]
+        let values = [this.valorFinal, this.status, this.id]
 
         let result = await banco.ExecutaComandoNonQuery(sql, values)
 
