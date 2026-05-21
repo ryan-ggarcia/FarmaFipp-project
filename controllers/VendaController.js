@@ -28,7 +28,6 @@ class VendaController {
             }
             let venda = new VendaModel()
             venda.status = 'Pendente'
-            venda.tipo = 'Online'
             let id = await venda.RegistrarVenda();
             venda.valorFinal = 0;
 

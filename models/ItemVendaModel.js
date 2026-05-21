@@ -77,8 +77,8 @@ class ItemVendaModel{
     }
 
     async RegistrarItemVenda(){
-        let sql = `INSERT INTO venda_item_leste 
-            (id_venda, id_produto, id_lote, vitem_quant, vitem_valorindividual, vitem_valortotal) 
+        let sql = `INSERT INTO venda_item_teste 
+            (id_venda, id_produto, id_lote, vitem_quant, vitem_valoruni, vitem_valortotal) 
             VALUES (?, ?, ?, ?, ?, ?)`
 
         let values = [this.id_venda, this.id_produto, this.id_lote, this.item_quant, this.item_valor, this.item_valor_total]
@@ -90,7 +90,7 @@ class ItemVendaModel{
 
     async ListarItensPorVenda(id_venda){
         let sql = `SELECT vil.*, p.pro_nome 
-                   FROM venda_item_leste vil
+                   FROM venda_item_teste vil
                    INNER JOIN produto p ON vil.id_produto = p.idProduto
                    WHERE vil.id_venda = ?`
 
@@ -107,7 +107,7 @@ class ItemVendaModel{
                 item.id_produto, 
                 item.id_lote, 
                 item.vitem_quant, 
-                item.vitem_valorindividual, 
+                item.vitem_valoruni, 
                 item.vitem_valortotal
             )
             itemVenda.nomeProduto = item.pro_nome || null
@@ -117,7 +117,7 @@ class ItemVendaModel{
     }
 
     async GetItemVenda(id_item){
-        let sql = "SELECT * FROM venda_item_leste WHERE id_venda_item = ?"
+        let sql = "SELECT * FROM venda_item_teste WHERE id_venda_item = ?"
 
         let values = [id_item]
 
@@ -131,7 +131,7 @@ class ItemVendaModel{
                 item.id_produto, 
                 item.id_lote, 
                 item.vitem_quant, 
-                item.vitem_valorindividual, 
+                item.vitem_valoruni, 
                 item.vitem_valortotal
             )
             return itemVenda

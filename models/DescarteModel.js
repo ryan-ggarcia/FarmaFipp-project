@@ -37,7 +37,7 @@ class DescarteModel {
 
     async cadastrar() {
         let sql = `INSERT INTO efetuar_descarte 
-            (desc_data, desc_quantidade, Produto_Descarte, Funcionario_Descarte) 
+            (des_date, des_quantidade, Produto_Descarte, Funcionario_Descarte) 
             VALUES (?, ?, ?, ?)`;
 
         let valores = [
@@ -57,8 +57,8 @@ class DescarteModel {
         let sql = `
             SELECT 
                 d.idEfetuar_descarte,
-                d.desc_data,
-                d.desc_quantidade,
+                d.des_date,
+                d.des_quantidade,
                 d.Produto_Descarte,
                 d.Funcionario_Descarte,
                 p.pro_nome,
@@ -76,8 +76,8 @@ class DescarteModel {
         for (let i = 0; i < rows.length; i++) {
             let descarte = new DescarteModel(
                 rows[i]["idEfetuar_descarte"],
-                rows[i]["desc_data"],
-                rows[i]["desc_quantidade"],
+                rows[i]["des_date"],
+                rows[i]["des_quantidade"],
                 rows[i]["Produto_Descarte"],
                 rows[i]["Funcionario_Descarte"],
                 rows[i]["pro_nome"],
@@ -103,8 +103,8 @@ class DescarteModel {
         if (rows.length > 0) {
             return new DescarteModel(
                 rows[0]["idEfetuar_descarte"],
-                rows[0]["desc_data"],
-                rows[0]["desc_quantidade"],
+                rows[0]["des_date"],
+                rows[0]["des_quantidade"],
                 rows[0]["Produto_Descarte"],
                 rows[0]["Funcionario_Descarte"],
                 rows[0]["pro_nome"],

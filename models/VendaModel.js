@@ -78,10 +78,10 @@ class VendaModel{
 
     async RegistrarVenda(){
         let sql = `INSERT INTO efetuar_venda 
-            (vend_dataEfetivar, vend_status, vend_tipo, vend_quantidade, vend_valorFinal, Funcionario_EfetuarVenda) 
+            (vend_dataVenda, vend_status, vend_quantidade, vend_valor, vend_valorFinal, Funcionario_EfetuarVenda) 
             VALUES (NOW(), ?, ?, ?, ?, ?)`
 
-        let values = [this.status, this.tipo, this.quantidade, this.valorFinal, this.funcionarioId]
+        let values = [this.status, this.quantidade, this.valorFinal, this.valorFinal, this.funcionarioId]
 
         let result = await banco.ExecutaComandoLastInserted(sql, values)
         
@@ -103,9 +103,9 @@ class VendaModel{
         for (let item of result){
             let venda = new VendaModel(
                 item.idEfetuar_Venda, 
-                item.vend_dataEfetivar, 
+                item.vend_dataVenda, 
                 item.vend_status, 
-                item.vend_tipo, 
+                null, 
                 item.vend_quantidade,
                 item.vend_valorFinal,
                 item.Funcionario_EfetuarVenda
@@ -127,9 +127,9 @@ class VendaModel{
             let item = rows[0]
             let venda = new VendaModel(
                 item.idEfetuar_Venda, 
-                item.vend_dataEfetivar, 
+                item.vend_dataVenda, 
                 item.vend_status, 
-                item.vend_tipo, 
+                null, 
                 item.vend_quantidade,
                 item.vend_valorFinal,
                 item.Funcionario_EfetuarVenda
