@@ -13,6 +13,22 @@ function toMySqlDateTime(value) {
 }
 
 class VendaController {
+
+    async VendasView(req, res){
+        res.render('vendas/index');
+    }
+
+    async ListarVendas(req, res){
+        try {
+            const itemVenda = new ItemVendaModel();
+            const lista = await itemVenda.ListarVendas();
+            return res.send(lista);
+        } catch (error) {
+            console.error('Erro ao listar vendas:', error);
+            return res.status(500).send({ ok: false, msg: 'Erro ao listar vendas!' });
+        }
+    }
+
     async RegistrarVenda(req, res) {
         console.log(req.body);
         const itens = Array.isArray(req.body)

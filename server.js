@@ -34,6 +34,7 @@ server.use("/fornecedores", FornecedorRouter);
 server.use("/produtos", ProdutoRouter);
 server.use("/estoque", EstoqueRouter);
 server.use('/venda', VendaRouter);
+server.use('/vendas', VendaRouter);
 
 global.CAMINHO_IMG_ABS = __dirname + "/public/img/produtos/";  
 global.CAMINHO_IMG_NAVEGADOR = "/img/produtos/";  

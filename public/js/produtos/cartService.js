@@ -50,7 +50,7 @@ function CartService(){
     function updateBadge() {
         const badge = document.getElementById('cartBadgeCount');
         if (!badge) return;
-        const total = cartList.reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0);
+        const total = loadCart().reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0);
         badge.textContent = String(total);
         badge.style.display = total > 0 ? 'inline-block' : 'none';
     }
@@ -58,6 +58,28 @@ function CartService(){
     function getTotalItems(){
         return loadCart().reduce((total, item) => total + (item.quantidade || 0), 0);
     }
+
+    function formatCurrency(value) {
+        return Number(value || 0).toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+    }
+
+    function renderCart() {
+        let cartList = loadCart();
+        const empty = document.getElementById('cartModalEmpty');
+        const items = document.getElementById('cartModalItems');
+        const footer = document.getElementById('cartModalFooter');
+        const body = document.getElementById('cartModalBody');
+
+        if (cartList.length === 0) {
+            if (empty) empty.classList.remove('d-none');
+            if (items) items.classList.add('d-none');
+            if (footer) footer.classList.add('d-none');
+            if (body) body.innerHTML = '';
+            return;
+        }
 
         if (empty)  empty.classList.add('d-none');
         if (items)  items.classList.remove('d-none');
@@ -109,7 +131,7 @@ function CartService(){
         document.querySelectorAll('.btn-modal-remove').forEach(btn => {
             btn.addEventListener('click', () => {
                 cartList = cartList.filter(item => getItemKey(item) !== String(btn.dataset.key));
-                localStorage.setItem("cart", JSON.stringify(cartList));
+                saveCart(cartList);
                 updateBadge();
                 renderCart();
             });
@@ -120,7 +142,7 @@ function CartService(){
                 const target = cartList.find(item => getItemKey(item) === String(btn.dataset.key));
                 if(target) {
                     target.quantidade = (Number(target.quantidade) || 0) + 1;
-                    localStorage.setItem("cart", JSON.stringify(cartList));
+                    saveCart(cartList);
                     updateBadge();
                     renderCart();
                 }
@@ -133,7 +155,7 @@ function CartService(){
                 if(target) {
                     target.quantidade = (Number(target.quantidade) || 0) - 1;
                     cartList = cartList.filter(item => Number(item.quantidade) > 0);
-                    localStorage.setItem("cart", JSON.stringify(cartList));
+                    saveCart(cartList);
                     updateBadge();
                     renderCart();
                 }
@@ -144,50 +166,22 @@ function CartService(){
         if (btnClear) {
             btnClear.onclick = () => {
                 cartList = [];
-                localStorage.setItem("cart", JSON.stringify(cartList));
+                saveCart(cartList);
                 updateBadge();
                 renderCart();
             };
         }
     }
 
-    function addToCart(){
-        let produto = this.dataset.produto;
-        let loteId = this.dataset.lote;
-        let that = this;
-
-        if(produto){
-            let target = cartList.find(item => String(item.id) === String(produto) && String(item.id_lote || item.idLote || '') === String(loteId || ''));
-            let p = null;
-
-        if(target){
-            target.quantidade = (Number(target.quantidade) || 0) + 1;
-            p = Promise.resolve();
-        } else {
-            p = fetch("/produtos/obter/" + produto)
-            .then(res=> res.json())
-            .then(data =>{
-                data.produto.quantidade = 1;
-                data.produto.imagem = data.produto.img;
-                data.produto.id_lote = loteId || data.produto.id_lote || data.produto.idLote || null;
-
-                cartList.push(data.produto);
-            })
-        }
-        Promise.all([p]).then(()=>{
-            localStorage.setItem("cart", JSON.stringify(cartList));
-            updateBadge();
-            that.innerHTML = `<i class="bi bi-bag-check"></i> Adicionado`;
-            setTimeout(()=>{
-                that.innerHTML = `<i class="bi bi-bag-plus"></i> Adicionar ao carrinho`;
-                }, 2000);
-            })
-        }
-        else{
-            alert("Produto não encontrado!");
-        }
-    }
+    return {
+        addToCart,
+        removeFromCart,
+        getTotalItems,
+        updateBadge,
+        renderCart
+    };
 }
+
 
 const cartService = CartService();
 window.cartService = cartService;
@@ -210,19 +204,35 @@ document.addEventListener('DOMContentLoaded', function(){
 
     document.querySelectorAll('.add-to-cart').forEach(btn =>{
         btn.addEventListener('click', function(){
-            const produto = {
-                id: this.dataset.id,
-                nome: this.dataset.nome,
-                preco: Number(this.dataset.preco),
-                quantidade: Number(this.dataset.quantidade),
-                descricao: this.dataset.descricao,
-                imagem: this.dataset.imagem
-            }
-        
-            cartService.addToCart(produto);
-            updateCartBadge();
+            const produtoId = this.dataset.produto;
+            const loteId = this.dataset.lote || null;
 
-            alert(`Produto "${produto.nome}" adicionado ao carrinho!`);
+            if(!produtoId){
+                alert('Produto não encontrado!');
+                return;
+            }
+
+            fetch('/produtos/obter/' + produtoId)
+                .then(res => res.json())
+                .then(data => {
+                    if(!data || !data.produto){
+                        throw new Error('Produto inválido');
+                    }
+
+                    const produto = {
+                        ...data.produto,
+                        imagem: data.produto.imagem || data.produto.img,
+                        id_lote: loteId || data.produto.id_lote || data.produto.idLote || null
+                    };
+
+                    cartService.addToCart(produto);
+                    updateCartBadge();
+
+                    alert(`Produto "${produto.nome}" adicionado ao carrinho!`);
+                })
+                .catch(() => {
+                    alert('Não foi possível adicionar o produto ao carrinho.');
+                });
         })
     })
 })
