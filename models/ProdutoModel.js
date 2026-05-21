@@ -62,9 +62,10 @@ class ProdutoModel{
                 listValues.push([row.idProduto, row.lot_id, row.lot_qnt]);
             })
         }
-        const sqlInserted = `INSERT INTO efetuar_descarte (des_date, des_quantidade, Produto_Descarte) VALUES (?, ?, ?)`
+        const sqlInserted = `INSERT INTO efetuar_descarte (des_date, des_quantidade, Produto_Descarte, Funcionario_Descarte) VALUES (?, ?, ?, ?)`
         for (const row of listValues) {
-            let values = [new Date(), row[2], row[0]];
+            // ID 1 é usado como 'Funcionário do Sistema' para descartes automáticos
+            let values = [new Date(), row[2], row[0], 1];
             await banco.ExecutaComandoNonQuery(sqlInserted, values);
         }
         return true;
