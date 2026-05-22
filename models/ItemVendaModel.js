@@ -138,7 +138,36 @@ class ItemVendaModel{
     }
 
     async ListarVendas(){
-        let sql = "select v.id_venda, v.ven_total, pr.pro_nome, vi.vitem_quant, vi.vitem_valoruni, vi.vitem_valortotal from venda_teste v inner join venda_item_teste vi on v.id_venda = vi.id_venda inner join produto pr on vi.id_produto = pr.idProduto order by 1";
+        let sql = `
+            select
+                v.id_venda,
+                v.ven_total,
+                pr.pro_nome,
+                case
+                    when coalesce(vi.vitem_quant, 0) > 0 then vi.vitem_quant
+                    when coalesce(vi.vitem_valortotal, 0) > 0 and coalesce(vi.vitem_valoruni, 0) > 0
+                        then round(vi.vitem_valortotal / vi.vitem_valoruni)
+                    when coalesce(v.ven_total, 0) > 0 and coalesce(pr.pro_preco, 0) > 0
+                        then greatest(1, round(v.ven_total / pr.pro_preco))
+                    else 0
+                end as vitem_quant_ajustado,
+                case
+                    when coalesce(vi.vitem_valoruni, 0) > 0 then vi.vitem_valoruni
+                    when coalesce(pr.pro_preco, 0) > 0 then pr.pro_preco
+                    when coalesce(v.ven_total, 0) > 0 then v.ven_total
+                    else 0
+                end as vitem_valoruni_ajustado,
+                case
+                    when coalesce(vi.vitem_valortotal, 0) > 0 then vi.vitem_valortotal
+                    when coalesce(vi.vitem_quant, 0) > 0 and coalesce(vi.vitem_valoruni, 0) > 0
+                        then vi.vitem_quant * vi.vitem_valoruni
+                    when coalesce(v.ven_total, 0) > 0 then v.ven_total
+                    else 0
+                end as vitem_valortotal_ajustado
+            from venda_teste v
+            inner join venda_item_teste vi on v.id_venda = vi.id_venda
+            inner join produto pr on vi.id_produto = pr.idProduto
+            order by 1`;
 
         let rows = await banco.ExecutaComando(sql);
 
@@ -147,11 +176,58 @@ class ItemVendaModel{
                 vendaId: row.id_venda,
                 vendaValor: Number(row.ven_total || 0),
                 itemNome: row.pro_nome,
-                itemQuantidade: Number(row.vitem_quant || 0),
-                itemValor: Number(row.vitem_valoruni || 0),
-                itemValorTotal: Number(row.vitem_valortotal || 0)
+                itemQuantidade: Number(row.vitem_quant_ajustado || 0),
+                itemValor: Number(row.vitem_valoruni_ajustado || 0),
+                itemValorTotal: Number(row.vitem_valortotal_ajustado || 0)
             };
         });
+    }
+
+    async listarVendaId(vendaId){
+        let sql = `
+            select
+                v.id_venda,
+                v.ven_total,
+                pr.pro_nome,
+                case
+                    when coalesce(vi.vitem_quant, 0) > 0 then vi.vitem_quant
+                    when coalesce(vi.vitem_valortotal, 0) > 0 and coalesce(vi.vitem_valoruni, 0) > 0
+                        then round(vi.vitem_valortotal / vi.vitem_valoruni)
+                    when coalesce(v.ven_total, 0) > 0 and coalesce(pr.pro_preco, 0) > 0
+                        then greatest(1, round(v.ven_total / pr.pro_preco))
+                    else 0
+                end as vitem_quant_ajustado,
+                case
+                    when coalesce(vi.vitem_valoruni, 0) > 0 then vi.vitem_valoruni
+                    when coalesce(pr.pro_preco, 0) > 0 then pr.pro_preco
+                    when coalesce(v.ven_total, 0) > 0 then v.ven_total
+                    else 0
+                end as vitem_valoruni_ajustado,
+                case
+                    when coalesce(vi.vitem_valortotal, 0) > 0 then vi.vitem_valortotal
+                    when coalesce(vi.vitem_quant, 0) > 0 and coalesce(vi.vitem_valoruni, 0) > 0
+                        then vi.vitem_quant * vi.vitem_valoruni
+                    when coalesce(v.ven_total, 0) > 0 then v.ven_total
+                    else 0
+                end as vitem_valortotal_ajustado
+            from venda_teste v
+            inner join venda_item_teste vi on v.id_venda = vi.id_venda
+            inner join produto pr on vi.id_produto = pr.idProduto
+            where v.id_venda = ?
+            order by 1`;
+
+        let rows = await banco.ExecutaComando(sql, [vendaId])
+
+        return rows.map(row =>{
+            return{
+                vendaId: row.id_venda,
+                vendaValor: Number(row.ven_total || 0),
+                itemNome: row.pro_nome,
+                itemQuantidade: Number(row.vitem_quant_ajustado || 0),
+                itemValor: Number(row.vitem_valoruni_ajustado || 0),
+                itemValorTotal: Number(row.vitem_valortotal_ajustado || 0)
+            }
+        })
     }
 
     toJSON(){

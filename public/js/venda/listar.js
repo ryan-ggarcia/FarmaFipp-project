@@ -1,7 +1,29 @@
 document.addEventListener("DOMContentLoaded", function(){
     const btnBuscar = document.getElementById("btnBuscar");
+    const txtSearch = document.getElementById("txtSearch");
+
     if (btnBuscar) {
-        btnBuscar.addEventListener("click", listarVendas);
+        btnBuscar.addEventListener("click", buscarVendas);
+    }
+
+    if (txtSearch) {
+        txtSearch.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                buscarVendas();
+            }
+        });
+    }
+
+    function buscarVendas(){
+        const vendaId = txtSearch ? txtSearch.value.trim() : "";
+
+        if (vendaId) {
+            listarVendaId(vendaId);
+            return;
+        }
+
+        listarVendas();
     }
 
     function listarVendas(){
@@ -13,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function(){
             return res.json();
         })
         .then(data =>{
-            montarTabela(data || []);
+            montarTabela(data);
         })
         .catch(error => {
             console.error(error);
@@ -46,4 +68,19 @@ document.addEventListener("DOMContentLoaded", function(){
         document.querySelector("#tabelaPedidos > tbody").innerHTML = html;
     }
 
+    function listarVendaId(vendaId){
+        fetch("/venda/listar/" + encodeURIComponent(vendaId))
+        .then(res =>{
+            if (!res.ok) {
+                throw new Error('Falha ao listar venda por ID: HTTP ' + res.status);
+            }
+            return res.json();
+        })
+        .then(data =>{
+            montarTabela(data);
+        })
+        .catch(error => {
+            console.error(error);
+        })
+    }
 })
