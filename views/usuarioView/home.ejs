@@ -465,6 +465,7 @@
         </div>
     </div>
 </section>
+<script src="/js/produtos/cartService.js"></script>
 <script>
             // Wishlist toggle
             document.querySelectorAll('.wishlist-btn').forEach(btn => {
@@ -476,16 +477,10 @@
                 });
             });
 
-            // Add to cart feedback
+            // Static demo products — redirect to /shop so users can buy real products
             document.querySelectorAll('.btn-add').forEach(btn => {
                 btn.addEventListener('click', function () {
-                    const orig = this.innerHTML;
-                    this.innerHTML = '<i class="bi bi-check-circle me-1"></i>Adicionado!';
-                    this.style.background = '#2D6A4F';
-                    setTimeout(() => {
-                        this.innerHTML = orig;
-                        this.style.background = '';
-                    }, 1500);
+                    window.location.href = '/shop';
                 });
             });
         </script>

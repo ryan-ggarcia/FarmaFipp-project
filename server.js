@@ -7,6 +7,7 @@ const expressEjsLayouts = require('express-ejs-layouts');
 // Rotas públicas
 const usuarioRouter = require("./routes/UsuarioRouter");
 const loginRouter = require('./routes/loginRouter');
+const ProdutoPublicRouter = require('./routes/ProdutoPublicRouter');
 
 // Rotas admin
 const homeRouter = require("./routes/HomeRouter");
@@ -36,6 +37,7 @@ server.use(express.json());
 // ==============================
 server.use("/", usuarioRouter);
 server.use("/login", loginRouter);
+server.use("/produtos", ProdutoPublicRouter);
 
 // ==============================
 // ROTAS ADMIN (layout admin)
