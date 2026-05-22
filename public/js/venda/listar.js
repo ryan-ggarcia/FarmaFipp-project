@@ -77,10 +77,23 @@ document.addEventListener("DOMContentLoaded", function(){
             return res.json();
         })
         .then(data =>{
+            if (data && data.ok === false) {
+                alert(data.msg || 'Venda não encontrada para o ID informado!');
+                document.querySelector("#tabelaPedidos > tbody").innerHTML = "";
+                return;
+            }
+
+            if (!Array.isArray(data) || data.length === 0) {
+                alert('Venda não encontrada para o ID informado!');
+                document.querySelector("#tabelaPedidos > tbody").innerHTML = "";
+                return;
+            }
+
             montarTabela(data);
         })
         .catch(error => {
             console.error(error);
+            alert('Erro ao buscar venda por ID!');
         })
     }
 })
