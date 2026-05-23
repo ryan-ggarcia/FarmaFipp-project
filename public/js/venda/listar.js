@@ -1,49 +1,44 @@
 document.addEventListener("DOMContentLoaded", function(){
-    const btnBuscar = document.getElementById("btnBuscar");
-    const txtSearch = document.getElementById("txtSearch");
 
-    if (btnBuscar) {
-        btnBuscar.addEventListener("click", buscarVendas);
-    }
-
-    if (txtSearch) {
-        txtSearch.addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                buscarVendas();
-            }
-        });
-    }
+    carregarVendas();
+    let input = document.querySelector("#txtSearch");
+    let btn = document.querySelector("#btnBuscar");
 
     function buscarVendas(){
-        const vendaId = txtSearch ? txtSearch.value.trim() : "";
-
-        if (vendaId) {
-            listarVendaId(vendaId);
-            return;
-        }
-
-        listarVendas();
+        let params = input.value;
+        carregarVendas(params)
     }
 
-    function listarVendas(){
-        fetch('/venda/listar')
+    input.addEventListener("keydown", function(event){
+        if(event.key === "Enter"){
+            let params = input.value;
+            buscarVendas(params)
+        }
+    });
+
+    btn.addEventListener("click", function(){
+        let params = input.value;
+        buscarVendas(params)
+    });
+
+    function carregarVendas(params){
+        fetch("/vendas/listar" + (params ? "?produto=" + params: ""))
         .then(res =>{
-            if (!res.ok) {
-                throw new Error('Falha ao listar vendas: HTTP ' + res.status);
-            }
-            return res.json();
+            return res.json()
         })
-        .then(data =>{
+        .then(data => {
             montarTabela(data);
-        })
-        .catch(error => {
-            console.error(error);
         })
     }
 
     function montarTabela(cartList){
-        let html = "";
+        let html = ""
+
+        if(!cartList || cartList.length === 0){
+            html = `<tr><td colspan="6">Nenhuma venda encontrada!</td></tr>`;
+            document.querySelector("#tabelaPedidos > tbody").innerHTML = html;
+            return;
+        }
 
         for(let venda of cartList){
             const vendaId = venda.vendaId ?? venda.id_venda ?? "-";
@@ -53,8 +48,9 @@ document.addEventListener("DOMContentLoaded", function(){
             const itemValor = Number(venda.itemValor ?? venda.item_valor ?? 0);
             const itemValorTotal = Number(venda.itemValorTotal ?? venda.item_valor_total ?? 0);
 
-            html +=
-            `
+            
+            html += 
+               `
             <tr>
                 <td>${vendaId}</td>
                 <td>${vendaValor.toFixed(2)}</td>
@@ -66,21 +62,5 @@ document.addEventListener("DOMContentLoaded", function(){
         }
 
         document.querySelector("#tabelaPedidos > tbody").innerHTML = html;
-    }
-
-    function listarVendaId(vendaId){
-        fetch("/venda/listar/" + encodeURIComponent(vendaId))
-        .then(res =>{
-            if (!res.ok) {
-                throw new Error('Falha ao listar venda por ID: HTTP ' + res.status);
-            }
-            return res.json();
-        })
-        .then(data =>{
-            montarTabela(data);
-        })
-        .catch(error => {
-            console.error(error);
-        })
     }
 })

@@ -20,8 +20,12 @@ class VendaController {
 
     async ListarVendas(req, res){
         try {
+            let ok = true;
+            let msg = "";
+
+            let params = req.query.produto
             const itemVenda = new ItemVendaModel();
-            const lista = await itemVenda.ListarVendas();
+            const lista = await itemVenda.ListarVendas(params);
             res.send(lista);
         } catch (error) {
             console.error('Erro ao listar vendas:', error);
