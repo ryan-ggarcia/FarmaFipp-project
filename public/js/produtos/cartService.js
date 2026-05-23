@@ -87,11 +87,12 @@ function CartService() {
         return cartList;
     }
 
-    // ── Public: getTotalItems ───────────────────────────────
-    function getTotalItems() {
-        return cartList.reduce(function (total, item) {
-            return total + (Number(item.quantidade) || 0);
-        }, 0);
+    function updateBadge() {
+        const badge = document.getElementById('cartBadgeCount');
+        if (!badge) return;
+        const total = loadCart().reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0);
+        badge.textContent = String(total);
+        badge.style.display = total > 0 ? 'inline-block' : 'none';
     }
 
     // ── Public: renderCart (modal) ──────────────────────────
@@ -107,6 +108,28 @@ function CartService() {
             if (empty)  empty.classList.remove('d-none');
             if (items)  items.classList.add('d-none');
             if (footer) footer.classList.add('d-none');
+            return;
+        }
+
+    function formatCurrency(value) {
+        return Number(value || 0).toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+    }
+
+    function renderCart() {
+        let cartList = loadCart();
+        const empty = document.getElementById('cartModalEmpty');
+        const items = document.getElementById('cartModalItems');
+        const footer = document.getElementById('cartModalFooter');
+        const body = document.getElementById('cartModalBody');
+
+        if (cartList.length === 0) {
+            if (empty) empty.classList.remove('d-none');
+            if (items) items.classList.add('d-none');
+            if (footer) footer.classList.add('d-none');
+            if (body) body.innerHTML = '';
             return;
         }
 
@@ -157,13 +180,10 @@ function CartService() {
         if (elTotalItems) elTotalItems.textContent = String(totalItems);
         if (elTotalPrice) elTotalPrice.textContent = formatCurrency(totalPrice);
 
-        // ── Event: Remove ──
-        document.querySelectorAll('.btn-modal-remove').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                cartList = cartList.filter(function (item) {
-                    return getItemKey(item) !== String(btn.dataset.key);
-                });
-                saveCart();
+        document.querySelectorAll('.btn-modal-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                cartList = cartList.filter(item => getItemKey(item) !== String(btn.dataset.key));
+                saveCart(cartList);
                 updateBadge();
                 renderCart();
             });
@@ -177,7 +197,7 @@ function CartService() {
                 });
                 if (target) {
                     target.quantidade = (Number(target.quantidade) || 0) + 1;
-                    saveCart();
+                    saveCart(cartList);
                     updateBadge();
                     renderCart();
                 }
@@ -192,10 +212,8 @@ function CartService() {
                 });
                 if (target) {
                     target.quantidade = (Number(target.quantidade) || 0) - 1;
-                    cartList = cartList.filter(function (item) {
-                        return Number(item.quantidade) > 0;
-                    });
-                    saveCart();
+                    cartList = cartList.filter(item => Number(item.quantidade) > 0);
+                    saveCart(cartList);
                     updateBadge();
                     renderCart();
                 }
@@ -207,26 +225,24 @@ function CartService() {
         if (btnClear) {
             btnClear.onclick = function () {
                 cartList = [];
-                saveCart();
+                saveCart(cartList);
                 updateBadge();
                 renderCart();
             };
         }
     }
 
-    // ── Return public API ───────────────────────────────────
     return {
-        addToCart: addToCart,
-        removeFromCart: removeFromCart,
-        getTotalItems: getTotalItems,
-        loadCart: loadCart,
-        renderCart: renderCart,
-        updateBadge: updateBadge
+        addToCart,
+        removeFromCart,
+        getTotalItems,
+        updateBadge,
+        renderCart
     };
 }
 
-// ── Singleton instance ──────────────────────────────────────
-var cartService = CartService();
+
+const cartService = CartService();
 window.cartService = cartService;
 
 function updateCartBadge() {
@@ -242,59 +258,37 @@ window.updateCartBadge = updateCartBadge;
 document.addEventListener('DOMContentLoaded', function () {
     updateCartBadge();
 
-    // Buttons on the /shop page use data-produto and data-lote attributes
-    document.querySelectorAll('.add-to-cart, .btn-cart-add').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var produtoId = this.dataset.produto || this.dataset.id;
-            var loteId    = this.dataset.lote || '';
-            var that      = this;
+    document.querySelectorAll('.add-to-cart').forEach(btn =>{
+        btn.addEventListener('click', function(){
+            const produtoId = this.dataset.produto;
+            const loteId = this.dataset.lote || null;
 
-            if (!produtoId) {
+            if(!produtoId){
                 alert('Produto não encontrado!');
                 return;
             }
 
-            // Check if the product is already in the cart
-            var existing = cartService.loadCart().find(function (item) {
-                return String(item.id) === String(produtoId);
-            });
+            fetch('/produtos/obter/' + produtoId)
+                .then(res => res.json())
+                .then(data => {
+                    if(!data || !data.produto){
+                        throw new Error('Produto inválido');
+                    }
 
-            if (existing) {
-                // Just increment quantity
-                cartService.addToCart({ id: produtoId });
-                updateCartBadge();
-                that.innerHTML = '<i class="bi bi-bag-check"></i> Adicionado';
-                setTimeout(function () {
-                    that.innerHTML = '<i class="bi bi-bag-plus"></i> Adicionar ao carrinho';
-                }, 2000);
-            } else {
-                // Fetch full product data from server
-                fetch('/produtos/obter/' + produtoId)
-                    .then(function (res) { return res.json(); })
-                    .then(function (data) {
-                        if (data.ok && data.produto) {
-                            cartService.addToCart({
-                                id: data.produto.id,
-                                nome: data.produto.nome,
-                                preco: data.produto.preco,
-                                descricao: data.produto.descricao,
-                                imagem: data.produto.img,
-                                id_lote: loteId || data.produto.id_lote || null
-                            });
-                            updateCartBadge();
-                            that.innerHTML = '<i class="bi bi-bag-check"></i> Adicionado';
-                            setTimeout(function () {
-                                that.innerHTML = '<i class="bi bi-bag-plus"></i> Adicionar ao carrinho';
-                            }, 2000);
-                        } else {
-                            alert('Produto não encontrado no servidor!');
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('Erro ao buscar produto:', err);
-                        alert('Erro ao adicionar produto ao carrinho.');
-                    });
-            }
-        });
-    });
-});
+                    const produto = {
+                        ...data.produto,
+                        imagem: data.produto.imagem || data.produto.img,
+                        id_lote: loteId || data.produto.id_lote || data.produto.idLote || null
+                    };
+
+                    cartService.addToCart(produto);
+                    updateCartBadge();
+
+                    alert(`Produto "${produto.nome}" adicionado ao carrinho!`);
+                })
+                .catch(() => {
+                    alert('Não foi possível adicionar o produto ao carrinho.');
+                });
+        })
+    })
+})
