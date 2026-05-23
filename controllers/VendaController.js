@@ -35,14 +35,21 @@ class VendaController {
 
     async ListarVendasId(req, res){
         try {
-            const vendaId = Number(req.params.id);
+            let ok = true;
+            let msg = "";
+            const vendaId = req.params.id;
 
-            if (Number.isNaN(vendaId) || vendaId <= 0) {
-                return res.status(400).send({ ok: false, msg: 'ID de venda inválido!' });
+            if (!vendaId) {
+                return res.send({ok: false, msg: 'ID de venda inválido!' });
             }
 
             const item = new ItemVendaModel();
             const lista = await item.listarVendaId(vendaId);
+
+            if (!Array.isArray(lista) || lista.length === 0) {
+                return res.send({ ok: false, msg: 'Venda não encontrada para o ID informado!' });
+            }
+
             return res.send(lista);
         } catch (error) {
             console.error('Erro ao listar venda por ID:', error);
