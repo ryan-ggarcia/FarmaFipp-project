@@ -70,8 +70,9 @@ class VendaController {
                 return res.send({ ok: false, msg: 'Nenhum item enviado ao servidor!' });
             }
             let venda = new VendaModel()
+            venda.status = 'Pendente'
             let id = await venda.RegistrarVenda();
-            venda.total = 0;
+            venda.valorFinal = 0;
 
             if(id){
                 for(let item of itens){
@@ -104,7 +105,7 @@ class VendaController {
                     itemVenda.item_valor = preco;
                     itemVenda.item_valor_total = quant * preco;
                     await itemVenda.RegistrarItemVenda();
-                    venda.total += itemVenda.item_valor_total;
+                    venda.valorFinal += itemVenda.item_valor_total;
 
                     let estoque = new EstoqueModel(0, null, 'SAÍDA', "VENDA", quant, produto.id, null);
                     produto.quantidade -= quant;

@@ -41,10 +41,35 @@ class ProdutoModel{
         this.#marca = marca;
         this.#lote = lote;
         this.#img = img;
-    this.#id_lote = id_lote;
+        this.#id_lote = id_lote;
     }
 
-
+    async #discardProductsExpired(){
+        const sql = `SELECT 
+                        p.idProduto, 
+                        l.lot_id, 
+                        l.lot_qnt
+                    FROM produto p
+                    INNER JOIN produto_lote pl ON p.idProduto = pl.produto_idProduto
+                    INNER JOIN Lote l ON pl.lote_lot_id = l.lot_id
+                    WHERE l.lot_validade < CURDATE();`
+        const banco = new Database();
+        let listValues = []
+        let rows = await banco.ExecutaComando(sql);
+        if(!rows || rows.length === 0) { return false; }
+        else{
+            rows.forEach(row => {
+                listValues.push([row.idProduto, row.lot_id, row.lot_qnt]);
+            })
+        }
+        const sqlInserted = `INSERT INTO efetuar_descarte (des_date, des_quantidade, Produto_Descarte, Funcionario_Descarte) VALUES (?, ?, ?, ?)`
+        for (const row of listValues) {
+            // ID 1 é usado como 'Funcionário do Sistema' para descartes automáticos
+            let values = [new Date(), row[2], row[0], 1];
+            await banco.ExecutaComandoNonQuery(sqlInserted, values);
+        }
+        return true;
+    }
 
     async Create() {
         const sql = 'insert into produto (pro_nome, descricao,  pro_preco, pro_quantidade,  Categoria_Produto, marca, idFornecedor, pro_img) values (?, ?, ?, ?, ?, ?, ?, ?)';
@@ -57,6 +82,7 @@ class ProdutoModel{
     async ListCategorias() {
         const sql = 'select * from categoria';
         const banco = new Database();
+        await this.#discardProductsExpired();
         let result =  await banco.ExecutaComando(sql);
         return result;
     }

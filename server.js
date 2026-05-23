@@ -2,26 +2,31 @@
 require('dotenv').config()
 const express = require('express');
 const cookieParser = require("cookie-parser");
+const expressEjsLayouts = require('express-ejs-layouts');
+
+// Rotas públicas
+const usuarioRouter = require("./routes/UsuarioRouter");
+const loginRouter = require('./routes/loginRouter');
+const ProdutoPublicRouter = require('./routes/ProdutoPublicRouter');
+
+// Rotas admin
 const homeRouter = require("./routes/HomeRouter");
-const usuarioRouter = require("./routes/UsuarioRouter")
-const ServicoRouter = require ('./routes/ServicoRouter');
+const ServicoRouter = require('./routes/ServicoRouter');
 const ClienteRouter = require('./routes/ClienteRoute');
 const FornecedorRouter = require('./routes/FornecedorRoute');
-const EstoqueRouter = require('./routes/EstoqueRoute');
-const VendaRouter = require('./routes/VendaRouter');
-//const brazilianUtils = require('@brazilian-utils/brazilian-utils');
-const expressEjsLayouts = require('express-ejs-layouts');
 const ProdutoRouter = require('./routes/ProdutoRouter');
-const server = express();
-//Preparando o servidor para receber as imagem 
+const EstoqueRouter = require('./routes/EstoqueRoute');
+const FuncionarioRouter = require('./routes/FuncionarioRoute');
+const DevolucaoRouter = require('./routes/DevolucaoRouter');
 
+// API
+const VendaRouter = require('./routes/VendaRouter');
+
+const server = express();
 
 server.set('view engine', 'ejs');
-//server.use(brazilianUtils);
 server.use(cookieParser());
 server.use(expressEjsLayouts);
-// set default layout to views/layout.ejs
-
 server.set('layout', "layout");
 server.use(express.static(__dirname + "/public"));
 server.use(express.urlencoded({extended:true}));

@@ -97,17 +97,19 @@ class ItemVendaModel{
     }
 
     async RegistrarItemVenda(){
-        let sql = "insert into venda_item_teste (id_venda, id_produto, id_lote, vitem_quant, vitem_valoruni, vitem_valortotal) values (?,?,?,?,?,?)"
+        let sql = `INSERT INTO venda_item_teste 
+            (id_venda, id_produto, id_lote, vitem_quant, vitem_valoruni, vitem_valortotal) 
+            VALUES (?, ?, ?, ?, ?, ?)`
 
         let values = [this.id_venda, this.id_produto, this.id_lote, this.item_quant, this.item_valor, this.item_valor_total]
 
-        let result = await banco.ExecutaComando(sql, values)
+        let result = await banco.ExecutaComandoNonQuery(sql, values)
 
-        return result?.insertId || null
+        return result
     }
 
     async GetItemVenda(id_item){
-        let sql = "select * from venda_item_teste where id_item = ?"
+        let sql = "SELECT * FROM venda_item_teste WHERE id_venda_item = ?"
 
         let values = [id_item]
 
@@ -115,7 +117,15 @@ class ItemVendaModel{
 
         if (rows.length > 0){
             let item = rows[0]
-            let itemVenda = new ItemVendaModel(item.id_item, item.id_venda, item.id_produto, item.id_lote, item.vitem_quant, item.vitem_valoruni, item.vitem_valortotal)
+            let itemVenda = new ItemVendaModel(
+                item.id_venda_item, 
+                item.id_venda, 
+                item.id_produto, 
+                item.id_lote, 
+                item.vitem_quant, 
+                item.vitem_valoruni, 
+                item.vitem_valortotal
+            )
             return itemVenda
         }
         return null
