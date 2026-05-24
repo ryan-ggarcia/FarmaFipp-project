@@ -34,7 +34,10 @@ function CartService() {
     }
 
     function formatCurrency(value) {
-        return 'R$ ' + Number(value || 0).toFixed(2).replace('.', ',');
+        return Number(value || 0).toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
     }
 
     function getItemKey(item) {
@@ -42,10 +45,18 @@ function CartService() {
         return item.id + '::' + lote;
     }
 
+    function getTotalItems() {
+        loadCart();
+        return cartList.reduce(function (sum, item) {
+            return sum + (Number(item.quantidade) || 0);
+        }, 0);
+    }
+
     // ── Badge ───────────────────────────────────────────────
     function updateBadge() {
         var badge = document.getElementById('cartBadgeCount');
         if (!badge) return;
+        loadCart();
         var total = cartList.reduce(function (sum, item) {
             return sum + (Number(item.quantidade) || 0);
         }, 0);
@@ -87,14 +98,6 @@ function CartService() {
         return cartList;
     }
 
-    function updateBadge() {
-        const badge = document.getElementById('cartBadgeCount');
-        if (!badge) return;
-        const total = loadCart().reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0);
-        badge.textContent = String(total);
-        badge.style.display = total > 0 ? 'inline-block' : 'none';
-    }
-
     // ── Public: renderCart (modal) ──────────────────────────
     function renderCart() {
         var empty  = document.getElementById('cartModalEmpty');
@@ -107,27 +110,6 @@ function CartService() {
         if (cartList.length === 0) {
             if (empty)  empty.classList.remove('d-none');
             if (items)  items.classList.add('d-none');
-            if (footer) footer.classList.add('d-none');
-            return;
-        }
-
-    function formatCurrency(value) {
-        return Number(value || 0).toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        });
-    }
-
-    function renderCart() {
-        let cartList = loadCart();
-        const empty = document.getElementById('cartModalEmpty');
-        const items = document.getElementById('cartModalItems');
-        const footer = document.getElementById('cartModalFooter');
-        const body = document.getElementById('cartModalBody');
-
-        if (cartList.length === 0) {
-            if (empty) empty.classList.remove('d-none');
-            if (items) items.classList.add('d-none');
             if (footer) footer.classList.add('d-none');
             if (body) body.innerHTML = '';
             return;
@@ -183,7 +165,7 @@ function CartService() {
         document.querySelectorAll('.btn-modal-remove').forEach(btn => {
             btn.addEventListener('click', () => {
                 cartList = cartList.filter(item => getItemKey(item) !== String(btn.dataset.key));
-                saveCart(cartList);
+                saveCart();
                 updateBadge();
                 renderCart();
             });
@@ -197,7 +179,7 @@ function CartService() {
                 });
                 if (target) {
                     target.quantidade = (Number(target.quantidade) || 0) + 1;
-                    saveCart(cartList);
+                    saveCart();
                     updateBadge();
                     renderCart();
                 }
@@ -213,7 +195,7 @@ function CartService() {
                 if (target) {
                     target.quantidade = (Number(target.quantidade) || 0) - 1;
                     cartList = cartList.filter(item => Number(item.quantidade) > 0);
-                    saveCart(cartList);
+                    saveCart();
                     updateBadge();
                     renderCart();
                 }
@@ -225,7 +207,7 @@ function CartService() {
         if (btnClear) {
             btnClear.onclick = function () {
                 cartList = [];
-                saveCart(cartList);
+                saveCart();
                 updateBadge();
                 renderCart();
             };
@@ -236,6 +218,7 @@ function CartService() {
         addToCart,
         removeFromCart,
         getTotalItems,
+        loadCart,
         updateBadge,
         renderCart
     };

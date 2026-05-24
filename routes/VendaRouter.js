@@ -7,6 +7,6 @@ const controller = new VendaController();
 router.post('/confirmar', controller.RegistrarVenda);
 router.get("/", controller.VendasView)
 router.get('/listar', controller.ListarVendas)
-router.get('/listar/:id', controller.ListarVendasId)
+
 
 module.exports = router;

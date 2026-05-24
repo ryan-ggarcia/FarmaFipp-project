@@ -33,30 +33,6 @@ class VendaController {
         }
     }
 
-    async ListarVendasId(req, res){
-        try {
-            let ok = true;
-            let msg = "";
-            const vendaId = req.params.id;
-
-            if (!vendaId) {
-                return res.send({ok: false, msg: 'ID de venda inválido!' });
-            }
-
-            const item = new ItemVendaModel();
-            const lista = await item.listarVendaId(vendaId);
-
-            if (!Array.isArray(lista) || lista.length === 0) {
-                return res.send({ ok: false, msg: 'Venda não encontrada para o ID informado!' });
-            }
-
-            return res.send(lista);
-        } catch (error) {
-            console.error('Erro ao listar venda por ID:', error);
-            return res.status(500).send({ ok: false, msg: 'Erro ao listar venda por ID!' });
-        }
-    }
-
     async RegistrarVenda(req, res) {
         console.log(req.body);
         const itens = Array.isArray(req.body)
