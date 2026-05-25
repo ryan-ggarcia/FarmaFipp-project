@@ -313,5 +313,85 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+            if (deleteAccountBtn) {
+                deleteAccountBtn.addEventListener("click", function() {
+                    Swal.fire({
+                        title: "Tem certeza?",
+                        text: "Esta ação é permanente e todos os seus dados e endereço serão excluídos irreversivelmente!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#dc3545", // Bootstrap Red
+                        cancelButtonColor: "#6c757d", // Bootstrap Secondary Grey
+                        confirmButtonText: "Sim, excluir conta",
+                        cancelButtonText: "Cancelar",
+                        background: "#121214", // dark theme background consistent with tokio night
+                        color: "#e1e1e6"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Show loading
+                            Swal.fire({
+                                title: "Processando...",
+                                text: "Excluindo sua conta e limpando sua sessão...",
+                                allowOutsideClick: false,
+                                background: "#121214",
+                                color: "#e1e1e6",
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            // Perform delete request using fetch
+                            fetch("/perfil/excluir", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.ok) {
+                                    Swal.fire({
+                                        title: "Conta Excluída!",
+                                        text: data.msg,
+                                        icon: "success",
+                                        background: "#121214",
+                                        color: "#e1e1e6",
+                                        confirmButtonColor: "#20a59a",
+                                        timer: 3000,
+                                        timerProgressBar: true
+                                    }).then(() => {
+                                        window.location.href = "/";
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: "Erro!",
+                                        text: data.msg,
+                                        icon: "error",
+                                        background: "#121214",
+                                        color: "#e1e1e6",
+                                        confirmButtonColor: "#20a59a"
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Erro na exclusão:", error);
+                                Swal.fire({
+                                    title: "Erro!",
+                                    text: "Houve um problema de rede ou erro interno no servidor.",
+                                    icon: "error",
+                                    background: "#121214",
+                                    color: "#e1e1e6",
+                                    confirmButtonColor: "#20a59a"
+                                });
+                            });
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 </html>

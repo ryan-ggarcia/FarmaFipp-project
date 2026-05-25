@@ -479,9 +479,104 @@
             });
         });
 
-        // Prevent form submit (no backend wired yet)
+        // Form submit using fetch API
         document.getElementById('editProfileForm').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            const nome = document.getElementById('editNome').value;
+            const data = document.getElementById('editNascimento').value;
+            const telefone = document.getElementById('editTelefone').value;
+            const email = document.getElementById('editEmail').value;
+            const senhaAtual = document.getElementById('editSenhaAtual').value;
+            const novaSenha = document.getElementById('editNovaSenha').value;
+            const confirmSenha = document.getElementById('editConfirmSenha').value;
+            
+            const cep = document.getElementById('editCep').value;
+            const rua = document.getElementById('editRua').value;
+            const numero = document.getElementById('editNumero').value;
+            const complemento = document.getElementById('editComplemento').value;
+            const bairro = document.getElementById('editBairro').value;
+            const cidade = document.getElementById('editCidade').value;
+            const estado = document.getElementById('editEstado').value;
+            const uf = document.getElementById('editUf').value;
+            
+            const id = document.querySelector('input[name="id"]').value;
+            const endId = document.querySelector('input[name="endId"]').value;
+
+            if (novaSenha && novaSenha !== confirmSenha) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ops...',
+                    text: 'A nova senha e a confirmação de senha não coincidem!',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Processando...',
+                text: 'Aguarde enquanto salvamos suas alterações.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch('/perfil/editar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id,
+                    nome,
+                    data,
+                    telefone,
+                    email,
+                    senhaAtual,
+                    novaSenha,
+                    confirmSenha,
+                    cep,
+                    rua,
+                    numero,
+                    complemento,
+                    bairro,
+                    cidade,
+                    estado,
+                    uf,
+                    endId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: data.msg,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = '/perfil';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: data.msg,
+                        confirmButtonColor: '#3085d6'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar perfil:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro Interno',
+                    text: 'Ocorreu um erro ao atualizar seu perfil. Tente novamente mais tarde.',
+                    confirmButtonColor: '#3085d6'
+                });
+            });
         });
     </script>
 </body>

@@ -7,5 +7,7 @@ let ctrl = new PerfilController();
 
 router.get("/", ctrl.perfileView);
 router.get("/editar", ctrl.editarView);
+router.post("/editar", ctrl.alterar);
+router.post("/excluir", ctrl.excluir);
 
 module.exports = router;
