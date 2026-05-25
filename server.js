@@ -8,6 +8,7 @@ const expressEjsLayouts = require('express-ejs-layouts');
 const usuarioRouter = require("./routes/UsuarioRouter");
 const loginRouter = require('./routes/loginRouter');
 const ProdutoPublicRouter = require('./routes/ProdutoPublicRouter');
+const PerfilRoute = require('./routes/PerfilRoute');
 
 // Rotas admin
 const homeRouter = require("./routes/HomeRouter");
@@ -23,6 +24,7 @@ const DevolucaoRouter = require('./routes/DevolucaoRouter');
 const VendaRouter = require('./routes/VendaRouter');
 
 const server = express();
+const middleware = require('./middleware/authMiddleware');
 
 server.set('view engine', 'ejs');
 server.use(cookieParser());
@@ -35,8 +37,11 @@ server.use(express.json());
 // ==============================
 // ROTAS PÚBLICAS (layoutPublico)
 // ==============================
-server.use("/", usuarioRouter);
 server.use("/login", loginRouter);
+server.use(middleware.validarCliente);
+server.use("/perfil", PerfilRoute);
+server.use("/", usuarioRouter);
+
 server.use("/produtos", ProdutoPublicRouter);
 
 // ==============================
