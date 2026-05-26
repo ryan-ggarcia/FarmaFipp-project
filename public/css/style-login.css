@@ -1,22 +1,26 @@
-  * {
-      margin: 0;
-      padding: 0;
+  /*
+   * style-login.css — página de login (standalone)
+   * Depende de _tokens.css carregado ANTES deste arquivo no HTML.
+   * Variáveis de marca vêm do _tokens.css; apenas variáveis
+   * exclusivas desta página são declaradas aqui.
+   */
+
+  *,
+  *::before,
+  *::after {
       box-sizing: border-box;
   }
 
+  /* Variáveis locais desta página (não duplicar tokens globais) */
   :root {
-      --primary-red: #A31621;
-      --accent-yellow: #F4D35E;
-      --dark-green: #2D6A4F;
-      --teal: #4E8098;
-      --light-bg: #f8f9fa;
+      --login-bg-left: #f0ede5;
   }
 
   body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
-      overflow-x: hidden;
+      /* Resolvido na fonte — sem band-aid overflow-x:hidden */
   }
 
   .login-container {

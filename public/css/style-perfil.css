@@ -1,24 +1,24 @@
-* {
-    margin: 0;
-    padding: 0;
+/*
+ * style-perfil.css — páginas de perfil do usuário (standalone)
+ * Depende de _tokens.css carregado ANTES deste arquivo no HTML.
+ * Variáveis de marca vêm do _tokens.css.
+ * Cor primária: var(--primary-red) = #A31621 (Farmafipp brand)
+ */
+
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
+/* Variáveis locais exclusivas desta página */
 :root {
-    --primary-red: #e63946;
-    --primary-red-dark: #d62828;
-    --accent-yellow: #f4a261;
-    --dark-green: #2a9d8f;
-    --teal: #457b9d;
-    --light-bg: #f0f4f8;
-    --text-dark: #1d3557;
-    --text-light: #6c757d;
+    --text-dark:    #1d3557;
+    --text-light:   #6c757d;
     --border-color: #dee2e6;
-    --success-green: #2a9d8f;
-    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Aliases de sucesso/teal específicos desta página */
+    --success-green: var(--clr-green, #2D6A4F);
+    --teal:          var(--primary-blue, #4E8098);
 }
 
 body {
@@ -26,7 +26,7 @@ body {
     background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
     min-height: 100vh;
     color: var(--text-dark);
-    overflow-x: hidden;
+    /* Sem overflow-x:hidden — resolve o layout na origem */
 }
 
 /* ========== PAGE CONTAINER ========== */

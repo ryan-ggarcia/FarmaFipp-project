@@ -3,71 +3,83 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Administração</title>
+  <meta name="theme-color" content="#A31621">
+  <title>FarmaFipp — Administração</title>
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
+  <!-- ═══ FONTES ═══════════════════════════════════════════════
+       DM Sans  : corpo de texto (400, 500, 600)
+       Syne     : títulos/headings (700, 800)
+       Pré-carregamento evita FOUT (flash de texto sem fonte)
+  ════════════════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap">
+
+  <!-- ═══ ÍCONES ════════════════════════════════════════════ -->
   <link rel="stylesheet" href="/css/fontawesome-free/css/all.min.css">
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <!-- Theme style -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <!-- ═══ CSS — ORDEM IMPORTA ══════════════════════════════
+       1. Design tokens (variáveis globais)
+       2. AdminLTE (framework do painel)
+       3. Estilos customizados (consomem os tokens)
+       4. Select2 (componente de select)
+  ════════════════════════════════════════════════════════════ -->
+  <link rel="stylesheet" href="/css/_tokens.css">
   <link rel="stylesheet" href="/css/adminlte.min.css">
-  <!-- Custom styles -->
   <link rel="stylesheet" href="/css/style.css">
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 </head>
+
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
-  <!-- Navbar -->
+  <!-- Navbar principal -->
   <%- include('partials/header') %>
-  <!-- /.navbar -->
 
-  <!-- Main Sidebar Container -->
+  <!-- Sidebar -->
   <%- include('partials/sidebar') %>
-  <!-- /.sidebar -->
 
-  <!-- Content Wrapper. Contains page content -->
+  <!-- Conteúdo principal -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <!-- /.content-header -->
-    <!-- Main content -->
     <main class="content py-4">
       <div class="container-fluid">
         <section class="dashboard-section">
-            <%- body %>
+          <%- body %>
         </section>
       </div>
     </main>
-    <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+
   <footer class="main-footer">
     <strong>Desenvolvido por RXcoders &copy;</strong>
     Todos os direitos reservados.
     <div class="float-right d-none d-sm-inline-block">
-      <b>Verção</b> 0.1
+      <b>Versão</b> 0.1
     </div>
   </footer>
 
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
+  <!-- Control Sidebar (AdminLTE) -->
+  <aside class="control-sidebar control-sidebar-dark"></aside>
+
 </div>
 <!-- ./wrapper -->
 
-<!-- jQuery -->
+<!-- ═══ SCRIPTS — carregados no fim do body ══════════════════ -->
+<!-- jQuery (requerido pelo AdminLTE e Select2) -->
 <script src="/js/jquery/jquery.min.js"></script>
 <!-- Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- Bootstrap 4 -->
+<!-- Bootstrap 5 bundle (inclui Popper) -->
 <script src="/js/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- AdminLTE App -->
 <script src="/js/adminlte.js"></script>
+
 </body>
 </html>

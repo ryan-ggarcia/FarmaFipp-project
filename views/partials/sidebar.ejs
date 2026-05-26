@@ -1,57 +1,115 @@
-<aside class="main-sidebar sidebar-dark elevation-4" style="min-height: 100vh;">
-  <% var __active = (typeof active !== 'undefined') ? active : ''; %>
-  <a href="/" class="brand-link text-center py-3" style="background: linear-gradient(90deg, rgba(163,22,33,0.95), rgba(78,128,152,0.95));">
-    <span class="brand-text fw-bold text-white">Farmafipp</span>
+<%
+/* Detecta qual seção está ativa para destacar o link correto */
+var __active = (typeof active !== 'undefined') ? active : '';
+%>
+
+<aside class="main-sidebar sidebar-dark elevation-2"
+       style="min-height:100vh; background:#1e2a38;">
+
+  <!-- Logo / Brand -->
+  <a href="/"
+     class="brand-link text-center py-3 d-flex align-items-center justify-content-center gap-2"
+     style="background:linear-gradient(90deg,rgba(163,22,33,.92),rgba(78,128,152,.88)); text-decoration:none;">
+    <i class="bi bi-capsule-pill text-white" style="font-size:1.3rem"></i>
+    <span class="brand-text fw-bold text-white"
+          style="font-family:'Syne',sans-serif; font-size:1.15rem; letter-spacing:-.3px">
+      Farmafipp
+    </span>
   </a>
 
-  <div class="sidebar pt-3">
-    <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  <div class="sidebar">
+    <nav class="mt-2" aria-label="Navegação principal">
+
+      <ul class="nav nav-pills nav-sidebar flex-column"
+          data-widget="treeview"
+          role="menu"
+          data-accordion="false">
+
+        <!-- Dashboard -->
         <li class="nav-item">
-          <a href="/admin" class="nav-link <%= (__active === 'dashboard') ? 'active' : '' %>">
+          <a href="/admin"
+             class="nav-link <%= (__active === 'dashboard') ? 'active' : '' %>"
+             title="Dashboard">
             <i class="bi bi-speedometer2 nav-icon"></i>
             <p>Dashboard</p>
           </a>
         </li>
 
+        <!-- Produtos -->
         <li class="nav-item">
-          <a href="/admin/produtos" class="nav-link <%= (__active === 'produtos') ? 'active' : '' %>">
+          <a href="/admin/produtos"
+             class="nav-link <%= (__active === 'produtos') ? 'active' : '' %>"
+             title="Produtos">
             <i class="bi bi-box-seam nav-icon"></i>
             <p>Produtos</p>
           </a>
         </li>
 
+        <!-- Serviços -->
         <li class="nav-item">
-          <a href="/admin/servicos" class="nav-link <%= (__active === 'servicos') ? 'active' : '' %>">
+          <a href="/admin/servicos"
+             class="nav-link <%= (__active === 'servicos') ? 'active' : '' %>"
+             title="Serviços">
             <i class="bi bi-tools nav-icon"></i>
             <p>Serviços</p>
           </a>
         </li>
 
+        <!-- Estoque -->
         <li class="nav-item">
-          <a href="/admin/clientes/listar" class="nav-link <%= (__active === 'clientes') ? 'active' : '' %>">
+          <a href="/admin/estoque/gerenciar"
+             class="nav-link <%= (__active === 'estoque') ? 'active' : '' %>"
+             title="Estoque">
+            <i class="bi bi-archive nav-icon"></i>
+            <p>Estoque</p>
+          </a>
+        </li>
+
+        <!-- Separador visual -->
+        <li class="nav-header" style="color:rgba(255,255,255,.35); font-size:.68rem; letter-spacing:.1em">
+          PESSOAS
+        </li>
+
+        <!-- Clientes -->
+        <li class="nav-item">
+          <a href="/admin/clientes/listar"
+             class="nav-link <%= (__active === 'clientes') ? 'active' : '' %>"
+             title="Clientes">
             <i class="bi bi-people nav-icon"></i>
             <p>Clientes</p>
           </a>
         </li>
 
-
+        <!-- Funcionários -->
         <li class="nav-item">
-          <a href="/admin/funcionarios/listar" class="nav-link <%= (__active === 'funcionarios') ? 'active' : '' %>">
+          <a href="/admin/funcionarios/listar"
+             class="nav-link <%= (__active === 'funcionarios') ? 'active' : '' %>"
+             title="Funcionários">
             <i class="bi bi-person-badge nav-icon"></i>
             <p>Funcionários</p>
           </a>
         </li>
 
+        <!-- Fornecedores -->
         <li class="nav-item">
-          <a href="/admin/fornecedores" class="nav-link <%= (__active === 'fornecedores') ? 'active' : '' %>">
+          <a href="/admin/fornecedores"
+             class="nav-link <%= (__active === 'fornecedores') ? 'active' : '' %>"
+             title="Fornecedores">
             <i class="bi bi-truck nav-icon"></i>
             <p>Fornecedores</p>
           </a>
         </li>
 
+        <!-- Separador visual -->
+        <li class="nav-header" style="color:rgba(255,255,255,.35); font-size:.68rem; letter-spacing:.1em">
+          OPERAÇÕES
+        </li>
+
+        <!-- Pós-Venda -->
         <li class="nav-item">
-          <a href="/admin/pos-venda" class="nav-link <%= (__active === 'posVenda') ? 'active' : '' %>">
+          <a href="/admin/pos-venda"
+             class="nav-link <%= (__active === 'posVenda') ? 'active' : '' %>"
+             title="Pós-Venda">
             <i class="bi bi-arrow-return-left nav-icon"></i>
             <p>Pós-Venda</p>
           </a>
@@ -60,4 +118,6 @@
       </ul>
     </nav>
   </div>
+  <!-- /.sidebar -->
+
 </aside>

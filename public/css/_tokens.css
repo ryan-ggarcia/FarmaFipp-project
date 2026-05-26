@@ -1,0 +1,208 @@
+/* ═══════════════════════════════════════════════════════════════
+   FARMAFIPP — DESIGN SYSTEM TOKENS  v1.0
+   ───────────────────────────────────────────────────────────────
+   FONTE ÚNICA DE VERDADE para todas as variáveis do projeto.
+
+   REGRA: NENHUM arquivo CSS deve redefinir variáveis que já
+   existem aqui. Todos os arquivos CSS consomem apenas estes
+   tokens via var(--nome).
+
+   Carregado PRIMEIRO em todos os layouts HTML.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ══════════════════════════════════════════════════════════
+     CORES DA MARCA
+     ══════════════════════════════════════════════════════════ */
+
+  /* Vermelho principal Farmafipp */
+  --clr-red:          #A31621;
+  --clr-red-dark:     #8a111a;
+  --clr-red-deeper:   #6b0b13;
+  --clr-red-a10:      rgba(163, 22, 33, .10);
+  --clr-red-a20:      rgba(163, 22, 33, .20);
+  --clr-red-a30:      rgba(163, 22, 33, .30);
+
+  /* Azul complementar */
+  --clr-blue:         #4E8098;
+  --clr-blue-dark:    #3a6678;
+  --clr-blue-a10:     rgba(78, 128, 152, .10);
+
+  /* Amarelo accent */
+  --clr-yellow:       #F4D35E;
+  --clr-yellow-dark:  #d9b836;
+
+  /* Verde farmácia */
+  --clr-green:        #2D6A4F;
+  --clr-green-dark:   #1f5038;
+  --clr-green-light:  #3a8a66;
+  --clr-green-a10:    rgba(45, 106, 79, .10);
+
+  /* Aliases de compatibilidade (código legado os usa como nomes simples) */
+  --primary-red:       var(--clr-red);
+  --primary-red-dark:  var(--clr-red-dark);
+  --primary-blue:      var(--clr-blue);
+  --accent-yellow:     var(--clr-yellow);
+  --hero-green:        var(--clr-green);
+  --dark-green:        var(--clr-green);
+  --teal:              var(--clr-blue);
+
+  /* ══════════════════════════════════════════════════════════
+     NEUTROS
+     ══════════════════════════════════════════════════════════ */
+  --gray-50:   #f8f9fa;
+  --gray-100:  #f0f2f5;
+  --gray-200:  #e9ecef;
+  --gray-300:  #dee2e6;
+  --gray-400:  #ced4da;
+  --gray-500:  #adb5bd;
+  --gray-600:  #6c757d;
+  --gray-700:  #495057;
+  --gray-800:  #343a40;
+  --gray-900:  #212529;
+
+  /* Dark para footer / background escuro */
+  --dark-bg:   #1e2d3d;
+
+  /* ══════════════════════════════════════════════════════════
+     CORES SEMÂNTICAS
+     ══════════════════════════════════════════════════════════ */
+  --clr-success:      var(--clr-green);
+  --clr-warning:      #e67e22;
+  --clr-error:        var(--clr-red);
+  --clr-info:         var(--clr-blue);
+  --success-green:    var(--clr-green);
+  --error-red:        var(--clr-red);
+  --warning-yellow:   #e9c46a;
+
+  /* ══════════════════════════════════════════════════════════
+     TEXTO
+     ══════════════════════════════════════════════════════════ */
+  --text-primary:    #1a1a1a;
+  --text-dark:       #1d3557;
+  --text-secondary:  var(--gray-600);
+  --text-light:      var(--gray-600);
+  --text-muted:      var(--gray-500);
+  --text-inverted:   #ffffff;
+
+  /* ══════════════════════════════════════════════════════════
+     FUNDOS
+     ══════════════════════════════════════════════════════════ */
+  --bg-body:     #f5f6fa;
+  --bg-surface:  #f8f9fa;
+  --bg-white:    #ffffff;
+  --light-bg:    var(--bg-surface);
+
+  /* ══════════════════════════════════════════════════════════
+     BORDAS
+     ══════════════════════════════════════════════════════════ */
+  --border-color:   #e9ecef;
+  --border-light:   #f0f2f5;
+  --border-darker:  #dee2e6;
+
+  /* ══════════════════════════════════════════════════════════
+     BORDER-RADIUS
+     ══════════════════════════════════════════════════════════ */
+  --radius-xs:    4px;
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    16px;
+  --radius-xl:    24px;
+  --radius-pill:  9999px;
+  --card-radius:  var(--radius-lg);
+
+  /* ══════════════════════════════════════════════════════════
+     SOMBRAS
+     ══════════════════════════════════════════════════════════ */
+  --shadow-xs: 0 1px 3px  rgba(0,0,0,.04);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,.06);
+  --shadow-md: 0 6px 24px rgba(0,0,0,.09);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.12);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.16);
+
+  /* Sombras coloridas (elevação com cor) */
+  --shadow-red:   0 8px 24px rgba(163,22,33,.25);
+  --shadow-blue:  0 8px 24px rgba(78,128,152,.25);
+  --shadow-green: 0 8px 24px rgba(45,106,79,.25);
+
+  /* Aliases de compatibilidade */
+  --shadow-sm-compat: var(--shadow-sm);
+  --shadow-md-compat: var(--shadow-md);
+  --shadow-lg-compat: var(--shadow-lg);
+
+  /* ══════════════════════════════════════════════════════════
+     ESPAÇAMENTO
+     ══════════════════════════════════════════════════════════ */
+  --space-1:  .25rem;   /*  4px */
+  --space-2:  .5rem;    /*  8px */
+  --space-3:  .75rem;   /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* ══════════════════════════════════════════════════════════
+     Z-INDEX
+     ══════════════════════════════════════════════════════════ */
+  --z-base:     1;
+  --z-raised:   10;
+  --z-dropdown: 1000;
+  --z-sticky:   1020;
+  --z-fixed:    1030;
+  --z-overlay:  1040;
+  --z-modal:    1050;
+  --z-toast:    1060;
+  --z-top:      9999;
+
+  /* ══════════════════════════════════════════════════════════
+     TRANSIÇÕES
+     ══════════════════════════════════════════════════════════ */
+  --t-fast:   all .15s ease;
+  --t-base:   all .25s ease;
+  --t-slow:   all .4s  ease;
+  --t-spring: all .3s  cubic-bezier(.4, 0, .2, 1);
+
+  /* Alias de compatibilidade */
+  --transition: var(--t-spring);
+
+  /* ══════════════════════════════════════════════════════════
+     TIPOGRAFIA
+     ══════════════════════════════════════════════════════════ */
+  --font-sans:    'DM Sans',      system-ui, -apple-system, sans-serif;
+  --font-display: 'Syne',         system-ui,               sans-serif;
+  --font-legacy:  'Source Sans Pro', 'Segoe UI',            sans-serif;
+
+  --text-xs:   .75rem;
+  --text-sm:   .875rem;
+  --text-md:   1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+
+  --leading-tight:   1.2;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.7;
+
+  --fw-regular:   400;
+  --fw-medium:    500;
+  --fw-semibold:  600;
+  --fw-bold:      700;
+  --fw-extra:     800;
+
+  /* ══════════════════════════════════════════════════════════
+     BREAKPOINTS (referência — use media queries reais)
+     ══════════════════════════════════════════════════════════
+     xs:  < 576px   (mobile portrait)
+     sm:   576px+   (mobile landscape / small tablet)
+     md:   768px+   (tablet)
+     lg:   992px+   (laptop/desktop pequeno)
+     xl:  1200px+   (desktop)
+     2xl: 1400px+   (large desktop)
+     ══════════════════════════════════════════════════════════ */
+}

@@ -1,134 +1,187 @@
-/* Custom dashboard styles for Farmafipp */
-:root{
-  --primary-red:#A31621;
-  --primary-blue:#4E8098;
-  --card-radius:12px;
+/* ═══════════════════════════════════════════════════════════════
+   FARMAFIPP — ADMIN DASHBOARD  (style.css)
+   ───────────────────────────────────────────────────────────────
+   Depende de _tokens.css carregado ANTES deste arquivo.
+   Contém APENAS sobrescritas visuais sobre o AdminLTE.
+   NÃO redefinir variáveis que já existem em _tokens.css.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────
+   BASE
+─────────────────────────────────────────────────────────────── */
+html { font-size: 16px; }
+
+body {
+  font-family: var(--font-sans);
+  /* Fundo suave: gradiente leve, sem poluição visual */
+  background: linear-gradient(135deg, #e8f4fc 0%, #fce8ec 100%);
+  min-height: 100vh;
+  color: var(--text-primary);
 }
 
-body{
-  background: linear-gradient(to right, #e3f2fd, #fce4ec);
-  min-height:100vh;
-  color:#333;
-}
-
-/* Navbar */
-.main-header .navbar{
+/* ──────────────────────────────────────────────────────────────
+   NAVBAR DO ADMIN
+─────────────────────────────────────────────────────────────── */
+.main-header .navbar {
   border-bottom: none;
 }
 
-/* Sidebar brand */
-.brand-link{
-  border-radius:0;
+/* ──────────────────────────────────────────────────────────────
+   SIDEBAR — link ativo
+─────────────────────────────────────────────────────────────── */
+.nav-sidebar .nav-link.active {
+  background: linear-gradient(90deg,
+    rgba(163,22,33,.92),
+    rgba(78,128,152,.92)
+  );
+  color: #fff;
 }
 
-/* Cards grid */
-.dashboard-grid{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:1.5rem;
+/* ──────────────────────────────────────────────────────────────
+   DASHBOARD GRID  (mobile-first)
+─────────────────────────────────────────────────────────────── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
 }
 
-@media (max-width:992px){
-  .dashboard-grid{
+/* ≥ 576px → 2 colunas */
+@media (min-width: 576px) {
+  .dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (max-width:576px){
-  .dashboard-grid{
-    grid-template-columns: 1fr;
-  }
 
-  form.d-none.d-md-flex{
-    display:none!important;
+/* ≥ 992px → 3 colunas + gap maior */
+@media (min-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
   }
 }
 
-.card-saas{
-  border-radius:var(--card-radius);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  overflow:hidden;
-  transition: transform .25s ease, box-shadow .25s ease;
-  background:#fff;
+/* ──────────────────────────────────────────────────────────────
+   CARD SAAS  (cards do dashboard)
+─────────────────────────────────────────────────────────────── */
+.card-saas {
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-sm);
   border: none;
-}
-.card-saas:hover{
-  transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  background: var(--bg-white);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+  /* Garante altura uniforme dentro do grid */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
+.card-saas:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Variante sem efeito hover (tabelas, listas) */
 .card-saas.no-hover:hover {
-  transform: none !important;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06) !important;
+  transform: none;
+  box-shadow: var(--shadow-sm);
 }
 
-.card-saas .card-image{
-  height:200px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: linear-gradient(90deg, rgba(78,128,152,0.08), rgba(163,22,33,0.06));
-}
-.card-saas .card-image img{
-  max-width:90%;
-  max-height:180px;
-  object-fit:contain;
-}
-.card-saas .card-body{
-  padding:1.25rem;
-}
-.card-saas .card-title{
-  font-weight:600;
-  color:var(--primary-red);
-}
-.card-saas .card-subtext{
-  color:#6c757d;
-  margin-bottom:1rem;
+/* Imagem do card — usa aspect-ratio para ser fluida */
+.card-saas .card-image {
+  aspect-ratio: 16 / 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg,
+    var(--clr-blue-a10),
+    var(--clr-red-a10)
+  );
+  overflow: hidden;
 }
 
-.btn-rounded{
-  border-radius:50px;
+.card-saas .card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.btn-primary.custom{
+.card-saas .card-body {
+  padding: var(--space-5);
+  flex: 1;
+}
+
+.card-saas .card-title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--text-lg);
+  color: var(--primary-red);
+  margin-bottom: var(--space-1);
+}
+
+.card-saas .card-subtext {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-4);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   CONTADORES DE STAT
+─────────────────────────────────────────────────────────────── */
+.small-count {
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-extra);
+  color: var(--primary-blue);
+  line-height: 1;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   BOTÕES
+─────────────────────────────────────────────────────────────── */
+.btn-rounded {
+  border-radius: var(--radius-pill);
+}
+
+.btn-primary.custom {
   background: var(--primary-blue);
   border-color: var(--primary-blue);
 }
-.btn-danger.custom{
+
+.btn-danger.custom {
   background: var(--primary-red);
   border-color: var(--primary-red);
 }
 
-.small-count{
-  font-size:1.5rem;
-  font-weight:700;
-  color:var(--primary-blue);
-}
-
-/* Sidebar active link override */
-.nav-sidebar .nav-link.active{
-  background: linear-gradient(90deg, rgba(163,22,33,0.95), rgba(78,128,152,0.95));
-  color:#fff;
-}
-
-/* Minor tweaks */
-.main-footer{
-  background:transparent;
-  border-top:1px solid rgba(0,0,0,0.05);
-  padding:1rem 1.25rem;
-}
-
-/* Utility */
-.p-1-25{padding:1.25rem}
-
-/* subtle animation for buttons */
-.btn{
+/* Animação sutil em todos os botões */
+.btn {
   transition: box-shadow .15s ease, transform .12s ease;
 }
-.btn:hover{
+
+.btn:hover {
   transform: translateY(-2px);
 }
 
-/* Disable table row hover for listing */
+/* ──────────────────────────────────────────────────────────────
+   FOOTER ADMIN
+─────────────────────────────────────────────────────────────── */
+.main-footer {
+  background: transparent;
+  border-top: 1px solid var(--border-color);
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   UTILITÁRIOS
+─────────────────────────────────────────────────────────────── */
+.p-1-25 { padding: var(--space-5); }
+
+/* ──────────────────────────────────────────────────────────────
+   TABELAS
+─────────────────────────────────────────────────────────────── */
+/* Remove hover padrão do Bootstrap nas listagens */
 .table tbody tr:hover {
-  background-color: transparent !important;
+  background-color: transparent;
 }

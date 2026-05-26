@@ -1,26 +1,21 @@
-* {
-    margin: 0;
-    padding: 0;
+/*
+ * style-cad.css — página de cadastro (standalone)
+ * Depende de _tokens.css carregado ANTES deste arquivo no HTML.
+ * Variáveis de marca vêm do _tokens.css.
+ */
+
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
+/* Variáveis locais exclusivas desta página */
 :root {
-    --primary-red: #e63946;
-    --primary-red-dark: #d62828;
-    --accent-yellow: #f4a261;
-    --dark-green: #2a9d8f;
-    --teal: #457b9d;
-    --light-bg: #f8f9fa;
-    --text-dark: #1d3557;
-    --text-light: #6c757d;
+    /* Reutiliza tokens globais via aliases locais */
+    --text-dark:    #1d3557;
+    --text-light:   #6c757d;
     --border-color: #dee2e6;
-    --success-green: #2a9d8f;
-    --error-red: #e63946;
-    --warning-yellow: #e9c46a;
-    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
@@ -33,7 +28,7 @@ body {
     justify-content: center;
     padding: 0;
     margin: 0;
-    overflow-x: hidden;
+    /* Sem overflow-x:hidden — resolve o layout na origem */
 }
 
 /* Container principal - Full Screen ajustável */

@@ -1,47 +1,96 @@
+<nav class="navbar navbar-expand-lg site-navbar py-2" aria-label="Navegação principal">
+  <div class="container">
 
-<nav class="navbar navbar-expand-lg site-navbar py-2">
-    <div class="container">
+    <!-- Logo / Brand -->
+    <a class="navbar-brand me-4" href="/">
+      Farma<span>fipp</span>
+    </a>
 
-        <a class="navbar-brand me-4" href="/">Farma<span>fipp</span></a>
+    <!-- Ações mobile (carrinho + toggle) -->
+    <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
+      <!-- Carrinho mobile -->
+      <a href="/carrinho" class="btn-cart position-relative" aria-label="Carrinho">
+        <i class="bi bi-bag"></i>
+        <span id="cartBadgeCountMobile"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
+              style="font-size:.6rem">0</span>
+      </a>
 
-        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
-            data-bs-target="#mainNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+      <!-- Botão toggle menu -->
+      <button class="navbar-toggler border-0 shadow-none"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#mainNav"
+              aria-controls="mainNav"
+              aria-expanded="false"
+              aria-label="Abrir menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
 
-        <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav me-auto gap-1">
-                <li class="nav-item"><a class="nav-link active" href="/">Início</a></li>
-                <li class="nav-item"><a class="nav-link" href="/shop">Produtos</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categorias</a>
-                    <ul class="dropdown-menu border-0 shadow-sm">
-                        <li><a class="dropdown-item" href="/shop">Vitaminas</a></li>
-                        <li><a class="dropdown-item" href="/shop">Dermatologia</a></li>
-                        <li><a class="dropdown-item" href="/shop">Bebê & Mamãe</a></li>
-                        <li><a class="dropdown-item" href="/shop">Higiene Pessoal</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="/pos-venda/online" id="btnNavbarPosVenda">Pós-Venda</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contato</a></li>
-                <li class="nav-item"><a class="nav-link" href="/login">Sair</a></li>
-            </ul>
+    <!-- Menu colapsável -->
+    <div class="collapse navbar-collapse" id="mainNav">
 
-            <div class="d-flex align-items-center gap-3 mt-2 mt-lg-0">
-                <div class="navbar-search d-none d-md-block">
-                    <i class="bi bi-search"></i>
-                    <input type="text" placeholder="Buscar produto…" />
-                </div>
-                <a href="/perfil" class="text-muted fs-5" title="Minha Conta"><i class="bi bi-person-circle"></i></a>
-                <a href="/carrinho" class="btn-cart position-relative">
-                    <i class="bi bi-bag me-1"></i> Carrinho
-                    <span
-                        id="cartBadgeCount"
-                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
-                        style="font-size:.65rem">0</span>
-                </a>
-            </div>
+      <!-- Links de navegação -->
+      <ul class="navbar-nav me-auto gap-1 mt-3 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" href="/" aria-current="page">Início</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/shop">Produtos</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            Categorias
+          </a>
+          <ul class="dropdown-menu border-0 shadow-sm">
+            <li><a class="dropdown-item" href="/shop">Vitaminas</a></li>
+            <li><a class="dropdown-item" href="/shop">Dermatologia</a></li>
+            <li><a class="dropdown-item" href="/shop">Bebê &amp; Mamãe</a></li>
+            <li><a class="dropdown-item" href="/shop">Higiene Pessoal</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pos-venda/online" id="btnNavbarPosVenda">Pós-Venda</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Contato</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">Sair</a>
+        </li>
+      </ul>
+
+      <!-- Ações desktop -->
+      <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+        <!-- Busca — visível apenas em md+ -->
+        <div class="navbar-search d-none d-md-block">
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <input type="text"
+                 placeholder="Buscar produto…"
+                 aria-label="Busca de produto">
         </div>
 
+        <!-- Perfil -->
+        <a href="/perfil"
+           class="text-muted fs-5"
+           title="Minha Conta"
+           aria-label="Meu perfil">
+          <i class="bi bi-person-circle"></i>
+        </a>
+
+        <!-- Carrinho (desktop) -->
+        <a href="/carrinho" class="btn-cart position-relative d-none d-lg-inline-flex" aria-label="Carrinho">
+          <i class="bi bi-bag me-1"></i> Carrinho
+          <span id="cartBadgeCount"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
+                style="font-size:.65rem">0</span>
+        </a>
+
+      </div>
     </div>
+    <!-- /.collapse -->
+
+  </div>
 </nav>

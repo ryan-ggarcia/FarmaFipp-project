@@ -1,36 +1,40 @@
-/* ════════════════════════════════
-   PRODUTOS PAGE – USER VIEW
-════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════
+   PRODUTOS PAGE – USER VIEW  (style-produtos-user.css)
+   Depende de _tokens.css carregado ANTES deste arquivo.
+════════════════════════════════════════════════════════════ */
 
 /* ── Hero Banner ── */
 .produtos-hero {
-    background: linear-gradient(135deg, #1a4731 0%, #2D6A4F 55%, #3a8a66 100%);
-    padding: 3rem 0 2.5rem;
+    background: linear-gradient(135deg, #1a4731 0%, var(--clr-green, #2D6A4F) 55%, #3a8a66 100%);
+    padding: clamp(2rem, 4vw, 3.5rem) 0 2.5rem;
     position: relative;
     overflow: hidden;
-    border-radius: 0 0 24px 24px;
+    border-radius: 0 0 var(--radius-xl, 24px) var(--radius-xl, 24px);
 }
 
+/* Círculos decorativos — tamanhos fluidos */
 .produtos-hero::before {
     content: '';
     position: absolute;
-    width: 400px;
-    height: 400px;
+    width: clamp(220px, 28vw, 420px);
+    height: clamp(220px, 28vw, 420px);
     border-radius: 50%;
     background: rgba(255,255,255,.05);
-    top: -150px;
-    right: -100px;
+    top: -15%;
+    right: -8%;
+    pointer-events: none;
 }
 
 .produtos-hero::after {
     content: '';
     position: absolute;
-    width: 200px;
-    height: 200px;
+    width: clamp(120px, 15vw, 210px);
+    height: clamp(120px, 15vw, 210px);
     border-radius: 50%;
     background: rgba(255,255,255,.04);
-    bottom: -80px;
+    bottom: -10%;
     left: 10%;
+    pointer-events: none;
 }
 
 .produtos-hero h1 {
@@ -336,8 +340,9 @@
 }
 
 .promo-badge-fire {
-    background: linear-gradient(135deg, #ff6b35, #e63946) !important;
-    color: #fff !important;
+    /* Usa a cor da marca em vez de vermelho genérico */
+    background: linear-gradient(135deg, #ff6b35, var(--clr-red, #A31621));
+    color: #fff;
     font-size: .72rem;
     font-weight: 700;
 }
