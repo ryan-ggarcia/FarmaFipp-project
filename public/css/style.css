@@ -162,6 +162,14 @@ body {
   transform: translateY(-2px);
 }
 
+/* Variante com gradiente invertido (vermelho → azul) */
+.card-saas .card-image.card-image-alt {
+  background: linear-gradient(90deg,
+    var(--clr-red-a10),
+    var(--clr-blue-a10)
+  );
+}
+
 /* ──────────────────────────────────────────────────────────────
    FOOTER ADMIN
 ─────────────────────────────────────────────────────────────── */
@@ -177,6 +185,45 @@ body {
    UTILITÁRIOS
 ─────────────────────────────────────────────────────────────── */
 .p-1-25 { padding: var(--space-5); }
+
+/* Cores de marca — substitui inline style="color:..." */
+.text-brand-red  { color: var(--primary-red);  }
+.text-brand-blue { color: var(--primary-blue); }
+
+/* Ícones dentro de .card-image (home.ejs) */
+.card-icon-blue { color: var(--primary-blue); }
+.card-icon-red  { color: var(--primary-red);  }
+
+/* Títulos de seção nos formulários admin */
+.admin-section-title {
+  color: var(--primary-red);
+  font-weight: 700;
+}
+
+/* Admin header component styles (substitui inline styles do header.ejs) */
+.navbar-badge-xs     { font-size: .6rem; }
+.dropdown-notif-menu { min-width: 240px; }
+.dropdown-user-menu  { min-width: 220px; }
+.avatar-img          { object-fit: cover; }
+.header-user-email   { font-size: .75rem; margin-top: .2rem; }
+
+/* Sidebar custom styles (substitui inline styles do sidebar.ejs) */
+.main-sidebar.sidebar-farmafipp           { min-height: 100vh; background: #1e2a38; }
+.main-sidebar .brand-link.sidebar-brand-link {
+  background: linear-gradient(90deg, rgba(163,22,33,.92), rgba(78,128,152,.88));
+  text-decoration: none;
+}
+.sidebar-brand-icon { font-size: 1.3rem; }
+.sidebar-brand-text {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: -.3px;
+}
+.nav-sidebar > .nav-header {
+  color: rgba(255,255,255,.35);
+  font-size: .68rem;
+  letter-spacing: .1em;
+}
 
 /* ──────────────────────────────────────────────────────────────
    TABELAS

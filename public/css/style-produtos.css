@@ -59,15 +59,56 @@
 }
 
 /* ──────────────────────────────────────────────────────────────
-   SIDEBAR DE FILTROS
+   SIDEBAR DE FILTROS — Mobile-first
+   Mobile: drawer fixo fora da tela (revela com .open)
+   Desktop (≥992px): sidebar estática à esquerda do layout
 ─────────────────────────────────────────────────────────────── */
 .filters-sidebar {
-  /* Fluida: mínimo 200px → prefere 22% → máximo 280px */
-  width: clamp(200px, 22%, 280px);
-  flex-shrink: 0;
-  position: sticky;
-  top: 72px;
-  /* Em mobile é um drawer — controlado por JS */
+  /* Mobile: drawer fixo oculto à esquerda */
+  position: fixed;
+  left: -300px;
+  top: 0;
+  bottom: 0;
+  width: min(280px, 85vw);
+  background: var(--bg-white);
+  z-index: var(--z-modal);
+  overflow-y: auto;
+  padding: 1rem;
+  transition: left .28s ease;
+  box-shadow: 4px 0 20px rgba(0,0,0,.15);
+}
+
+.filters-sidebar.open {
+  left: 0;
+}
+
+/* Backdrop escurece o conteúdo quando o drawer está aberto (mobile) */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: calc(var(--z-modal) - 1);
+}
+
+.sidebar-backdrop.show {
+  display: block;
+}
+
+/* ≥ 992px: sidebar deixa de ser drawer e vira coluna estática */
+@media (min-width: 992px) {
+  .filters-sidebar {
+    position: sticky;
+    left: auto;
+    top: 72px;
+    bottom: auto;
+    width: clamp(200px, 22%, 280px);
+    flex-shrink: 0;
+    z-index: auto;
+    overflow-y: visible;
+    box-shadow: none;
+    transition: none;
+  }
 }
 
 .filter-card {
@@ -578,50 +619,9 @@ input[type="range"] {
   padding: .45rem 1.25rem;
 }
 
-/* ──────────────────────────────────────────────────────────────
-   SIDEBAR DRAWER MOBILE (< 992px)
-─────────────────────────────────────────────────────────────── */
-/* O drawer aparece apenas em telas menores que 992px */
-@media (max-width: 991px) {
-
-  .filters-sidebar {
-    position: fixed;
-    left: -300px;  /* Escondida fora da tela */
-    top: 0;
-    bottom: 0;
-    width: min(280px, 85vw);
-    background: var(--bg-white);
-    z-index: var(--z-modal);
-    overflow-y: auto;
-    padding: 1rem;
-    transition: left .28s ease;
-    box-shadow: 4px 0 20px rgba(0,0,0,.15);
-  }
-
-  .filters-sidebar.open {
-    left: 0;
-  }
-
-  .sidebar-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.4);
-    z-index: calc(var(--z-modal) - 1);
-  }
-
-  .sidebar-backdrop.show {
-    display: block;
-  }
-
-  .btn-filter-mobile {
-    display: inline-flex;
-  }
-}
-
 /* Botão abrir filtros no mobile */
 .btn-filter-mobile {
-  display: none;
+  display: inline-flex; /* Mobile: visível por padrão */
   align-items: center;
   gap: .4rem;
   background: var(--bg-white);
@@ -639,9 +639,16 @@ input[type="range"] {
   color: var(--primary-red);
 }
 
+/* ≥ 992px: oculta o botão de abrir filtros (sidebar é estática) */
+@media (min-width: 992px) {
+  .btn-filter-mobile {
+    display: none;
+  }
+}
+
 /* Botão fechar sidebar no mobile */
 .sidebar-close-btn {
-  display: none;
+  display: block; /* Mobile: visível */
   position: absolute;
   top: .75rem;
   right: .75rem;
@@ -652,8 +659,9 @@ input[type="range"] {
   cursor: pointer;
 }
 
-@media (max-width: 991px) {
+/* ≥ 992px: oculta o botão de fechar (sidebar não é mais drawer) */
+@media (min-width: 992px) {
   .sidebar-close-btn {
-    display: block;
+    display: none;
   }
 }

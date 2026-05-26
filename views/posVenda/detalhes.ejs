@@ -15,7 +15,7 @@
   <!-- Informações da Devolução -->
   <div class="card card-saas no-hover mb-3">
     <div class="card-body">
-      <h5 class="mb-3" style="color: rgba(163,22,33,0.95); font-weight: bold;">Informações da Solicitação</h5>
+      <h5 class="mb-3 admin-section-title">Informações da Solicitação</h5>
       <div class="row g-3">
         <div class="col-md-3">
           <label class="form-label fw-bold">Tipo</label>
@@ -87,7 +87,7 @@
   <div class="card card-saas mb-3">
     <div class="card-body p-0">
       <div class="p-3">
-        <h5 class="mb-0" style="color: rgba(163,22,33,0.95); font-weight: bold;">Itens Devolvidos</h5>
+        <h5 class="mb-0 admin-section-title">Itens Devolvidos</h5>
       </div>
       <div class="table-responsive">
         <table class="table mb-0 align-middle">
@@ -121,7 +121,7 @@
   <% if(devolucao.getSTATUS() === 'Aguardando') { %>
     <div class="card card-saas no-hover">
       <div class="card-body">
-        <h5 class="mb-3" style="color: rgba(163,22,33,0.95); font-weight: bold;">Ações</h5>
+        <h5 class="mb-3 admin-section-title">Ações</h5>
         <input type="hidden" id="devolucaoId" value="<%= devolucao.getID() %>">
         <button id="btnAprovar" class="btn btn-success btn-rounded me-2">
           <i class="fas fa-check me-2"></i>Aprovar

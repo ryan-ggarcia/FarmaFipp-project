@@ -16,19 +16,7 @@ var __userRole  = (typeof user  !== 'undefined' && user  && user.perfil) ? user.
     </button>
 
     <!-- Busca — oculta em telas xs, visível a partir de md -->
-    <form class="d-none d-md-flex ms-2 flex-grow-1" style="max-width:440px"
-          action="/search" method="GET" role="search">
-      <div class="input-group">
-        <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted">
-          <i class="bi bi-search" aria-hidden="true"></i>
-        </span>
-        <input class="form-control border-start-0 bg-light rounded-end-pill"
-               type="search"
-               name="q"
-               placeholder="Buscar produto, cliente…"
-               aria-label="Busca">
-      </div>
-    </form>
+   
 
     <!-- Menu direito -->
     <ul class="navbar-nav ms-auto align-items-center gap-1">
@@ -41,10 +29,9 @@ var __userRole  = (typeof user  !== 'undefined' && user  && user.perfil) ? user.
            aria-expanded="false"
            aria-label="Notificações">
           <i class="bi bi-bell fs-5 text-muted"></i>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                style="font-size:.6rem">3</span>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger navbar-badge-xs">3</span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width:240px">
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-notif-menu">
           <li><h6 class="dropdown-header">Notificações</h6></li>
           <li><hr class="dropdown-divider my-0"></li>
           <li>
@@ -63,23 +50,22 @@ var __userRole  = (typeof user  !== 'undefined' && user  && user.perfil) ? user.
            href="#"
            aria-label="Menu do usuário">
           <img src="/img/user.png"
-               class="rounded-circle border border-2 border-light"
+               class="rounded-circle border border-2 border-light avatar-img"
                alt="Avatar do usuário"
                width="34"
-               height="34"
-               style="object-fit:cover">
+               height="34">
           <span class="d-none d-lg-block fw-semibold small text-dark">
             <%= __userName.split(' ')[0] %>
           </span>
           <i class="bi bi-chevron-down small text-muted d-none d-lg-inline"></i>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width:220px">
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm dropdown-user-menu">
 
           <!-- Info do usuário no topo do dropdown -->
           <li class="px-3 py-2">
             <div class="fw-semibold small text-dark lh-1"><%= __userName %></div>
             <% if(__userEmail){ %>
-            <div class="text-muted" style="font-size:.75rem;margin-top:.2rem"><%= __userEmail %></div>
+            <div class="text-muted header-user-email"><%= __userEmail %></div>
             <% } %>
           </li>
           <li><hr class="dropdown-divider my-1"></li>

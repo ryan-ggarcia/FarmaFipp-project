@@ -56,7 +56,8 @@
   .login-left {
       background: linear-gradient(135deg, #f0ede5 0%, #e8e3db 100%);
       padding: 60px 40px;
-      display: flex;
+      /* Mobile: painel esquerdo oculto — visível em ≥769px */
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -195,7 +196,8 @@
   }
 
   .login-right {
-      padding: 60px 50px;
+      /* Mobile: padding compacto */
+      padding: 40px 30px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -233,7 +235,8 @@
   }
 
   .welcome-title {
-      font-size: 28px;
+      /* Mobile: menor */
+      font-size: 24px;
       font-weight: 700;
       color: #2c2c2c;
       margin-bottom: 5px;
@@ -256,6 +259,8 @@
 
   .radio-group {
       display: flex;
+      /* Mobile: empilhado verticalmente */
+      flex-direction: column;
       gap: 12px;
       margin-bottom: 30px;
   }
@@ -472,30 +477,22 @@
       display: flex;
   }
 
-  @media (max-width: 768px) {
-      .login-card {
-          margin: 20px;
-      }
-
+  /* ≥ 769px: exibe painel esquerdo, restaura padding e espaçamentos */
+  @media (min-width: 769px) {
       .login-left {
-          padding: 40px 30px;
-          display: none;
+          display: flex;
       }
 
       .login-right {
-          padding: 40px 30px;
-      }
-
-      .left-title {
-          font-size: 24px;
+          padding: 60px 50px;
       }
 
       .welcome-title {
-          font-size: 24px;
+          font-size: 28px;
       }
 
       .radio-group {
-          flex-direction: column;
+          flex-direction: row;
       }
   }
 

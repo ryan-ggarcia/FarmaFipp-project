@@ -57,8 +57,11 @@ body {
 .signup-header-banner {
     background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
     color: white;
-    padding: 30px 40px;
+    /* Mobile: coluna centralizada, padding compacto */
+    padding: 40px 20px;
     display: flex;
+    flex-direction: column;
+    text-align: center;
     align-items: center;
     gap: 20px;
     position: relative;
@@ -134,7 +137,8 @@ body {
 /* Conteúdo do Formulário */
 .signup-content {
     flex: 1;
-    padding: 40px;
+    /* Mobile: padding compacto */
+    padding: 30px 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -198,7 +202,8 @@ body {
 .split-form-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 40px;
+    /* Mobile: gap compacto */
+    gap: 30px;
 }
 
 .section-title {
@@ -369,7 +374,8 @@ select.form-control {
     font-weight: 700;
     cursor: pointer;
     width: 100%;
-    max-width: 450px;
+    /* Mobile: full-width */
+    max-width: 100%;
     transition: var(--transition);
     box-shadow: 0 8px 16px rgba(230, 57, 70, 0.2);
     display: flex;
@@ -413,18 +419,24 @@ select.form-control {
 .signup-content::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
 .signup-content::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-/* Responsividade - Desktop (Duas Colunas) */
+/* ≥ 992px: Desktop (duas colunas, padding generoso) */
 @media (min-width: 992px) {
     .signup-page-container {
         padding: 40px;
     }
-    
+
     .signup-full-card {
         border-radius: 24px;
         flex-direction: column;
         max-width: 1400px;
         margin: 0 auto;
         height: auto;
+    }
+
+    .signup-header-banner {
+        flex-direction: row;
+        text-align: initial;
+        padding: 30px 40px;
     }
 
     .split-form-layout {
@@ -439,20 +451,17 @@ select.form-control {
     .signup-content {
         padding: 50px 70px;
     }
-    
+
     .header-text h1 {
         font-size: 36px;
+    }
+
+    .btn-signup {
+        max-width: 450px;
     }
 }
 
 /* Extra grande telas - limitar largura máxima */
 @media (min-width: 1600px) {
     .signup-full-card { max-width: 1500px; }
-}
-
-@media (max-width: 991px) {
-    .signup-header-banner { flex-direction: column; text-align: center; padding: 40px 20px; }
-    .signup-content { padding: 30px 20px; }
-    .split-form-layout { gap: 30px; }
-    .btn-signup { max-width: 100%; }
 }

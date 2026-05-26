@@ -55,8 +55,11 @@ body {
 .profile-header-banner {
     background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
     color: white;
-    padding: 40px 50px;
+    /* Mobile: coluna centralizada, padding compacto */
+    padding: 30px 20px;
     display: flex;
+    flex-direction: column;
+    text-align: center;
     align-items: center;
     gap: 24px;
     position: relative;
@@ -147,7 +150,8 @@ body {
 }
 
 .profile-header-info h1 {
-    font-size: 32px;
+    /* Mobile: tamanho reduzido */
+    font-size: 24px;
     font-weight: 800;
     margin: 0 0 6px 0;
     letter-spacing: -0.5px;
@@ -208,14 +212,16 @@ body {
 /* ========== MAIN CONTENT ========== */
 .profile-content {
     flex: 1;
-    padding: 40px 50px;
+    /* Mobile: padding compacto */
+    padding: 30px 20px;
     overflow-y: auto;
 }
 
 /* ========== STATS ROW ========== */
 .profile-stats-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    /* Mobile: 1 coluna */
+    grid-template-columns: 1fr;
     gap: 20px;
     margin-bottom: 40px;
 }
@@ -287,7 +293,8 @@ body {
 /* ========== SECTIONS GRID ========== */
 .profile-sections-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* Mobile: 1 coluna */
+    grid-template-columns: 1fr;
     gap: 30px;
 }
 
@@ -359,8 +366,10 @@ body {
 }
 
 .data-row {
+    /* Mobile: coluna empilhada */
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
     padding: 14px 0;
     border-bottom: 1px solid #f0f2f5;
     transition: var(--transition);
@@ -384,9 +393,10 @@ body {
 }
 
 .data-label {
-    width: 140px;
+    /* Mobile: sem largura fixa */
+    width: auto;
     flex-shrink: 0;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-light);
     text-transform: uppercase;
@@ -551,7 +561,8 @@ body {
 
 /* ========== BACK LINK ========== */
 .back-link-row {
-    padding: 16px 50px;
+    /* Mobile: padding compacto */
+    padding: 16px 20px;
     background: #fafbfc;
     border-top: 2px solid var(--border-color);
     display: flex;
@@ -600,56 +611,59 @@ body {
     }
 }
 
-@media (max-width: 991px) {
-    .profile-header-banner {
-        flex-direction: column;
-        text-align: center;
-        padding: 30px 20px;
-    }
-
-    .profile-header-actions {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .profile-content {
-        padding: 30px 20px;
-    }
-
-    .profile-sections-grid {
-        grid-template-columns: 1fr;
-    }
-
+/* ── ≥ 577px: stats 2 colunas, data-row em linha ── */
+@media (min-width: 577px) {
     .profile-stats-row {
         grid-template-columns: 1fr 1fr;
     }
 
+    .data-row {
+        flex-direction: row;
+        gap: 0;
+    }
+
     .data-label {
         width: 110px;
-        font-size: 12px;
-    }
-
-    .profile-header-info h1 {
-        font-size: 24px;
-    }
-
-    .back-link-row {
-        padding: 16px 20px;
     }
 }
 
-@media (max-width: 576px) {
-    .profile-stats-row {
-        grid-template-columns: 1fr;
+/* ── ≥ 992px: layout desktop completo ── */
+@media (min-width: 992px) {
+    .profile-header-banner {
+        flex-direction: row;
+        text-align: initial;
+        padding: 40px 50px;
+        align-items: center;
     }
 
-    .data-row {
-        flex-direction: column;
-        gap: 4px;
+    .profile-header-actions {
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+    }
+
+    .profile-content {
+        padding: 40px 50px;
+    }
+
+    .profile-sections-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .profile-stats-row {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
 
     .data-label {
-        width: auto;
+        width: 140px;
+        font-size: 13px;
+    }
+
+    .profile-header-info h1 {
+        font-size: 32px;
+    }
+
+    .back-link-row {
+        padding: 16px 50px;
     }
 }
 
@@ -660,7 +674,8 @@ body {
 /* ========== EDIT FORM LAYOUT ========== */
 .edit-form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* Mobile: 1 coluna */
+    grid-template-columns: 1fr;
     gap: 30px;
 }
 
@@ -805,9 +820,11 @@ body {
 .edit-actions {
     grid-column: 1 / -1;
     display: flex;
+    /* Mobile: botões empilhados em coluna inversa */
+    flex-direction: column-reverse;
     justify-content: flex-end;
-    align-items: center;
-    gap: 16px;
+    align-items: stretch;
+    gap: 12px;
     padding-top: 20px;
     border-top: 2px solid var(--border-color);
     margin-top: 10px;
@@ -863,20 +880,36 @@ body {
     transform: translateY(0);
 }
 
-/* ========== EDIT PAGE RESPONSIVE ========== */
-@media (max-width: 991px) {
+/* Mobile default: botões full-width */
+.btn-cancel,
+.btn-save {
+    width: 100%;
+    justify-content: center;
+}
+
+/* ── Ícones de tipo de usuário (substitui inline styles do perfile.ejs) ── */
+.icon-accent-yellow { color: var(--accent-yellow); margin-right: 6px; }
+.icon-teal          { color: var(--teal);          margin-right: 6px; }
+
+/* ── Endereço vazio (substitui inline style) ── */
+.address-line-muted { color: var(--text-light); }
+
+/* ========== EDIT PAGE RESPONSIVE — mobile-first ========== */
+/* ≥ 992px: edit form 2 colunas, botões em linha */
+@media (min-width: 992px) {
     .edit-form {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .edit-actions {
-        flex-direction: column-reverse;
-        gap: 12px;
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
     }
 
     .btn-cancel,
     .btn-save {
-        width: 100%;
-        justify-content: center;
+        width: auto;
+        justify-content: initial;
     }
 }
