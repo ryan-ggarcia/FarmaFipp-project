@@ -12,9 +12,5 @@ router.post("/presencial", controladora.cadastrarPresencial);
 router.get("/detalhes/:id", controladora.detalhesView);
 router.post("/status", controladora.atualizarStatus);
 router.post("/deletar", controladora.deletar);
-
-// Rotas públicas (cliente)
-router.get("/online", controladora.solicitarOnlineView);
-router.post("/online", controladora.solicitarOnline);
-
 module.exports = router;
+

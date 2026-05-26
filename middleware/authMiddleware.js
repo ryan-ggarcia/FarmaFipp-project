@@ -7,7 +7,7 @@ class AuthMiddleware{
             let usuarioId = req.cookies.usuarioLogado
             let usuario = new ClienteModel()
             usuario = await usuario.Get(usuarioId)
-            if(usuario != null && usuario.cliStatus == 1 && usuario.perfilId == 1){
+            if(usuario != null && usuario.cliStatus == 1 && (usuario.perfilId == 1 || usuario.perfilId == 3)){
                 next()
             }else{
                 res.redirect("/login/")
