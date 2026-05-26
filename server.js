@@ -8,6 +8,7 @@ const expressEjsLayouts = require('express-ejs-layouts');
 const usuarioRouter = require("./routes/UsuarioRouter");
 const loginRouter = require('./routes/loginRouter');
 const ProdutoPublicRouter = require('./routes/ProdutoPublicRouter');
+const PerfilRoute = require('./routes/PerfilRoute');
 
 // Rotas admin
 const homeRouter = require("./routes/HomeRouter");
@@ -23,6 +24,7 @@ const DevolucaoRouter = require('./routes/DevolucaoRouter');
 const VendaRouter = require('./routes/VendaRouter');
 
 const server = express();
+const middleware = require('./middleware/authMiddleware');
 
 server.set('view engine', 'ejs');
 server.use(cookieParser());
@@ -31,15 +33,33 @@ server.set('layout', "layout");
 server.use(express.static(__dirname + "/public"));
 server.use(express.urlencoded({extended:true}));
 server.use(express.json());
-server.use("/", homeRouter);
-server.use("/usuario",usuarioRouter)
-server.use("/servicos", ServicoRouter);
-server.use("/clientes", ClienteRouter);
-server.use("/fornecedores", FornecedorRouter);
-server.use("/produtos", ProdutoRouter);
-server.use("/estoque", EstoqueRouter);
-server.use('/venda', VendaRouter);
-server.use('/vendas', VendaRouter);
+
+// ==============================
+// ROTAS PÚBLICAS (layoutPublico)
+// ==============================
+server.use("/login", loginRouter);
+server.use(middleware.validarCliente);
+server.use("/perfil", PerfilRoute);
+server.use("/", usuarioRouter);
+
+server.use("/produtos", ProdutoPublicRouter);
+
+// ==============================
+// ROTAS ADMIN (layout admin)
+// ==============================
+server.use("/admin", homeRouter);
+server.use("/admin/produtos", ProdutoRouter);
+server.use("/admin/servicos", ServicoRouter);
+server.use("/admin/clientes", ClienteRouter);
+server.use("/admin/fornecedores", FornecedorRouter);
+server.use("/admin/funcionarios", FuncionarioRouter);
+server.use("/admin/estoque", EstoqueRouter);
+server.use("/admin/pos-venda", DevolucaoRouter);
+
+// ==============================
+// API
+// ==============================
+server.use("/venda", VendaRouter);
 
 global.CAMINHO_IMG_ABS = __dirname + "/public/img/produtos/";  
 global.CAMINHO_IMG_NAVEGADOR = "/img/produtos/";  

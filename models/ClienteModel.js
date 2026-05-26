@@ -132,6 +132,7 @@ class ClienteModel{
                 cliente.endEstado = rows[0]["end_estado"];
                 cliente.endUf = rows[0]["end_uf"];
                 cliente.endCep = rows[0]["end_cep"];
+                cliente.endComplemento = rows[0]["end_complemento"];
                 
             return cliente;
         }

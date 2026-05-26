@@ -1,5 +1,9 @@
 const LoginModel = require('../models/LoginModel')
+const ClienteModel = require('../models/ClienteModel')
+const EnderecoModelCliente = require('../models/EnderecoModelCliente')
+const { cpf } = require('cpf-cnpj-validator')
 const bcrypt = require('bcrypt')
+
 class LoginController{
     async loginView(req,res){
         res.render('login/login', {layout: false})
@@ -14,8 +18,10 @@ class LoginController{
             let banco = new LoginModel()
             let result = await banco.verificar(email)
             if(result != null){
+                
                 if( await bcrypt.compare(senha,result.senha)){
                     // gravar id do usuário no cookie (result tem cli_id)
+                    
                     res.cookie("usuarioLogado", result.cli_id)
                     ok = true
                     msg = "Redirecionando para a página inícial..."
@@ -40,6 +46,68 @@ class LoginController{
     async cadastroView(req, res) {
         res.render("login/cadastro", { layout: false })
     }
+
+    async cadastrar(req, res) {
+        try {
+            const { nome, cpf: inputCpf, data, telefone, email, senha, rua, numero, complemento, bairro, cidade, estado, cep, uf } = req.body;
+
+            const cpfLimpo = inputCpf ? inputCpf.replace(/\D/g, '') : '';
+
+            // Validação dos dados pessoais
+            if (!nome || !cpfLimpo || !data || !telefone || !email || !senha) {
+                return res.send({ ok: false, msg: "Preencha todos os dados pessoais" })
+            }
+
+            // Validação dos dados de endereço
+            if (!rua || !numero || !bairro || !cidade || !estado || !cep || !uf) {
+                return res.send({ ok: false, msg: "Preencha todos os dados do endereço" })
+            }
+
+            // Validação do CPF
+            if (!cpfLimpo || !cpf.isValid(cpfLimpo)) {
+                return res.send({ ok: false, msg: "CPF inválido" })
+            }
+
+            // Verificar se CPF ou email já existem no banco
+            let cpfExistente = await new ClienteModel().FindByCpf(cpfLimpo);
+            let emailExistente = await new ClienteModel().FindByEmail(email);
+
+            if (cpfExistente || emailExistente) {
+                let msgCpf = cpfExistente ? "CPF já cadastrado. " : "";
+                let msgEmail = emailExistente ? "Email já cadastrado." : "";
+                return res.send({ ok: false, msg: msgCpf + msgEmail })
+            }
+
+            // Hash da senha
+            const senhaHash = await bcrypt.hash(senha, 10)
+
+            // Criar cliente (status=1 ativo, perfil_id=1 cliente normal)
+            let cliente = new ClienteModel(0, nome, 1, cpfLimpo, email, senhaHash, telefone, data, 1)
+            let result = await cliente.Create()
+
+            if (!result) {
+                return res.send({ ok: false, msg: "Erro ao cadastrar cliente" })
+            }
+
+            const cliId = result
+
+            // Criar endereço do cliente
+            let endereco = new EnderecoModelCliente(
+                0, rua, bairro, cidade, numero, estado, uf, cep, complemento || '', cliId
+            )
+            let resultEnd = await endereco.Create()
+
+            if (!resultEnd) {
+                return res.send({ ok: false, msg: "Erro ao cadastrar endereço" })
+            }
+
+            return res.send({ ok: true, msg: "Cadastro realizado com sucesso! Bem-vindo à FarmaFipp!" })
+        } catch (error) {
+            console.error('Erro ao cadastrar:', error);
+            return res.send({ ok: false, msg: "Erro interno ao processar cadastro. Tente novamente." })
+        }
+    }
+    
 }
 
 module.exports = LoginController

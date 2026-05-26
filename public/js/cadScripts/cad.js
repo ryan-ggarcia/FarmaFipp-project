@@ -635,7 +635,7 @@ document.getElementById('signupBtn').addEventListener('click', function (e) {
     this.textContent = '';
 
     // Envio do formulário
-    fetch("/clientes/cadastrar", {
+    fetch("/login/cadastro", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

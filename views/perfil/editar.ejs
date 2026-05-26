@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmaFipp - Editar Perfil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style-perfil.css">
+</head>
+<body>
+    <div class="profile-page-container">
+        <div class="profile-full-card">
+            <!-- HEADER BANNER -->
+            <div class="profile-header-banner">
+                <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar">
+                        ✏️
+                    </div>
+                </div>
+
+                <div class="profile-header-info">
+                    <h1>Editar Perfil</h1>
+                    <div class="profile-subtitle">
+                        <i class="bi bi-info-circle"></i>
+                        <span>Atualize suas informações pessoais, acesso e endereço</span>
+                    </div>
+                </div>
+
+                <div class="profile-header-actions">
+                    <a href="/perfil" class="btn-header">
+                        <i class="bi bi-arrow-left"></i>
+                        Voltar ao Perfil
+                    </a>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="profile-content">
+                <form id="editProfileForm" class="edit-form">
+
+                    <!-- SEÇÃO 1: DADOS PESSOAIS -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <div class="section-header-left">
+                                <i class="bi bi-person-circle"></i>
+                                <h2>Dados Pessoais</h2>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div class="row g-3">
+                                <!-- NOME COMPLETO -->
+                                <div class="col-12">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Nome Completo</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-person field-icon"></i>
+                                            <input 
+                                                type="text" 
+                                                class="edit-input" 
+                                                id="editNome"
+                                                name="nome"
+                                                value="<%= user ? user.cliNome : '' %>"
+                                                placeholder="João da Silva Santos"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CPF (readonly) -->
+                                <div class="col-md-6">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>CPF</span>
+                                            <span class="label-badge">Não editável</span>
+                                        </label>
+                                        <div class="edit-input-wrap disabled">
+                                            <i class="bi bi-credit-card field-icon"></i>
+                                            <input 
+                                                type="text" 
+                                                class="edit-input" 
+                                                id="editCpf"
+                                                value="<%= user && user.cliCpf ? (function(){ let c = String(user.cliCpf); return c.length === 11 ? c.slice(0,3)+'.'+c.slice(3,6)+'.'+c.slice(6,9)+'-'+c.slice(9) : c; })() : '' %>"
+                                                readonly
+                                                disabled
+                                            >
+                                            <i class="bi bi-lock lock-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- DATA DE NASCIMENTO -->
+                                <div class="col-md-6">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Data de Nascimento</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-calendar3 field-icon"></i>
+                                            <input 
+                                                type="date" 
+                                                class="edit-input" 
+                                                id="editNascimento"
+                                                name="data"
+                                                value="<%= user && user.cliNascimento ? new Date(user.cliNascimento).toISOString().split('T')[0] : '' %>"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- TELEFONE -->
+                                <div class="col-md-6">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Telefone</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-telephone field-icon"></i>
+                                            <input 
+                                                type="tel" 
+                                                class="edit-input" 
+                                                id="editTelefone"
+                                                name="telefone"
+                                                value="<%= user ? user.cliTelefone || '' : '' %>"
+                                                placeholder="(11) 98765-4321"
+                                                maxlength="15"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO 2: ACESSO -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <div class="section-header-left">
+                                <i class="bi bi-shield-lock"></i>
+                                <h2>Acesso à Conta</h2>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div class="row g-3">
+                                <!-- EMAIL -->
+                                <div class="col-12">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>E-mail</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-envelope field-icon"></i>
+                                            <input 
+                                                type="email" 
+                                                class="edit-input" 
+                                                id="editEmail"
+                                                name="email"
+                                                value="<%= user ? user.cliEmail || '' : '' %>"
+                                                placeholder="seu@email.com"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SENHA ATUAL -->
+                                <div class="col-md-4">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Senha Atual</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-key field-icon"></i>
+                                            <input 
+                                                type="password" 
+                                                class="edit-input" 
+                                                id="editSenhaAtual"
+                                                name="senhaAtual"
+                                                placeholder="••••••••"
+                                                required
+                                            >
+                                            <button type="button" class="toggle-password" data-target="editSenhaAtual">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- NOVA SENHA -->
+                                <div class="col-md-4">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Nova Senha</span>
+                                            <span class="label-hint">Opcional</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-lock field-icon"></i>
+                                            <input 
+                                                type="password" 
+                                                class="edit-input" 
+                                                id="editNovaSenha"
+                                                name="novaSenha"
+                                                placeholder="••••••••"
+                                            >
+                                            <button type="button" class="toggle-password" data-target="editNovaSenha">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CONFIRMAR NOVA SENHA -->
+                                <div class="col-md-4">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Confirmar Nova Senha</span>
+                                            <span class="label-hint">Opcional</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-lock-fill field-icon"></i>
+                                            <input 
+                                                type="password" 
+                                                class="edit-input" 
+                                                id="editConfirmSenha"
+                                                name="confirmSenha"
+                                                placeholder="••••••••"
+                                            >
+                                            <button type="button" class="toggle-password" data-target="editConfirmSenha">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO 3: ENDEREÇO -->
+                    <div class="profile-section full-width">
+                        <div class="section-header">
+                            <div class="section-header-left">
+                                <i class="bi bi-geo-alt"></i>
+                                <h2>Endereço de Entrega</h2>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div class="row g-3">
+                                <!-- CEP -->
+                                <div class="col-md-3">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>CEP</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-mailbox field-icon"></i>
+                                            <input 
+                                                type="text" 
+                                                class="edit-input" 
+                                                id="editCep"
+                                                name="cep"
+                                                value="<%= user ? user.endCep || '' : '' %>"
+                                                placeholder="00000-000"
+                                                maxlength="9"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- RUA -->
+                                <div class="col-md-7">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Rua / Avenida</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-signpost field-icon"></i>
+                                            <input 
+                                                type="text" 
+                                                class="edit-input" 
+                                                id="editRua"
+                                                name="rua"
+                                                value="<%= user ? user.endRua || '' : '' %>"
+                                                placeholder="Rua dos Anjos"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- NÚMERO -->
+                                <div class="col-md-2">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Nº</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-hash field-icon"></i>
+                                            <input 
+                                                type="text" 
+                                                class="edit-input" 
+                                                id="editNumero"
+                                                name="numero"
+                                                value="<%= user ? user.endNum || '' : '' %>"
+                                                placeholder="123"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- COMPLEMENTO -->
+                                <div class="col-md-4">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Complemento</span>
+                                            <span class="label-hint">Opcional</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-building field-icon"></i>
+                                            <input 
+                                                type="text" 
+                                                class="edit-input" 
+                                                id="editComplemento"
+                                                name="complemento"
+                                                value="<%= user ? user.endComplemento || '' : '' %>"
+                                                placeholder="Apto 42, Bloco B"
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- BAIRRO -->
+                                <div class="col-md-4">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Bairro</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-pin-map field-icon"></i>
+                                            <input 
+                                                type="text" 
+                                                class="edit-input" 
+                                                id="editBairro"
+                                                name="bairro"
+                                                value="<%= user ? user.endBairro || '' : '' %>"
+                                                placeholder="Centro"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CIDADE -->
+                                <div class="col-md-4">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Cidade</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-geo field-icon"></i>
+                                            <input 
+                                                type="text" 
+                                                class="edit-input" 
+                                                id="editCidade"
+                                                name="cidade"
+                                                value="<%= user ? user.endCidade || '' : '' %>"
+                                                placeholder="São Paulo"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ESTADO -->
+                                <div class="col-md-6">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>Estado</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-map field-icon"></i>
+                                            <select class="edit-input edit-select" id="editEstado" name="estado" required>
+                                                <option value="">Selecione o estado</option>
+                                                <% 
+                                                    const estados = ['Acre','Alagoas','Amapá','Amazonas','Bahia','Ceará','Distrito Federal','Espírito Santo','Goiás','Maranhão','Mato Grosso','Mato Grosso do Sul','Minas Gerais','Pará','Paraíba','Paraná','Pernambuco','Piauí','Rio de Janeiro','Rio Grande do Norte','Rio Grande do Sul','Rondônia','Roraima','Santa Catarina','São Paulo','Sergipe','Tocantins'];
+                                                    estados.forEach(function(e) {
+                                                %>
+                                                    <option value="<%= e %>" <%= user && user.endEstado === e ? 'selected' : '' %>><%= e %></option>
+                                                <% }); %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- UF -->
+                                <div class="col-md-6">
+                                    <div class="edit-field">
+                                        <label class="edit-label">
+                                            <span>UF</span>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="edit-input-wrap">
+                                            <i class="bi bi-signpost-2 field-icon"></i>
+                                            <select class="edit-input edit-select" id="editUf" name="uf" required>
+                                                <option value="">Selecione</option>
+                                                <% 
+                                                    const ufs = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+                                                    ufs.forEach(function(u) {
+                                                %>
+                                                    <option value="<%= u %>" <%= user && user.endUf === u ? 'selected' : '' %>><%= u %></option>
+                                                <% }); %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HIDDEN FIELDS -->
+                    <input type="hidden" name="id" value="<%= user ? user.cliId : '' %>">
+                    <input type="hidden" name="endId" value="<%= user ? user.endId || '' : '' %>">
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="edit-actions">
+                        <a href="/perfil" class="btn-cancel">
+                            <i class="bi bi-x-lg"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn-save" id="saveProfileBtn">
+                            <i class="bi bi-check-lg"></i>
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- BACK LINK -->
+            <div class="back-link-row">
+                <a href="/perfil">
+                    <i class="bi bi-arrow-left"></i>
+                    Voltar ao perfil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Password toggle
+        document.querySelectorAll('.toggle-password').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var target = document.getElementById(this.dataset.target);
+                var isPassword = target.type === 'password';
+                target.type = isPassword ? 'text' : 'password';
+                this.innerHTML = isPassword 
+                    ? '<i class="bi bi-eye-slash"></i>' 
+                    : '<i class="bi bi-eye"></i>';
+            });
+        });
+
+        // Form submit using fetch API
+        document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('editNome').value;
+            const data = document.getElementById('editNascimento').value;
+            const telefone = document.getElementById('editTelefone').value;
+            const email = document.getElementById('editEmail').value;
+            const senhaAtual = document.getElementById('editSenhaAtual').value;
+            const novaSenha = document.getElementById('editNovaSenha').value;
+            const confirmSenha = document.getElementById('editConfirmSenha').value;
+            
+            const cep = document.getElementById('editCep').value;
+            const rua = document.getElementById('editRua').value;
+            const numero = document.getElementById('editNumero').value;
+            const complemento = document.getElementById('editComplemento').value;
+            const bairro = document.getElementById('editBairro').value;
+            const cidade = document.getElementById('editCidade').value;
+            const estado = document.getElementById('editEstado').value;
+            const uf = document.getElementById('editUf').value;
+            
+            const id = document.querySelector('input[name="id"]').value;
+            const endId = document.querySelector('input[name="endId"]').value;
+
+            if (novaSenha && novaSenha !== confirmSenha) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ops...',
+                    text: 'A nova senha e a confirmação de senha não coincidem!',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Processando...',
+                text: 'Aguarde enquanto salvamos suas alterações.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch('/perfil/editar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id,
+                    nome,
+                    data,
+                    telefone,
+                    email,
+                    senhaAtual,
+                    novaSenha,
+                    confirmSenha,
+                    cep,
+                    rua,
+                    numero,
+                    complemento,
+                    bairro,
+                    cidade,
+                    estado,
+                    uf,
+                    endId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: data.msg,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = '/perfil';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: data.msg,
+                        confirmButtonColor: '#3085d6'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar perfil:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro Interno',
+                    text: 'Ocorreu um erro ao atualizar seu perfil. Tente novamente mais tarde.',
+                    confirmButtonColor: '#3085d6'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

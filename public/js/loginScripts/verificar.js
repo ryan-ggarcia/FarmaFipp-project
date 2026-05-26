@@ -161,13 +161,24 @@ loginBtn.addEventListener('click', function () {
             Swal.fire({
                 icon: "error",
                 title: "Erro no envio de dados",
-                text: result.msg,
+                text: "Resposta inesperada do servidor",
                 timer: 1500
             })
             loginBtn.disabled = false;
             loginBtn.classList.remove('loading');
             loginBtn.textContent = 'Entrar';
         }
+    }).catch(function (error) {
+        console.error('Erro na requisição de login:', error);
+        Swal.fire({
+            icon: "error",
+            title: "Erro de conexão",
+            text: "Não foi possível conectar ao servidor. Tente novamente.",
+            timer: 2500
+        })
+        loginBtn.disabled = false;
+        loginBtn.classList.remove('loading');
+        loginBtn.textContent = 'Entrar';
     })
 
     // // Simulate login process
