@@ -1,0 +1,195 @@
+/* ═══════════════════════════════════════════════════════════════
+   FARMAFIPP — DASHBOARD ANALYTICS STYLES  (style-dashboard.css)
+   Depende de _tokens.css carregado ANTES.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── HEADER ─────────────────────────────────────────────────── */
+.dash-header-section .h3 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin-bottom: .15rem;
+}
+
+/* ─── PERIOD FILTER ──────────────────────────────────────────── */
+.period-btn {
+  font-size: .78rem;
+  padding: .3rem .75rem;
+  border-radius: var(--radius-pill) !important;
+  transition: var(--t-fast);
+}
+
+.period-btn.active,
+.period-btn:active {
+  background: var(--clr-blue) !important;
+  border-color: var(--clr-blue) !important;
+  color: #fff !important;
+}
+
+/* ─── KPI ROW ────────────────────────────────────────────────── */
+.dash-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .75rem;
+}
+
+@media (min-width: 576px) {
+  .dash-kpi-row { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 992px) {
+  .dash-kpi-row { grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+}
+
+.kpi-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  border: 1px solid var(--border-color);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+}
+
+.kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.kpi-icon-blue   { background: linear-gradient(135deg, var(--clr-blue), var(--clr-blue-dark)); }
+.kpi-icon-red    { background: linear-gradient(135deg, var(--clr-red),  var(--clr-red-dark));  }
+.kpi-icon-green  { background: linear-gradient(135deg, var(--clr-green), var(--clr-green-dark)); }
+.kpi-icon-yellow { background: linear-gradient(135deg, #e67e22, #d35400); }
+.kpi-icon-teal   { background: linear-gradient(135deg, #4E8098, #3a6678); }
+
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: var(--fw-extra);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.kpi-label {
+  font-size: .72rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: var(--fw-medium);
+}
+
+/* ─── CHART CARDS ────────────────────────────────────────────── */
+.dash-chart-card {
+  min-height: 280px;
+}
+
+.dash-chart-title {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin-bottom: .15rem;
+}
+
+.dash-chart-subtitle {
+  font-size: var(--text-sm);
+}
+
+.dash-chart-total {
+  font-size: 1.25rem;
+  font-weight: var(--fw-bold);
+  color: var(--clr-blue);
+}
+
+/* ─── SUMMARY TABLE ──────────────────────────────────────────── */
+.dash-summary-table {
+  width: 100%;
+  font-size: .84rem;
+}
+
+.dash-summary-table tr {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.dash-summary-table tr:last-child {
+  border-bottom: none;
+}
+
+.dash-summary-table td {
+  padding: .6rem .25rem;
+  vertical-align: middle;
+}
+
+.dash-summary-table td:first-child {
+  color: var(--text-secondary);
+  font-weight: var(--fw-medium);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.dash-summary-table td:last-child {
+  text-align: right;
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+
+.dash-summary-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─── SECTION LABEL ──────────────────────────────────────────── */
+.dash-section-label {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-secondary);
+  font-weight: var(--fw-semibold);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+
+.dash-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+/* ─── CHART LOADER (skeleton) ────────────────────────────────── */
+.chart-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+  height: 200px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

@@ -1,64 +1,201 @@
+<link rel="stylesheet" href="/css/style-listProduto.css">
 <script src="/js/servicos/listar.js"></script>
+
+<%
+/* ── contadores para os stat cards ── */
+const _total       = lista.length;
+const _aprovados   = lista.filter(s => s.getSTATUS() === 'aprovado').length;
+const _aguardando  = lista.filter(s => s.getSTATUS() === 'aguardando').length;
+const _naoAprov    = lista.filter(s => s.getSTATUS() === 'nao_aprovado').length;
+%>
+
 <div class="p-3 p-1-25">
-  <div class="d-flex justify-content-between align-items-center mb-3">
+
+  <!-- ── Cabeçalho ── -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
       <h3 class="mb-0">Serviços cadastrados</h3>
       <small class="text-muted">Gerencie os serviços registrados no sistema</small>
     </div>
-    <div>
-      <a class="btn btn-primary custom btn-rounded" href="/admin/servicos/cadastrar"><i class="fas fa-plus me-2"></i>
-        Cadastrar Serviço</a>
+    <div class="d-flex gap-2 align-items-center">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar serviço...">
+      </div>
+      <a class="btn btn-primary custom btn-rounded" href="/admin/servicos/cadastrar">
+        <i class="fas fa-plus me-2"></i>Cadastrar Serviço
+      </a>
     </div>
   </div>
 
-  <div class="card card-saas">
+  <!-- ── Stat cards ── -->
+  <div class="stats-row mb-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-blue"><i class="fas fa-tools"></i></div>
+      <div>
+        <div class="stat-number"><%= _total %></div>
+        <div class="stat-label">Total de Serviços</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-green"><i class="fas fa-check-circle"></i></div>
+      <div>
+        <div class="stat-number"><%= _aprovados %></div>
+        <div class="stat-label">Aprovados</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-orange"><i class="fas fa-clock"></i></div>
+      <div>
+        <div class="stat-number"><%= _aguardando %></div>
+        <div class="stat-label">Aguardando</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-red"><i class="fas fa-times-circle"></i></div>
+      <div>
+        <div class="stat-number"><%= _naoAprov %></div>
+        <div class="stat-label">Não Aprovados</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tabela ── -->
+  <div class="card card-saas no-hover">
     <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table mb-0 align-middle">
+        <table class="table mb-0 align-middle table-produtos" id="tabelaServicos">
           <thead class="table-light">
             <tr>
               <th>ID</th>
               <th>Tipo</th>
               <th>Preço</th>
-              <th>Observações</th>
               <th>Status</th>
               <th>Data</th>
               <th>Hora</th>
-              <th>Funcionario</th>
+              <th>Funcionário</th>
               <th>Cliente</th>
+              <th>Observações</th>
               <th class="text-end">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <% for(let i=0; i < lista.length; i++) { %>
+
+            <% if(lista.length === 0){ %>
               <tr>
-                <td><%= lista[i].getID() %></td>
-                <td><%= lista[i].getDESC_TIPO() %></td>
-                <td>R$ <%= lista[i].getPRECO() %></td>
-                <td><%= lista[i].getOBS() %></td>
-                 <td>
-                  <% if(lista[i].getSTATUS()=='aprovado' ) { %>
-                    <span class="badge bg-success">Aprovado</span>
-                    <% } else { %>
-                      <span class="badge bg-secondary">Pendente</span>
-                      <% } %>
-                </td>
-                <td><%= (lista[i].getDATA() instanceof Date) ? lista[i].getDATA().toISOString().split('T')[0] : (typeof lista[i].getDATA() === 'string' ? lista[i].getDATA().split('T')[0] : lista[i].getDATA()) %></td>
-                <td><%= lista[i].getHORA() %></td>
-                <td><%= lista[i].getNOME_FUNC() %></td>
-                <td><%= lista[i].getNOME_CLIE() %></td>
-               
-                <td class="text-end">
-                  <a href="/admin/servicos/alterar/<%= lista[i].getID() %>" class="btn btn-sm btn-primary btn-rounded me-2"
-                    title="Alterar"><i class="fas fa-pen"></i></a>
-                  <button data-id="<%= lista[i].getID() %>" class="btn btn-sm btn-danger btn-rounded btnExcluir"
-                    title="Excluir"><i class="fas fa-trash"></i></button>
+                <td colspan="10" class="text-center py-5">
+                  <div class="empty-table">
+                    <i class="fas fa-tools"></i>
+                    <h5>Nenhum serviço cadastrado</h5>
+                    <p>Comece adicionando um novo serviço ao sistema.</p>
+                    <a href="/admin/servicos/cadastrar"
+                       class="btn btn-primary custom btn-rounded btn-sm">
+                      <i class="fas fa-plus me-1"></i>Cadastrar Serviço
+                    </a>
+                  </div>
                 </td>
               </tr>
-              <% } %>
+            <% } %>
+
+            <% for(let i = 0; i < lista.length; i++){ %>
+              <%
+                const s        = lista[i];
+                const status   = s.getSTATUS();
+                const dataRaw  = s.getDATA();
+                let dataFmt = '—';
+                if(dataRaw){
+                  if(dataRaw instanceof Date){
+                    dataFmt = dataRaw.toLocaleDateString('pt-BR');
+                  } else if(typeof dataRaw === 'string'){
+                    const parts = dataRaw.split('T')[0].split('-');
+                    if(parts.length === 3) dataFmt = parts[2]+'/'+parts[1]+'/'+parts[0];
+                    else dataFmt = dataRaw;
+                  }
+                }
+              %>
+              <tr class="servico-row">
+
+                <!-- ID -->
+                <td><span class="id-badge">#<%= s.getID() %></span></td>
+
+                <!-- Tipo -->
+                <td>
+                  <span class="cat-badge"><%= s.getDESC_TIPO() || '—' %></span>
+                </td>
+
+                <!-- Preço -->
+                <td>
+                  <span class="preco-value">
+                    R$ <%= Number(s.getPRECO()).toFixed(2) %>
+                  </span>
+                </td>
+
+                <!-- Status -->
+                <td>
+                  <% if(status === 'aprovado'){ %>
+                    <span class="qtd-badge qtd-ok">Aprovado</span>
+                  <% } else if(status === 'aguardando'){ %>
+                    <span class="qtd-badge qtd-low">Aguardando</span>
+                  <% } else if(status === 'nao_aprovado'){ %>
+                    <span class="qtd-badge qtd-out">Não Aprovado</span>
+                  <% } else { %>
+                    <span class="lote-badge"><%= status || '—' %></span>
+                  <% } %>
+                </td>
+
+                <!-- Data -->
+                <td><%= dataFmt %></td>
+
+                <!-- Hora -->
+                <td><%= s.getHORA() || '—' %></td>
+
+                <!-- Funcionário -->
+                <td><%= s.getNOME_FUNC() || '—' %></td>
+
+                <!-- Cliente -->
+                <td><%= s.getNOME_CLIE() || '—' %></td>
+
+                <!-- Observações -->
+                <td>
+                  <span style="max-width:160px; display:inline-block; overflow:hidden;
+                               text-overflow:ellipsis; white-space:nowrap; font-size:.8rem;
+                               color:#666;" title="<%= s.getOBS() || '' %>">
+                    <%= s.getOBS() || '—' %>
+                  </span>
+                </td>
+
+                <!-- Ações -->
+                <td class="text-end">
+                  <div class="acoes-wrap">
+                    <a href="/admin/servicos/alterar/<%= s.getID() %>"
+                       class="btn btn-sm btn-action btn-edit" title="Alterar">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button data-id="<%= s.getID() %>"
+                            class="btn btn-sm btn-action btn-delete btnExcluir"
+                            title="Excluir">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+
+              </tr>
+            <% } %>
+
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
+  <!-- ── Rodapé da tabela ── -->
+  <% if(lista.length > 0){ %>
+    <div class="table-footer mt-2">
+      <small class="text-muted">
+        Exibindo <strong><%= lista.length %></strong>
+        serviço<%= lista.length !== 1 ? 's' : '' %>
+      </small>
+    </div>
+  <% } %>
+
 </div>

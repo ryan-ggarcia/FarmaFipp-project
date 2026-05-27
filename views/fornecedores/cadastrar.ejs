@@ -1,52 +1,95 @@
-
-<body>
-    
-    <h1>Cadastrar Fornecedor</h1>
-    
-
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required><br>
-
-        <label for="cnpj">CNPJ:</label>
-        <input type="text" id="cnpj" name="cnpj" required><br>
-
-        <label for="telefone">Telefone:</label>
-        <input type="text" id="telefone" name="telefone" required><br>
-
-        <label for="endereco">Endereço:</label>
-        <div class="col-md-4">
-            <label class="form-label">Rua:</label>
-            <input id="rua" type="text" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Número:</label>
-            <input id="num" type="text" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Bairro:</label>
-            <input id="bairro" type="text" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Cidade:</label>
-            <input id="cidade" type="text" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Estado:</label>
-            <input id="estado" type="text" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">CEP:</label>
-            <input id="cep" type="text" class= "form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">UF:</label>
-            <input id="uf" type="text" class="form-control">
-            </div>
-        </div>
-
-        <button type="button" id="cadastrar">Cadastrar</button>
-
-</body>
-
-
 <script src="/js/fornecedores/cadastrar.js"></script>
+
+<div class="p-3 p-1-25">
+
+  <!-- ── Dados do Fornecedor ── -->
+  <div class="card card-saas no-hover mb-3">
+    <div class="card-body">
+      <h4 class="mb-3 admin-section-title">
+        <i class="bi bi-truck me-2"></i>Cadastro de Fornecedor
+      </h4>
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <label class="form-label">Nome</label>
+          <input id="nome" type="text" class="form-control" placeholder="Nome do fornecedor">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">CNPJ</label>
+          <input id="cnpj" type="text" class="form-control" maxlength="18"
+                 onkeypress="mascara('##.###.###/####-##', this, event)"
+                 placeholder="00.000.000/0000-00">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Telefone</label>
+          <input id="telefone" type="text" class="form-control" maxlength="15"
+                 onkeypress="mascara('(##) #####-####', this, event)"
+                 placeholder="(00) 00000-0000">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Endereço ── -->
+  <div class="card card-saas no-hover">
+    <div class="card-body">
+      <h4 class="mb-3 admin-section-title">
+        <i class="bi bi-geo-alt me-2"></i>Endereço
+      </h4>
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <label class="form-label">CEP</label>
+          <input id="cep" type="text" class="form-control" maxlength="9"
+                 onkeypress="mascara('#####-###', this, event)"
+                 placeholder="00000-000">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Rua</label>
+          <input id="rua" type="text" class="form-control" placeholder="Nome da rua">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Número</label>
+          <input id="num" type="text" class="form-control" placeholder="Nº">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Bairro</label>
+          <input id="bairro" type="text" class="form-control" placeholder="Bairro">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Cidade</label>
+          <input id="cidade" type="text" class="form-control" placeholder="Cidade">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Estado</label>
+          <input id="estado" type="text" class="form-control" placeholder="Estado">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">UF</label>
+          <input id="uf" type="text" class="form-control" maxlength="2" placeholder="SP">
+        </div>
+
+        <div class="col-12 d-flex gap-2 mt-1">
+          <button id="cadastrar" type="button"
+                  class="btn btn-primary custom btn-rounded">
+            <i class="fas fa-save me-1"></i>Cadastrar
+          </button>
+          <a href="/admin/fornecedores" class="btn btn-outline-secondary btn-rounded">
+            <i class="fas fa-arrow-left me-1"></i>Voltar
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -13,7 +13,7 @@ class ProdutoController {
             categoria = await categoria.ListCategorias()
             let lote = new LoteModel()
             lote = await lote.List()
-            res.render('produtos/listar', { lista, categoria, lote });
+            res.render('produtos/listar', { lista, categoria, lote, active: 'produtos' });
         } catch (error) {
             console.error('Erro ao listar produtos:', error);
             res.status(500).send({ ok: false, msg: 'Erro ao listar produtos!' });
@@ -26,7 +26,7 @@ class ProdutoController {
             let listaFornecedor = await fornecedor.List();
             let produto = new ProdutoModel();
             let listaCategoria = await produto.ListCategorias();
-            res.render('produtos/cadastrar', { categorias: listaCategoria, fornecedores: listaFornecedor });
+            res.render('produtos/cadastrar', { categorias: listaCategoria, fornecedores: listaFornecedor, active: 'produtos' });
         } catch (error) {
             console.error('Erro ao carregar view de cadastro:', error);
             res.status(500).send({ ok: false, msg: 'Erro ao carregar página de cadastro!' });
@@ -60,7 +60,8 @@ class ProdutoController {
                 fornecedores,
                 produtoAlter: produto,
                 listaCategorias: categorias,
-                listaFornecedores: fornecedores
+                listaFornecedores: fornecedores,
+                active: 'produtos'
             });
         } catch (error) {
             console.error('Erro ao carregar view de alteração de produto:', error);

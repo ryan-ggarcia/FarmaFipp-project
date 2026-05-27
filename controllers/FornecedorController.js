@@ -14,11 +14,11 @@ class FornecedorController{
         const fornecedor = new FornecedorModel();
         const fornecedores = await fornecedor.List();
         const fonecedoresAtivos = fornecedores.filter(f => f.status === 'ativo');
-        res.render('fornecedores/listar', {fornecedores: fonecedoresAtivos});
+        res.render('fornecedores/listar', { fornecedores: fonecedoresAtivos, active: 'fornecedores' });
     }
 
     async cadastrarView(req, res){
-        res.render('fornecedores/cadastrar');
+        res.render('fornecedores/cadastrar', { active: 'fornecedores' });
     }
 
     async alterarView(req, res){
@@ -26,7 +26,7 @@ class FornecedorController{
         const fornecedorModel = await fornecedor.Get(req.params.id);
         const endereco = new EnderecoModel();
         const enderecoModel = await endereco.GetByFornecedor(req.params.id);
-        res.render('fornecedores/alterar', {fornecedor: fornecedorModel, endereco: enderecoModel});
+        res.render('fornecedores/alterar', { fornecedor: fornecedorModel, endereco: enderecoModel, active: 'fornecedores' });
     }
 
     async alterar(req, res){

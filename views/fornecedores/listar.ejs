@@ -1,46 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-    <h1>Listar Fornecedores</h1>
-
-    <button><a href="/admin/fornecedores/cadastrar">Cadastrar Novo Fornecedor</a></button>
-
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>CNPJ</th>
-                <th>Telefone</th>
-                <th>Endereço</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            
-                <% fornecedores.forEach(fornecedor => { %>
-                    <tr>
-                        <td><%= fornecedor.id %></td>
-                        <td><%= fornecedor.nome %></td>
-                        <td><%= fornecedor.cnpj %></td>
-                        <td><%= fornecedor.telefone %></td>
-                        </td>
-                        <td>
-                            <a href="/admin/fornecedores/alterar/<%= fornecedor.id %>" class="btn btn-primary btn-sm">Alterar</a>
-                            <button data-id="<%= fornecedor.id %>"   class="btn btn-danger btn-sm btnExcluir">Excluir</button>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-    </table>
-</body>
-</html>
-
+<link rel="stylesheet" href="/css/style-listProduto.css">
 <script src="/js/fornecedores/listar.js"></script>
+
+<%
+const _totalForn  = fornecedores.length;
+const _ativos     = fornecedores.filter(f => f.status === 'ativo').length;
+const _inativos   = fornecedores.filter(f => f.status !== 'ativo').length;
+%>
+
+<div class="p-3 p-1-25">
+
+  <!-- ── Cabeçalho ── -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <h3 class="mb-0">Fornecedores cadastrados</h3>
+      <small class="text-muted">Gerencie os fornecedores registrados no sistema</small>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar fornecedor...">
+      </div>
+      <a class="btn btn-primary custom btn-rounded" href="/admin/fornecedores/cadastrar">
+        <i class="fas fa-plus me-2"></i>Cadastrar Fornecedor
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Stat cards ── -->
+  <div class="stats-row mb-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-blue"><i class="fas fa-truck"></i></div>
+      <div>
+        <div class="stat-number"><%= _totalForn %></div>
+        <div class="stat-label">Total de Fornecedores</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-green"><i class="fas fa-check-circle"></i></div>
+      <div>
+        <div class="stat-number"><%= _ativos %></div>
+        <div class="stat-label">Ativos</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-red"><i class="fas fa-times-circle"></i></div>
+      <div>
+        <div class="stat-number"><%= _inativos %></div>
+        <div class="stat-label">Inativos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tabela ── -->
+  <div class="card card-saas no-hover">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle table-produtos" id="tabelaFornecedores">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>CNPJ</th>
+              <th>Telefone</th>
+              <th>Status</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <% if(fornecedores.length === 0){ %>
+              <tr>
+                <td colspan="6" class="text-center py-5">
+                  <div class="empty-table">
+                    <i class="fas fa-truck"></i>
+                    <h5>Nenhum fornecedor cadastrado</h5>
+                    <p>Comece adicionando um novo fornecedor ao sistema.</p>
+                    <a href="/admin/fornecedores/cadastrar"
+                       class="btn btn-primary custom btn-rounded btn-sm">
+                      <i class="fas fa-plus me-1"></i>Cadastrar Fornecedor
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+
+            <% fornecedores.forEach(function(f){ %>
+              <tr class="fornecedor-row">
+
+                <td><span class="id-badge">#<%= f.id %></span></td>
+
+                <td>
+                  <div class="nome-wrap">
+                    <span class="prod-name"><%= f.nome %></span>
+                    <span class="prod-desc"><%= f.cnpj || '—' %></span>
+                  </div>
+                </td>
+
+                <td><span class="forn-id"><%= f.cnpj || '—' %></span></td>
+
+                <td><span class="forn-id"><%= f.telefone || '—' %></span></td>
+
+                <td>
+                  <% if(f.status === 'ativo'){ %>
+                    <span class="qtd-badge qtd-ok">Ativo</span>
+                  <% } else { %>
+                    <span class="qtd-badge qtd-out">Inativo</span>
+                  <% } %>
+                </td>
+
+                <td class="text-end">
+                  <div class="acoes-wrap">
+                    <a href="/admin/fornecedores/alterar/<%= f.id %>"
+                       class="btn btn-sm btn-action btn-edit" title="Alterar">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button data-id="<%= f.id %>"
+                            class="btn btn-sm btn-action btn-delete btnExcluir"
+                            title="Excluir">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <% if(fornecedores.length > 0){ %>
+    <div class="table-footer mt-2">
+      <small class="text-muted">
+        Exibindo <strong><%= fornecedores.length %></strong>
+        fornecedor<%= fornecedores.length !== 1 ? 'es' : '' %>
+      </small>
+    </div>
+  <% } %>
+
+</div>

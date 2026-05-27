@@ -10,7 +10,7 @@ class LoteController {
             let listaProdutos = await produto.Read();
             let fornecedor = new FornecedorModel();
             let listaFornecedor = await fornecedor.List();
-            res.render('produtos/cadastrarLote', { produtos: listaProdutos, fornecedores: listaFornecedor });
+            res.render('produtos/cadastrarLote', { produtos: listaProdutos, fornecedores: listaFornecedor, active: 'produtos' });
         } catch (error) {
             console.error('Erro ao carregar view de cadastro de lote:', error);
             res.status(500).send({ ok: false, msg: 'Erro ao carregar página de cadastro de lote!' });

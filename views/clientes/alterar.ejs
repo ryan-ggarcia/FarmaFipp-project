@@ -1,64 +1,133 @@
 <script src="/js/clientes/alterar.js"></script>
-<div>
-    <h1>Alterar dados do cliente</h1>
-    <div>
-        <div class="form-group">
-            <input type="hidden" id="cliId" value="<%= cliente.cliId %>">
+
+<div class="p-3 p-1-25">
+
+  <!-- ── Dados Pessoais ── -->
+  <div class="card card-saas no-hover mb-3">
+    <div class="card-body">
+      <h4 class="mb-3 admin-section-title">
+        <i class="bi bi-pencil-square me-2"></i>Alterar Dados do Cliente
+      </h4>
+
+      <!-- ID oculto -->
+      <input type="hidden" id="cliId" value="<%= cliente.cliId %>">
+
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <label class="form-label">Nome</label>
+          <input type="text" id="cliNome" class="form-control"
+                 value="<%= cliente.cliNome %>" placeholder="Nome completo">
         </div>
-        <div class="form-group">
-            <input type="text" id="cliNome" value="<%= cliente.cliNome %>">
+
+        <div class="col-md-4">
+          <label class="form-label">Status</label>
+          <select id="cliStatus" class="form-control">
+            <option value="1" <%= cliente.cliStatus ? 'selected' : '' %>>Ativo</option>
+            <option value="0" <%= !cliente.cliStatus ? 'selected' : '' %>>Inativo</option>
+          </select>
         </div>
-        <div class="form-group">
-            <select id="cliStatus" value="<%=cliente.cliStatus %>">
-                <option value="1" <%= cliente.cliStatus ? 'selected' : '' %>>Ativo</option>
-                <option value="0" <%= !cliente.cliStatus ? 'selected' : '' %>>Inativo</option>
-            </select>
+
+        <div class="col-md-4">
+          <label class="form-label">CPF</label>
+          <input type="text" id="cliCpf" class="form-control"
+                 value="<%= cliente.cliCpf %>" placeholder="000.000.000-00">
         </div>
-        <div class="form-group">
-            <input type="text" id="cliCpf" value="<%= cliente.cliCpf %>">
+
+        <div class="col-md-4">
+          <label class="form-label">Telefone</label>
+          <input type="text" id="cliTelefone" class="form-control"
+                 value="<%= cliente.cliTelefone %>" placeholder="(00) 00000-0000">
         </div>
-        <div class="form-group">
-            <input type="text" id="cliTelefone" value="<%= cliente.cliTelefone %>">
+
+        <div class="col-md-4">
+          <label class="form-label">E-mail</label>
+          <input type="email" id="cliEmail" class="form-control"
+                 value="<%= cliente.cliEmail %>" placeholder="email@exemplo.com">
         </div>
-        <div class="form-group">
-            <input type="text" id="cliEmail" value="<%= cliente.cliEmail %>">
+
+        <div class="col-md-4">
+          <label class="form-label">Senha</label>
+          <input type="password" id="cliSenha" class="form-control"
+                 value="<%= cliente.cliSenha %>" placeholder="••••••••">
         </div>
-        <div class="form-group">
-            <input type="password" id="cliSenha" value="<%= cliente.cliSenha %>">
+
+        <div class="col-md-4">
+          <label class="form-label">Data de Nascimento</label>
+          <input type="date" id="cliNascimento" class="form-control"
+                 value="<%= cliente.cliNascimento %>">
         </div>
-        <div class="form-group">
-            <input type="date" id="cliNascimento" value="<%= cliente.cliNascimento %>">
-        </div>
+
+      </div>
     </div>
-    <h1>Alterar Endereço</h1>
-    <div>
-        <div class="form-group">
-            <input type="hidden" id="endId" value="<%= cliente.endId %>">
+  </div>
+
+  <!-- ── Endereço ── -->
+  <div class="card card-saas no-hover">
+    <div class="card-body">
+      <h4 class="mb-3 admin-section-title">
+        <i class="bi bi-geo-alt me-2"></i>Alterar Endereço
+      </h4>
+
+      <!-- ID do endereço oculto -->
+      <input type="hidden" id="endId" value="<%= cliente.endId %>">
+
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <label class="form-label">Rua</label>
+          <input type="text" id="endRua" class="form-control"
+                 value="<%= cliente.endRua %>" placeholder="Nome da rua">
         </div>
-        <div class="form-group">
-            <input type="text" id="endRua" value="<%= cliente.endRua %>">
+
+        <div class="col-md-4">
+          <label class="form-label">Número</label>
+          <input type="text" id="endNum" class="form-control"
+                 value="<%= cliente.endNum %>" placeholder="Nº">
         </div>
-        <div class="form-group">
-            <input type="text" id="endBairro" value="<%= cliente.endBairro %>">
+
+        <div class="col-md-4">
+          <label class="form-label">Bairro</label>
+          <input type="text" id="endBairro" class="form-control"
+                 value="<%= cliente.endBairro %>" placeholder="Bairro">
         </div>
-        <div class="form-group">
-            <input type="text" id="endNum" value="<%= cliente.endNum %>">
+
+        <div class="col-md-4">
+          <label class="form-label">Cidade</label>
+          <input type="text" id="endCidade" class="form-control"
+                 value="<%= cliente.endCidade %>" placeholder="Cidade">
         </div>
-        <div class="form-group">
-            <input type="text" id="endCidade" value="<%= cliente.endCidade %>">
+
+        <div class="col-md-4">
+          <label class="form-label">Estado</label>
+          <input type="text" id="endEstado" class="form-control"
+                 value="<%= cliente.endEstado %>" placeholder="Estado">
         </div>
-        <div class="form-group">
-            <input type="text" id="endEstado" value="<%= cliente.endEstado %>">
+
+        <div class="col-md-4">
+          <label class="form-label">UF</label>
+          <input type="text" id="endUf" class="form-control" maxlength="2"
+                 value="<%= cliente.endUf %>" placeholder="SP">
         </div>
-        <div class="form-group">
-            <input type="text" id="endUf" value="<%= cliente.endUf %>">
+
+        <div class="col-md-4">
+          <label class="form-label">CEP</label>
+          <input type="text" id="endCep" class="form-control"
+                 value="<%= cliente.endCep %>" placeholder="00000-000">
         </div>
-        <div class="form-group">
-            <input type="text" id="endCep" value="<%= cliente.endCep %>">
+
+        <div class="col-12 d-flex gap-2 mt-1">
+          <button id="btnAlterar" type="button"
+                  class="btn btn-primary custom btn-rounded">
+            <i class="fas fa-save me-1"></i>Salvar Alterações
+          </button>
+          <a href="/admin/clientes/listar" class="btn btn-outline-secondary btn-rounded">
+            <i class="fas fa-arrow-left me-1"></i>Voltar
+          </a>
         </div>
-        <div>
-            <button id="btnAlterar" class="btn btn-primary">Alterar</button>
-            <a href="/admin/clientes/listar">Voltar</a>
-        </div>
+
+      </div>
     </div>
+  </div>
+
 </div>

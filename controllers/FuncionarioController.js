@@ -5,13 +5,13 @@ const bcrypt = require("bcrypt")
 
 class FuncionarioController{
     async cadastrarView(req, res){
-        res.render("funcionarios/cadastrar")
+        res.render("funcionarios/cadastrar", { active: 'funcionarios' })
     }
 
     async listarView(req, res){
         let funcionario = new FuncionarioModel();
         let lista = await funcionario.Read();
-        res.render("funcionarios/listar", {lista})
+        res.render("funcionarios/listar", { lista, active: 'funcionarios' })
     }
 
     async alterarView(req, res){
@@ -19,7 +19,7 @@ class FuncionarioController{
         let endereco = new EnderecoModelFuncionario();
         funcionario = await funcionario.Get(req.params.id)
         endereco = await endereco.Get(funcionario.funcId)
-        res.render("funcionarios/alterar", {funcionario, endereco})
+        res.render("funcionarios/alterar", { funcionario, endereco, active: 'funcionarios' })
     }
 
     async cadastrar(req, res){

@@ -1,71 +1,120 @@
 <script src="/js/funcionarios/cadastrar.js"></script>
-<div>
-    <h1>Cadastrar Cliente</h1>
-    <div>
-        <div class="form-group">
-            <label>Matricula:</label>
-            <input id="matricula" type="text" class="form-control">
-        </div>
-        <div class="form-group">
-            <label>Nome:</label>
-            <input id="nome" type="text" class="form-control">
-        </div>
-        <div class="form-group">
-            <label>Cargo:</label>
-            <input id="cargo" type="text" class="form-control">
-        </div>
-    <div class="form-group">
-        <label>CPF:</label>
-        <input id="cpf" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label>Telefone:</label>
-        <input id="telefone" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label>Email:</label>
-        <input id="email" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label>Senha:</label>
-        <input id="senha" type="password" class="form-control">
-    </div>
-</div>
 
-<div>
-    <h1>Cadastrar endereco</h1>
-    <div>
-    <div class="form-group">
-        <label>CEP:</label>
-        <input id="cep" type="text" class="form-control">
-    </div>
-        <div class="form-group">
-            <label>Rua:</label>
-            <input id="rua" type="text" class="form-control">
+<div class="p-3 p-1-25">
+
+  <!-- ── Dados do Funcionário ── -->
+  <div class="card card-saas no-hover mb-3">
+    <div class="card-body">
+      <h4 class="mb-3 admin-section-title">
+        <i class="bi bi-person-plus me-2"></i>Cadastro de Funcionário
+      </h4>
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <label class="form-label">Matrícula</label>
+          <input id="matricula" type="text" class="form-control" placeholder="Matrícula">
         </div>
-        <div class="form-group">
-            <label>Número:</label>
-            <input id="num" type="text" class="form-control">
+
+        <div class="col-md-4">
+          <label class="form-label">Nome</label>
+          <input id="nome" type="text" class="form-control" placeholder="Nome completo">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Cargo</label>
+          <input id="cargo" type="text" class="form-control" placeholder="Cargo">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">CPF</label>
+          <input id="cpf" type="text" class="form-control" maxlength="14"
+                 onkeypress="mascara('###.###.###-##', this, event)"
+                 placeholder="000.000.000-00">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Telefone</label>
+          <input id="telefone" type="text" class="form-control" maxlength="15"
+                 onkeypress="mascara('(##) #####-####', this, event)"
+                 placeholder="(00) 00000-0000">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">E-mail</label>
+          <input id="email" type="email" class="form-control" placeholder="email@exemplo.com">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Senha</label>
+          <input id="senha" type="password" class="form-control" placeholder="••••••••">
+        </div>
+
+      </div>
     </div>
-    <div class="form-group">
-        <label>Complemento:</label>
-        <input id="complemento" type="text" class="form-control">
+  </div>
+
+  <!-- ── Endereço ── -->
+  <div class="card card-saas no-hover">
+    <div class="card-body">
+      <h4 class="mb-3 admin-section-title">
+        <i class="bi bi-geo-alt me-2"></i>Endereço
+      </h4>
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <label class="form-label">CEP</label>
+          <input id="cep" type="text" class="form-control" maxlength="9"
+                 onkeypress="mascara('#####-###', this, event)"
+                 placeholder="00000-000">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Rua</label>
+          <input id="rua" type="text" class="form-control" placeholder="Nome da rua">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Número</label>
+          <input id="num" type="text" class="form-control" placeholder="Nº">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Complemento</label>
+          <input id="complemento" type="text" class="form-control" placeholder="Apto, sala...">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Bairro</label>
+          <input id="bairro" type="text" class="form-control" placeholder="Bairro">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Cidade</label>
+          <input id="cidade" type="text" class="form-control" placeholder="Cidade">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Estado</label>
+          <input id="estado" type="text" class="form-control" placeholder="Estado">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">UF</label>
+          <input id="uf" type="text" class="form-control" maxlength="2" placeholder="SP">
+        </div>
+
+        <div class="col-12 d-flex gap-2 mt-1">
+          <button id="btnCadastrar" type="button"
+                  class="btn btn-primary custom btn-rounded">
+            <i class="fas fa-save me-1"></i>Cadastrar
+          </button>
+          <a href="/admin/funcionarios/listar" class="btn btn-outline-secondary btn-rounded">
+            <i class="fas fa-arrow-left me-1"></i>Voltar
+          </a>
+        </div>
+
+      </div>
     </div>
-    <div class="form-group">
-        <label>Bairro:</label>
-        <input id="bairro" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label>Cidade:</label>
-        <input id="cidade" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label>Estado:</label>
-        <input id="estado" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label>UF:</label>
-        <input id="uf" type="text" class="form-control">
-    </div>
-    <button class="btn btn-primary" id="btnCadastrar">Cadastrar</button>
+  </div>
+
 </div>

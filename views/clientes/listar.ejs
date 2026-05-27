@@ -1,99 +1,173 @@
+<link rel="stylesheet" href="/css/style-listProduto.css">
 <script src="/js/clientes/listar.js"></script>
-<div class="p-3 p-1-25">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h3 class="mb-0">Clientes cadastrados</h3>
-            <small class="text-muted">Gerencie os clientes registrados no sistema</small>
-        </div>
-        <div>
-            <a class="btn btn-primary custom btn-rounded" href="/admin/clientes/cadastrar"><i class="fas fa-plus me-2"></i>
-                Cadastrar Clientes</a>
-        </div>
-    </div>
-    <div class="card card-saas ">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table mb-0 align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>Status</th>
-                            <th>CPF</th>
-                            <th>Email</th>
-                            <th>Telefone</th>
-                            <th>Data de Nascimento</th>
-                            <th class="text-end">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% lista.forEach(function(c){ %>
-                            <tr>
-                                <td>
-                                    <%= c.cliId %>
-                                </td>
-                                <td>
-                                    <%= c.cliNome %>
-                                </td>
-                                <td>
-                                    <%= c.cliStatus ? 'Ativo' : 'Inativo' %>
-                                </td>
-                                <td>
-                                    <%= c.cliCpf %>
-                                </td>
-                                <td>
-                                    <%= c.cliEmail %>
-                                </td>
-                                <td>
-                                    <%= c.cliTelefone %>
-                                </td>
-                                <td>
-                                    <%= new Date(c.cliNascimento).toLocaleDateString('pt-BR') %>
-                                </td>
-                                <td>
-                                    <button data-id="<%= c.cliId %>" class="btn btn-sm btn-info btn-rounded btnDetalhes">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <a href="/admin/clientes/alterar/<%= c.cliId %>" class="btn btn-sm btn-primary btn-rounded">
-                                        <i class="fas fa-pen"></i>
-                                    </a>
-                                    <button data-id="<%= c.cliId %>" class="btn btn-sm btn-danger btnExcluir btn-rounded">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="detalhes" id="detalhes-<%= c.cliId %>" style="display: none;">
-                                <td colspan="8">
-                                    <strong>Endereço:</strong><br>
-                                    Rua: <%= c.endRua %><br>
-                                        Bairro: <%= c.endBairro %><br>
-                                            Cidade: <%= c.endCidade %><br>
-                                                Número: <%= c.endNum %><br>
-                                                    Estado: <%= c.endEstado %><br>
-                                                        UF: <%= c.endUf %><br>
-                                                            CEP: <%= c.endCep %><br>
-                                </td>
-                            </tr>
-                            <% }) %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
+<%
+const _totalCli  = lista.length;
+const _ativos    = lista.filter(c => c.cliStatus).length;
+const _inativos  = lista.filter(c => !c.cliStatus).length;
+%>
+
+<div class="p-3 p-1-25">
+
+  <!-- ── Cabeçalho ── -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <h3 class="mb-0">Clientes cadastrados</h3>
+      <small class="text-muted">Gerencie os clientes registrados no sistema</small>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar cliente...">
+      </div>
+      <a class="btn btn-primary custom btn-rounded" href="/admin/clientes/cadastrar">
+        <i class="fas fa-plus me-2"></i>Cadastrar Cliente
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Stat cards ── -->
+  <div class="stats-row mb-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-blue"><i class="fas fa-users"></i></div>
+      <div>
+        <div class="stat-number"><%= _totalCli %></div>
+        <div class="stat-label">Total de Clientes</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-green"><i class="fas fa-user-check"></i></div>
+      <div>
+        <div class="stat-number"><%= _ativos %></div>
+        <div class="stat-label">Ativos</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-red"><i class="fas fa-user-times"></i></div>
+      <div>
+        <div class="stat-number"><%= _inativos %></div>
+        <div class="stat-label">Inativos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tabela ── -->
+  <div class="card card-saas no-hover">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle table-produtos" id="tabelaClientes">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Status</th>
+              <th>CPF</th>
+              <th>Email</th>
+              <th>Telefone</th>
+              <th>Nascimento</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <% if(lista.length === 0){ %>
+              <tr>
+                <td colspan="8" class="text-center py-5">
+                  <div class="empty-table">
+                    <i class="fas fa-users"></i>
+                    <h5>Nenhum cliente cadastrado</h5>
+                    <p>Comece adicionando um novo cliente ao sistema.</p>
+                    <a href="/admin/clientes/cadastrar"
+                       class="btn btn-primary custom btn-rounded btn-sm">
+                      <i class="fas fa-plus me-1"></i>Cadastrar Cliente
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+
+            <% lista.forEach(function(c){ %>
+              <tr class="cliente-row">
+                <td><span class="id-badge">#<%= c.cliId %></span></td>
+
+                <td>
+                  <div class="nome-wrap">
+                    <span class="prod-name"><%= c.cliNome %></span>
+                    <span class="prod-desc"><%= c.cliEmail %></span>
+                  </div>
+                </td>
+
+                <td>
+                  <% if(c.cliStatus){ %>
+                    <span class="qtd-badge qtd-ok">Ativo</span>
+                  <% } else { %>
+                    <span class="qtd-badge qtd-out">Inativo</span>
+                  <% } %>
+                </td>
+
+                <td><span class="forn-id"><%= c.cliCpf %></span></td>
+
+                <td><span class="forn-id"><%= c.cliEmail %></span></td>
+
+                <td><span class="forn-id"><%= c.cliTelefone %></span></td>
+
+                <td>
+                  <span class="val-badge val-ok">
+                    <%= new Date(c.cliNascimento).toLocaleDateString('pt-BR') %>
+                  </span>
+                </td>
+
+                <td class="text-end">
+                  <div class="acoes-wrap">
+                    <button data-id="<%= c.cliId %>"
+                            class="btn btn-sm btn-action btnDetalhes"
+                            title="Ver endereço"
+                            style="background:rgba(78,128,152,.1);color:#4E8098;border-color:rgba(78,128,152,.2);">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <a href="/admin/clientes/alterar/<%= c.cliId %>"
+                       class="btn btn-sm btn-action btn-edit" title="Alterar">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button data-id="<%= c.cliId %>"
+                            class="btn btn-sm btn-action btn-delete btnExcluir"
+                            title="Excluir">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Linha de detalhes do endereço (oculta por padrão) -->
+              <tr class="detalhes" id="detalhes-<%= c.cliId %>" style="display:none;">
+                <td colspan="8">
+                  <div class="d-flex flex-wrap gap-4 px-2 py-2"
+                       style="background:#f8f9fa; border-radius:8px; font-size:.84rem;">
+                    <div><span class="text-muted">Rua:</span> <strong><%= c.endRua %></strong></div>
+                    <div><span class="text-muted">Nº:</span> <strong><%= c.endNum %></strong></div>
+                    <div><span class="text-muted">Bairro:</span> <strong><%= c.endBairro %></strong></div>
+                    <div><span class="text-muted">Cidade:</span> <strong><%= c.endCidade %></strong></div>
+                    <div><span class="text-muted">Estado:</span> <strong><%= c.endEstado %></strong></div>
+                    <div><span class="text-muted">UF:</span> <strong><%= c.endUf %></strong></div>
+                    <div><span class="text-muted">CEP:</span> <strong><%= c.endCep %></strong></div>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <% if(lista.length > 0){ %>
+    <div class="table-footer mt-2">
+      <small class="text-muted">
+        Exibindo <strong><%= lista.length %></strong>
+        cliente<%= lista.length !== 1 ? 's' : '' %>
+      </small>
+    </div>
+  <% } %>
 
 </div>
-<script>
-    document.querySelectorAll('.btnDetalhes').forEach(btn => {
-        btn.addEventListener('click', function () {
-            let id = this.getAttribute('data-id');
-            let linha = document.getElementById('detalhes-' + id);
-
-            if (linha.style.display === 'none') {
-                linha.style.display = 'table-row';
-            } else {
-                linha.style.display = 'none';
-            }
-        });
-    });
-</script>

@@ -1,39 +1,71 @@
-<form>
-
-    <label for="nome" class="form-label">Lote:</label>
-    <input type="text" class="form-control" id="nome" name="nome" required>
-
-    <label for="validade" class="form-label">Validade:</label>
-    <input type="date" class="form-control" id="validade" name="validade" required>
-
-    <label for="quantidade" class="form-label">Quantidade:</label>
-    <input type="number" class="form-control" id="quantidade" name="quantidade" min="0" required>
-
-  
-    <label for="fornecedor" class="form-label">Fornecedor:</label>
-    <select class="form-control" id="fornecedor" name="fornecedor" required>
-        <option value="">Selecione um fornecedor</option>
-        <% for(let i=0; i < fornecedores.length; i++) { %>
-            <option value="<%= fornecedores[i].id %>">
-                <%= fornecedores[i].nome %>
-            </option>
-            <% } %>
-    </select>
-
-    <label for="produto" class="form-label">Produto:</label>
-    <select class="form-control" id="produto" name="produto" multiple="multiple" required>
-        <% for(let i=0; i < produtos.length; i++) { %>
-            <option value="<%= produtos[i].id %>">
-                <%= produtos[i].nome %>
-            </option>
-            <% } %>
-    </select>
-
-    <div>
-        <button type="button" id="cadastrarLote" class="btn btn-primary">Cadastrar Lote</button>
-        <a href="/admin/produtos">Voltar</a>
-    </div>
-
-</form>
-
 <script src="/js/produtos/cadastrarLote.js"></script>
+
+<div class="p-3 p-1-25">
+  <div class="card card-saas no-hover">
+    <div class="card-body">
+      <h4 class="mb-3 admin-section-title">
+        <i class="bi bi-collection me-2"></i>Cadastrar Novo Lote
+      </h4>
+
+      <form id="formCadastrarLote">
+        <div class="row g-3">
+
+          <!-- Nome do Lote -->
+          <div class="col-md-4">
+            <label class="form-label">Nome do Lote</label>
+            <input type="text" class="form-control" id="nome" name="nome"
+                   required placeholder="Ex: LOT-2025-001">
+          </div>
+
+          <!-- Validade -->
+          <div class="col-md-4">
+            <label class="form-label">Validade</label>
+            <input type="date" class="form-control" id="validade" name="validade" required>
+          </div>
+
+          <!-- Quantidade -->
+          <div class="col-md-4">
+            <label class="form-label">Quantidade</label>
+            <input type="number" class="form-control" id="quantidade" name="quantidade"
+                   min="0" required placeholder="0">
+          </div>
+
+          <!-- Fornecedor -->
+          <div class="col-md-6">
+            <label class="form-label">Fornecedor</label>
+            <select class="form-control" id="fornecedor" name="fornecedor" required>
+              <option value="">Selecione um fornecedor</option>
+              <% fornecedores.filter(f => f.status === 'ativo').forEach(function(f){ %>
+                <option value="<%= f.id %>"><%= f.nome %></option>
+              <% }); %>
+            </select>
+          </div>
+
+          <!-- Produto(s) -->
+          <div class="col-md-6">
+            <label class="form-label">Produto(s) do Lote</label>
+            <select class="form-control" id="produto" name="produto"
+                    multiple="multiple" required style="min-height:100px;">
+              <% for(let i = 0; i < produtos.length; i++){ %>
+                <option value="<%= produtos[i].id %>"><%= produtos[i].nome %></option>
+              <% } %>
+            </select>
+            <small class="text-muted">Segure Ctrl para selecionar mais de um produto</small>
+          </div>
+
+          <!-- Botões -->
+          <div class="col-12 d-flex gap-2 mt-1">
+            <button type="button" id="cadastrarLote"
+                    class="btn btn-primary custom btn-rounded">
+              <i class="fas fa-save me-1"></i>Cadastrar Lote
+            </button>
+            <a href="/admin/produtos" class="btn btn-outline-secondary btn-rounded">
+              <i class="fas fa-arrow-left me-1"></i>Voltar
+            </a>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

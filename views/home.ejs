@@ -1,9 +1,186 @@
-<section class="dashboard-intro mb-4">
-  <h1 class="h3">Seja bem-vindo <span class="text-brand-red">Administrador!</span></h1>
-  <p class="text-muted">O que vamos fazer hoje?</p>
+<%
+/* ── Totais para os KPI cards ── */
+const _totalProdutos    = (produtos    && produtos.length)    ? produtos.length    : 0;
+const _totalServicos    = (servicos    && servicos.length)    ? servicos.length    : 0;
+const _totalClientes    = (clientes    && clientes.length)    ? clientes.length    : 0;
+const _totalFuncionarios= (funcionarios&& funcionarios.length)? funcionarios.length: 0;
+const _totalFornecedores= (fornecedores && fornecedores.length) ? fornecedores.filter(f => f.status === 'ativo').length : 0;
+
+/* ── Formata moeda BRL ── */
+function _brl(v){ return 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+%>
+
+<!-- ══════════════════════════════════════════════════════════
+     CABEÇALHO DO DASHBOARD
+══════════════════════════════════════════════════════════════ -->
+<section class="dash-header-section mb-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <h1 class="h3 mb-0">Dashboard</h1>
+      <p class="text-muted mb-0 small">Visão geral do sistema</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted small">Período:</span>
+      <div class="btn-group btn-group-sm" id="periodFilter" role="group" aria-label="Filtro de período">
+        <button type="button" class="btn btn-outline-secondary period-btn" data-period="dia">Dia</button>
+        <button type="button" class="btn btn-outline-secondary period-btn active" data-period="mes">Mês</button>
+        <button type="button" class="btn btn-outline-secondary period-btn" data-period="ano">Ano</button>
+      </div>
+    </div>
+  </div>
 </section>
 
+<!-- ══════════════════════════════════════════════════════════
+     KPI CARDS
+══════════════════════════════════════════════════════════════ -->
+<div class="dash-kpi-row mb-4">
+
+  <!-- Produtos -->
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap kpi-icon-blue"><i class="bi bi-box-seam"></i></div>
+    </div>
+    <div class="kpi-value"><%= _totalProdutos %></div>
+    <div class="kpi-label">Produtos</div>
+  </div>
+
+  <!-- Serviços -->
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap kpi-icon-red"><i class="bi bi-tools"></i></div>
+    </div>
+    <div class="kpi-value"><%= _totalServicos %></div>
+    <div class="kpi-label">Serviços</div>
+  </div>
+
+  <!-- Clientes -->
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap kpi-icon-green"><i class="bi bi-people"></i></div>
+    </div>
+    <div class="kpi-value"><%= _totalClientes %></div>
+    <div class="kpi-label">Clientes</div>
+  </div>
+
+  <!-- Funcionários -->
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap kpi-icon-yellow"><i class="bi bi-person-badge"></i></div>
+    </div>
+    <div class="kpi-value"><%= _totalFuncionarios %></div>
+    <div class="kpi-label">Funcionários</div>
+  </div>
+
+  <!-- Fornecedores -->
+  <div class="kpi-card">
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap kpi-icon-teal"><i class="bi bi-truck"></i></div>
+    </div>
+    <div class="kpi-value"><%= _totalFornecedores %></div>
+    <div class="kpi-label">Fornecedores</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRÁFICOS — LINHA 1
+══════════════════════════════════════════════════════════════ -->
+<div class="row g-3 mb-3">
+
+  <!-- ── Vendas (barra) ── -->
+  <div class="col-xl-8 col-lg-7">
+    <div class="card card-saas no-hover dash-chart-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+          <div>
+            <div class="dash-chart-title">Visão Geral de Vendas</div>
+            <div class="dash-chart-subtitle text-muted">Total de vendas por período</div>
+          </div>
+          <div class="text-end">
+            <div class="dash-chart-total" id="totalVendasLabel"><%= _brl(totalVendas) %></div>
+            <small class="text-muted"><%= vendasData.length %> transações</small>
+          </div>
+        </div>
+        <canvas id="chartVendas" style="max-height:240px"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Status dos Serviços (donut) ── -->
+  <div class="col-xl-4 col-lg-5">
+    <div class="card card-saas no-hover dash-chart-card">
+      <div class="card-body">
+        <div class="dash-chart-title mb-1">Serviços por Status</div>
+        <div class="dash-chart-subtitle text-muted mb-3">Distribuição atual</div>
+        <canvas id="chartStatus" style="max-height:210px"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRÁFICOS — LINHA 2
+══════════════════════════════════════════════════════════════ -->
+<div class="row g-3 mb-4">
+
+  <!-- ── Serviços (linha) ── -->
+  <div class="col-lg-6">
+    <div class="card card-saas no-hover dash-chart-card">
+      <div class="card-body">
+        <div class="dash-chart-title mb-1">Serviços Realizados</div>
+        <div class="dash-chart-subtitle text-muted mb-3">Receita de serviços por período</div>
+        <canvas id="chartServicos" style="max-height:210px"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Resumo Geral ── -->
+  <div class="col-lg-6">
+    <div class="card card-saas no-hover h-100">
+      <div class="card-body">
+        <div class="dash-chart-title mb-3">Resumo Geral</div>
+        <table class="dash-summary-table">
+          <tbody>
+            <tr>
+              <td><span class="dash-summary-dot" style="background:var(--clr-blue)"></span>Total de Vendas</td>
+              <td><strong id="resumoVendas"><%= _brl(totalVendas) %></strong></td>
+            </tr>
+            <tr>
+              <td><span class="dash-summary-dot" style="background:var(--clr-red)"></span>Receita de Serviços</td>
+              <td><strong><%= _brl(totalServicos) %></strong></td>
+            </tr>
+            <tr>
+              <td><span class="dash-summary-dot" style="background:var(--clr-green)"></span>Serviços Aprovados</td>
+              <td id="resumoAprovados"><strong>--</strong></td>
+            </tr>
+            <tr>
+              <td><span class="dash-summary-dot" style="background:var(--clr-yellow)"></span>Serviços Pendentes</td>
+              <td id="resumoPendentes"><strong>--</strong></td>
+            </tr>
+            <tr>
+              <td><span class="dash-summary-dot" style="background:var(--clr-red)"></span>Não Aprovados</td>
+              <td id="resumoNaoAprovados"><strong>--</strong></td>
+            </tr>
+            <tr>
+              <td><span class="dash-summary-dot" style="background:var(--clr-blue)"></span>Clientes Ativos</td>
+              <td><strong><%= _totalClientes %></strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ACESSO RÁPIDO (cards de gerenciamento)
+══════════════════════════════════════════════════════════════ -->
+<div class="dash-section-label"><i class="bi bi-grid-3x3-gap me-1"></i>Acesso Rápido</div>
+
 <div class="dashboard-grid">
+
   <!-- Serviços -->
   <div class="card card-saas">
     <div class="card-image">
@@ -16,7 +193,7 @@
           <p class="card-subtext">Controle os serviços</p>
         </div>
         <div class="text-end">
-          <div class="small-count"><%= (servicos && servicos.length) ? servicos.length : 0 %></div>
+          <div class="small-count"><%= _totalServicos %></div>
           <div class="text-muted small">Serviços</div>
         </div>
       </div>
@@ -34,12 +211,12 @@
     </div>
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start mb-2">
-        <div class="row">
+        <div>
           <h5 class="card-title">Gerenciar Produtos</h5>
-          <span class="card-subtext"> Controle os produtos cadastrados</span>
+          <p class="card-subtext">Controle os produtos cadastrados</p>
         </div>
         <div class="text-end">
-          <div class="small-count">0</div>
+          <div class="small-count"><%= _totalProdutos %></div>
           <div class="text-muted small">Produtos</div>
         </div>
       </div>
@@ -50,20 +227,20 @@
     </div>
   </div>
 
-  <!-- Usuários -->
+  <!-- Clientes -->
   <div class="card card-saas">
     <div class="card-image">
       <i class="bi bi-people fs-1 card-icon-blue"></i>
     </div>
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start mb-2">
-        <div class="row">
-          <h5 class="card-title">Gerenciar Usuários</h5>
-          <p class="card-subtext">Administre os usuários do sistema</p>
+        <div>
+          <h5 class="card-title">Gerenciar Clientes</h5>
+          <p class="card-subtext">Administre os clientes do sistema</p>
         </div>
         <div class="text-end">
-          <div class="small-count"><%= (clientes && clientes.length) ? clientes.length : 0 %></div>
-          <div class="text-muted small">Usuários</div>
+          <div class="small-count"><%= _totalClientes %></div>
+          <div class="text-muted small">Clientes</div>
         </div>
       </div>
       <div class="d-flex gap-3">
@@ -73,33 +250,10 @@
     </div>
   </div>
 
-  <!-- Compras -->
-  <div class="card card-saas">
-    <div class="card-image card-image-alt">
-      <i class="bi bi-cart fs-1 card-icon-red"></i>
-    </div>
-    <div class="card-body">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-          <h5 class="card-title">Gerenciar Compras</h5>
-          <p class="card-subtext">Controle as compras realizadas</p>
-        </div>
-        <div class="text-end">
-          <div class="small-count">0</div>
-          <div class="text-muted small">Compras</div>
-        </div>
-      </div>
-      <div class="d-flex gap-2">
-        <a href="/admin/compras" class="btn btn-danger custom btn-rounded">Gerenciar</a>
-        <a href="/admin/compras" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
-      </div>
-    </div>
-  </div>
-
   <!-- Funcionários -->
   <div class="card card-saas">
     <div class="card-image">
-      <i class="bi bi-person-badge fs-1 card-icon-blue"></i>
+      <i class="bi bi-person-badge fs-1 card-icon-yellow"></i>
     </div>
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start mb-2">
@@ -108,13 +262,13 @@
           <p class="card-subtext">Gerencie sua equipe</p>
         </div>
         <div class="text-end">
-          <div class="small-count"><%= (funcionarios && funcionarios.length) ? funcionarios.length : 0 %></div>
+          <div class="small-count"><%= _totalFuncionarios %></div>
           <div class="text-muted small">Funcionários</div>
         </div>
       </div>
       <div class="d-flex gap-2">
-        <a href="/admin/funcionarios" class="btn btn-primary custom btn-rounded">Gerenciar</a>
-        <a href="/admin/funcionarios" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
+        <a href="/admin/funcionarios/listar" class="btn btn-primary custom btn-rounded">Gerenciar</a>
+        <a href="/admin/funcionarios/listar" class="btn btn-outline-secondary btn-rounded">Ver Detalhes</a>
       </div>
     </div>
   </div>
@@ -131,7 +285,7 @@
           <p class="card-subtext">Controle seus fornecedores</p>
         </div>
         <div class="text-end">
-          <div class="small-count"><%= (fornecedores && fornecedores.length) ? fornecedores.length : 0 %></div>
+          <div class="small-count"><%= _totalFornecedores %></div>
           <div class="text-muted small">Fornecedores</div>
         </div>
       </div>
@@ -142,19 +296,16 @@
     </div>
   </div>
 
+  <!-- Pós-Venda -->
   <div class="card card-saas">
     <div class="card-image card-image-alt">
-      <i class="bi bi-truck fs-1 card-icon-red"></i>
+      <i class="bi bi-arrow-return-left fs-1 card-icon-red"></i>
     </div>
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start mb-2">
         <div>
-          <h5 class="card-title">Gerenciar Controle Produtos pós venda</h5>
-          <p class="card-subtext">Controle Pós Venda</p>
-        </div>
-        <div class="text-end">
-          <div class="small-count"><%= (fornecedores && fornecedores.length) ? fornecedores.length : 0 %></div>
-          <div class="text-muted small">Fornecedores</div>
+          <h5 class="card-title">Pós-Venda</h5>
+          <p class="card-subtext">Controle devoluções e trocas</p>
         </div>
       </div>
       <div class="d-flex gap-2">
@@ -165,3 +316,181 @@
   </div>
 
 </div>
+<!-- /.dashboard-grid -->
+
+<!-- ══════════════════════════════════════════════════════════
+     SCRIPTS DOS GRÁFICOS
+══════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  /* ── dados injetados pelo servidor ── */
+  const _vendasData   = <%- JSON.stringify(vendasData)   %>;
+  const _servicosData = <%- JSON.stringify(servicosData) %>;
+
+  let _period = 'mes';
+
+  /* ── instâncias dos gráficos ── */
+  let _chartVendas, _chartServicos, _chartStatus;
+
+  /* ── agrupa dados por período ── */
+  function groupBy(data, period, dateKey, valueKey) {
+    const groups  = {};
+    const ordered = [];
+    const now     = new Date();
+
+    // Gera rótulos de período
+    function getLabel(d) {
+      if (period === 'dia') {
+        const diff = Math.floor((now - d) / 86400000);
+        if (diff > 29) return null;
+        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      }
+      if (period === 'mes') {
+        return d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+      }
+      return String(d.getFullYear());
+    }
+
+    data.forEach(item => {
+      if (!item[dateKey]) return;
+      const d   = new Date(item[dateKey] + 'T00:00:00');
+      const key = getLabel(d);
+      if (!key) return;
+      if (!groups[key]) { groups[key] = 0; ordered.push(key); }
+      groups[key] += (item[valueKey] || 0);
+    });
+
+    // Remove duplicatas mantendo ordem
+    const seen = new Set();
+    const labels = ordered.filter(k => { if (seen.has(k)) return false; seen.add(k); return true; });
+    const values = labels.map(k => Math.round(groups[k] * 100) / 100);
+    return { labels, values };
+  }
+
+  /* ── função principal de atualização ── */
+  function updateCharts() {
+    const vd = groupBy(_vendasData,   _period, 'data', 'valorFinal');
+    const sd = groupBy(_servicosData, _period, 'data', 'preco');
+
+    /* total label */
+    const total = _vendasData.reduce((a, v) => a + v.valorFinal, 0);
+    const fmt   = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    document.getElementById('totalVendasLabel').textContent = fmt(total);
+
+    /* ── Chart Vendas (barra) ── */
+    if (_chartVendas) _chartVendas.destroy();
+    _chartVendas = new Chart(document.getElementById('chartVendas'), {
+      type: 'bar',
+      data: {
+        labels: vd.labels.length ? vd.labels : ['Sem dados'],
+        datasets: [{
+          label: 'Vendas (R$)',
+          data:  vd.values.length ? vd.values : [0],
+          backgroundColor: 'rgba(78,128,152,.75)',
+          borderColor:     'rgba(78,128,152,1)',
+          borderWidth: 1,
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => fmt(ctx.raw) } }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f4f4f4' }, ticks: { callback: v => 'R$ ' + v } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    /* ── Chart Serviços (linha) ── */
+    if (_chartServicos) _chartServicos.destroy();
+    _chartServicos = new Chart(document.getElementById('chartServicos'), {
+      type: 'line',
+      data: {
+        labels: sd.labels.length ? sd.labels : ['Sem dados'],
+        datasets: [{
+          label: 'Serviços (R$)',
+          data:  sd.values.length ? sd.values : [0],
+          backgroundColor: 'rgba(163,22,33,.1)',
+          borderColor:     'rgba(163,22,33,.85)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.45,
+          pointBackgroundColor: '#A31621',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => fmt(ctx.raw) } }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f4f4f4' }, ticks: { callback: v => 'R$ ' + v } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  /* ── Chart Status (donut) — estático ── */
+  function initStatusChart() {
+    const approved = _servicosData.filter(s => s.status === 'aprovado').length;
+    const pending  = _servicosData.filter(s => s.status === 'aguardando').length;
+    const rejected = _servicosData.filter(s => s.status === 'nao_aprovado').length;
+    const none     = _servicosData.filter(s => !s.status || s.status === '0').length;
+
+    /* atualiza resumo lateral */
+    const el = id => document.getElementById(id);
+    if (el('resumoAprovados'))   el('resumoAprovados').innerHTML   = '<strong>' + approved + '</strong>';
+    if (el('resumoPendentes'))   el('resumoPendentes').innerHTML   = '<strong>' + pending  + '</strong>';
+    if (el('resumoNaoAprovados'))el('resumoNaoAprovados').innerHTML = '<strong>' + rejected + '</strong>';
+
+    if (_chartStatus) _chartStatus.destroy();
+    _chartStatus = new Chart(document.getElementById('chartStatus'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Aprovado', 'Aguardando', 'Não Aprovado', 'Sem status'],
+        datasets: [{
+          data: [approved, pending, rejected, none],
+          backgroundColor: [
+            'rgba(45,106,79,.85)',
+            'rgba(244,211,94,.9)',
+            'rgba(163,22,33,.85)',
+            'rgba(173,181,189,.7)'
+          ],
+          borderWidth: 0,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } }
+        }
+      }
+    });
+  }
+
+  /* ── filtros de período ── */
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      _period = this.dataset.period;
+      updateCharts();
+    });
+  });
+
+  /* ── inicialização ── */
+  updateCharts();
+  initStatusChart();
+})();
+</script>

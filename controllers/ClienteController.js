@@ -5,13 +5,13 @@ const bcrypt = require('bcrypt');
 
 class ClienteController{
     async cadastrarView(req, res){
-        res.render('clientes/cadastrar');
+        res.render('clientes/cadastrar', { active: 'clientes' });
     }
 
     async listarView(req, res){
         let cliente = new ClienteModel();
         let lista = await cliente.Read();
-        res.render('clientes/listar', {lista});
+        res.render('clientes/listar', { lista, active: 'clientes' });
     }
 
     async alterarView(req, res){
@@ -19,7 +19,7 @@ class ClienteController{
         let endereco = new EnderecoModelCliente()
         cliente = await cliente.Get(req.params.id)
         endereco = await endereco.Get(cliente.cliId)
-        res.render('clientes/alterar', {cliente, endereco});
+        res.render('clientes/alterar', { cliente, endereco, active: 'clientes' });
     }
 
     async cadastrar(req, res) {

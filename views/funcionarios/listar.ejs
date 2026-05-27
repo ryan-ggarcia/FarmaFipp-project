@@ -1,73 +1,168 @@
+<link rel="stylesheet" href="/css/style-listProduto.css">
 <script src="/js/funcionarios/listar.js"></script>
-<div>
-    <h1>Lista de Funcionários</h1>
-    <div>
-        <a class="btn btn-primary" href="/admin/funcionarios/cadastrar"><i class="fas fa-plus"></i> Cadastrar Novo Funcionário</a>
-    </div>
-    <br>
-    <div>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Matrícula</th>
-                    <th>Cargo</th>
-                    <th>Nome</th>
-                    <th>Telefone</th>
-                    <th>Email</th>
-                    <th>CPF</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% lista.forEach(function(func){ %>
-                    <tr>
-                        <td><%= func.funcId %></td>
-                        <td><%= func.funcMatricula %></td>
-                        <td><%= func.funcCargo %></td>
-                        <td><%= func.funcNome %></td>
-                        <td><%= func.funcTelefone %></td>
-                        <td><%= func.funcEmail %></td>
-                        <td><%= func.funcCpf %></td>
-                        <td>
-                             <button data-id="<%= func.funcId %>" class="btn btn-info btnDetalhes">
-                    <i class="fas fa-eye"></i>
-                            </button>
-                            <a href="/admin/funcionarios/alterar/<%= func.funcId %>" class="btn btn-primary">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                            <button data-id="<%= func.funcId %>" class="btn btn-danger btnExcluir">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="detalhes" id="detalhes-<%= func.funcId %>" style="display: none;">
-                        <td colspan="10">
-                            <strong>Endereço:</strong><br>
-                            Rua: <%= func.endRua %><br>
-                            Bairro: <%= func.endBairro %><br>
-                            Cidade: <%= func.endCidade %><br>
-                            Número: <%= func.endNum %><br>
-                            Estado: <%= func.endEstado %><br>
-                            UF: <%= func.endUf %><br>
-                            CEP: <%= func.endCep %><br>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </div>
-</div>
-<script>
-    document.querySelectorAll('.btnDetalhes').forEach(btn => {
-        btn.addEventListener('click', function () {
-            let id = this.getAttribute('data-id');
-            let linha = document.getElementById('detalhes-' + id);
 
-            if (linha.style.display === 'none') {
-                linha.style.display = 'table-row';
-            } else {
-                linha.style.display = 'none';
-            }
-        });
-    });
-</script>
+<%
+const _totalFunc = lista.length;
+const _comEnd    = lista.filter(f => f.endId).length;
+const _semEnd    = lista.filter(f => !f.endId).length;
+%>
+
+<div class="p-3 p-1-25">
+
+  <!-- ── Cabeçalho ── -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <h3 class="mb-0">Funcionários cadastrados</h3>
+      <small class="text-muted">Gerencie os funcionários registrados no sistema</small>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar funcionário...">
+      </div>
+      <a class="btn btn-primary custom btn-rounded" href="/admin/funcionarios/cadastrar">
+        <i class="fas fa-plus me-2"></i>Cadastrar Funcionário
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Stat cards ── -->
+  <div class="stats-row mb-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-blue"><i class="fas fa-user-tie"></i></div>
+      <div>
+        <div class="stat-number"><%= _totalFunc %></div>
+        <div class="stat-label">Total de Funcionários</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-green"><i class="fas fa-map-marker-alt"></i></div>
+      <div>
+        <div class="stat-number"><%= _comEnd %></div>
+        <div class="stat-label">Com Endereço</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-orange"><i class="fas fa-exclamation-circle"></i></div>
+      <div>
+        <div class="stat-number"><%= _semEnd %></div>
+        <div class="stat-label">Sem Endereço</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tabela ── -->
+  <div class="card card-saas no-hover">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle table-produtos" id="tabelaFuncionarios">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Matrícula</th>
+              <th>Cargo</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>E-mail</th>
+              <th>CPF</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <% if(lista.length === 0){ %>
+              <tr>
+                <td colspan="8" class="text-center py-5">
+                  <div class="empty-table">
+                    <i class="fas fa-user-tie"></i>
+                    <h5>Nenhum funcionário cadastrado</h5>
+                    <p>Comece adicionando um novo funcionário ao sistema.</p>
+                    <a href="/admin/funcionarios/cadastrar"
+                       class="btn btn-primary custom btn-rounded btn-sm">
+                      <i class="fas fa-plus me-1"></i>Cadastrar Funcionário
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+
+            <% lista.forEach(function(func){ %>
+              <tr class="funcionario-row">
+
+                <td><span class="id-badge">#<%= func.funcId %></span></td>
+
+                <td><span class="lote-badge"><%= func.funcMatricula || '—' %></span></td>
+
+                <td><span class="cat-badge"><%= func.funcCargo || '—' %></span></td>
+
+                <td>
+                  <div class="nome-wrap">
+                    <span class="prod-name"><%= func.funcNome %></span>
+                    <span class="prod-desc"><%= func.funcEmail %></span>
+                  </div>
+                </td>
+
+                <td><span class="forn-id"><%= func.funcTelefone || '—' %></span></td>
+
+                <td><span class="forn-id"><%= func.funcEmail || '—' %></span></td>
+
+                <td><span class="forn-id"><%= func.funcCpf || '—' %></span></td>
+
+                <td class="text-end">
+                  <div class="acoes-wrap">
+                    <button data-id="<%= func.funcId %>"
+                            class="btn btn-sm btn-action btnDetalhes"
+                            title="Ver endereço"
+                            style="background:rgba(78,128,152,.1);color:#4E8098;border-color:rgba(78,128,152,.2);">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <a href="/admin/funcionarios/alterar/<%= func.funcId %>"
+                       class="btn btn-sm btn-action btn-edit" title="Alterar">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button data-id="<%= func.funcId %>"
+                            class="btn btn-sm btn-action btn-delete btnExcluir"
+                            title="Excluir">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Linha de endereço (oculta por padrão) -->
+              <tr class="detalhes" id="detalhes-<%= func.funcId %>" style="display:none;">
+                <td colspan="8">
+                  <div class="d-flex flex-wrap gap-4 px-2 py-2"
+                       style="background:#f8f9fa; border-radius:8px; font-size:.84rem;">
+                    <% if(func.endRua){ %>
+                      <div><span class="text-muted">Rua:</span> <strong><%= func.endRua %></strong></div>
+                      <div><span class="text-muted">Nº:</span> <strong><%= func.endNum || '—' %></strong></div>
+                      <div><span class="text-muted">Bairro:</span> <strong><%= func.endBairro || '—' %></strong></div>
+                      <div><span class="text-muted">Cidade:</span> <strong><%= func.endCidade || '—' %></strong></div>
+                      <div><span class="text-muted">Estado:</span> <strong><%= func.endEstado || '—' %></strong></div>
+                      <div><span class="text-muted">UF:</span> <strong><%= func.endUf || '—' %></strong></div>
+                      <div><span class="text-muted">CEP:</span> <strong><%= func.endCep || '—' %></strong></div>
+                    <% } else { %>
+                      <span class="text-muted fst-italic">Endereço não cadastrado.</span>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <% if(lista.length > 0){ %>
+    <div class="table-footer mt-2">
+      <small class="text-muted">
+        Exibindo <strong><%= lista.length %></strong>
+        funcionário<%= lista.length !== 1 ? 's' : '' %>
+      </small>
+    </div>
+  <% } %>
+
+</div>

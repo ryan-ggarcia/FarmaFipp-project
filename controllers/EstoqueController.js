@@ -7,7 +7,7 @@ class EstoqueController {
         try{
             const Estoque = new EstoqueModel();
             const estoqueList = await Estoque.ListInventory();
-            res.render('estoque/gerenciar', { estoqueList: estoqueList || [] });
+            res.render('estoque/gerenciar', { estoqueList: estoqueList || [], active: 'estoque' });
         } 
         catch (error) {
             console.error('Erro ao carregar view de gerenciamento de estoque:', error);

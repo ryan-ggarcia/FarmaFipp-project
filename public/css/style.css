@@ -191,8 +191,11 @@ body {
 .text-brand-blue { color: var(--primary-blue); }
 
 /* Ícones dentro de .card-image (home.ejs) */
-.card-icon-blue { color: var(--primary-blue); }
-.card-icon-red  { color: var(--primary-red);  }
+.card-icon-blue   { color: var(--primary-blue); }
+.card-icon-red    { color: var(--primary-red);  }
+.card-icon-green  { color: var(--clr-green);    }
+.card-icon-yellow { color: #e67e22;             }
+.card-icon-teal   { color: var(--clr-blue);     }
 
 /* Títulos de seção nos formulários admin */
 .admin-section-title {
