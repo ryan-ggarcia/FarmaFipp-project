@@ -114,11 +114,20 @@ const _inativos   = fornecedores.filter(f => f.status !== 'ativo').length;
                        class="btn btn-sm btn-action btn-edit" title="Alterar">
                       <i class="fas fa-edit"></i>
                     </a>
-                    <button data-id="<%= f.id %>"
-                            class="btn btn-sm btn-action btn-delete btnExcluir"
-                            title="Excluir">
-                      <i class="fas fa-trash"></i>
-                    </button>
+                    <% if(f.status === 'ativo'){ %>
+                      <button data-id="<%= f.id %>" data-status="inativo"
+                              class="btn btn-sm btn-action btn-delete btnToggleStatus"
+                              title="Desativar">
+                        <i class="fas fa-power-off"></i>
+                      </button>
+                    <% } else { %>
+                      <button data-id="<%= f.id %>" data-status="ativo"
+                              class="btn btn-sm btn-action btnToggleStatus"
+                              style="background:rgba(34,197,94,.1);color:#16a34a;border-color:rgba(34,197,94,.2);"
+                              title="Ativar">
+                        <i class="fas fa-check-circle"></i>
+                      </button>
+                    <% } %>
                   </div>
                 </td>
               </tr>

@@ -7,6 +7,7 @@ let ctrl = new FornecedorController();
 
 router.get('/', ctrl.listaView);
 router.delete('/delete', ctrl.delete);
+router.post('/status', ctrl.toggleStatus);
 router.get('/cadastrar', ctrl.cadastrarView);
 router.post('/cadastrar', ctrl.cadastrar);
 router.put('/alterar', ctrl.alterar);

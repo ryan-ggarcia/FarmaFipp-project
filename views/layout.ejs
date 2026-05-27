@@ -105,8 +105,11 @@ var __mpRole     = __mpUser && __mpUser.perfilId == 3 ? 'Administrador' : 'Usuá
           </span>
         </div>
         <button type="button"
-                class="btn-close btn-close-white align-self-start ms-2 flex-shrink-0"
-                data-bs-dismiss="modal" aria-label="Fechar"></button>
+                class="close align-self-start ms-2 flex-shrink-0"
+                data-dismiss="modal" aria-label="Fechar"
+                style="color:#fff;opacity:.8;font-size:1.4rem;background:none;border:none;line-height:1;">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
 
       <!-- ── Corpo ── -->
@@ -206,6 +209,17 @@ var __mpRole     = __mpUser && __mpUser.perfilId == 3 ? 'Administrador' : 'Usuá
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <!-- AdminLTE App -->
 <script src="/js/adminlte.js"></script>
+
+<!-- Inicialização explícita do modal de perfil (Bootstrap 4 + jQuery) -->
+<script>
+$(document).ready(function(){
+  $('#btnAbrirPerfil').on('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    $('#perfilModal').modal('show');
+  });
+});
+</script>
 
 </body>
 </html>

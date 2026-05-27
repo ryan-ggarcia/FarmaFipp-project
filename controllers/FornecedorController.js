@@ -28,8 +28,30 @@ class FornecedorController{
         res.render('fornecedores/alterar', { fornecedor: fornecedorModel, endereco: enderecoModel, active: 'fornecedores' });
     }
 
+    async toggleStatus(req, res){
+        const { id, status } = req.body;
+        if(!id || !status) return res.send({ ok: false, msg: 'Dados inválidos!' });
+        try {
+            const modelo = new FornecedorModel();
+            let result;
+            if(status === 'ativo'){
+                const forn = await modelo.Get(id);
+                if(!forn) return res.send({ ok: false, msg: 'Fornecedor não encontrado!' });
+                result = await modelo.AtiveFornecedor(forn.cnpj);
+            } else {
+                result = await modelo.Delete(id);
+            }
+            const msg = status === 'ativo' ? 'Fornecedor ativado com sucesso!' : 'Fornecedor desativado com sucesso!';
+            if(result) return res.send({ ok: true, msg });
+            return res.send({ ok: false, msg: 'Erro ao alterar status do fornecedor!' });
+        } catch(error){
+            console.error(error);
+            return res.send({ ok: false, msg: 'Erro interno!' });
+        }
+    }
+
     async alterar(req, res){
-        const {id, nome, telefone, cnpj} = req.body;
+        const {id, nome, telefone, cnpj, status} = req.body;
         const { rua, num, bairro, estado, cidade, cep, uf } = req.body;
 
         if(!id || !nome || !telefone || !cnpj){
@@ -77,6 +99,13 @@ class FornecedorController{
                 })
             }
 
+            /* Atualiza status se enviado */
+            if(status === 'inativo'){
+                await fornecedorModel.Delete(id);
+            } else if(status === 'ativo'){
+                await fornecedorModel.AtiveFornecedor(formatCnpj(cnpj));
+            }
+
             const enderecoModel = new EnderecoModel(0, rua, bairro, cidade, num, estado, uf, cep, null, id);
             const resultEnd = await enderecoModel.UpdateFornecedorEndereço();
 
@@ -102,8 +131,9 @@ class FornecedorController{
     }
 
     async cadastrar(req, res){
-        const { nome, telefone, cnpj } = req.body;
+        const { nome, telefone, cnpj, status } = req.body;
         const { rua, numero, bairro, estado, cidade, cep, uf } = req.body;
+        const statusFinal = (status === 'inativo') ? 'inativo' : 'ativo';
 
         // Validação dos dados do fornecedor
         if(!nome || !telefone || !cnpj){
@@ -168,7 +198,7 @@ class FornecedorController{
 
             // Variável com nome diferente para evitar conflito
             const novoFornecedor = new FornecedorModel(
-                0, nome, formatPhone(telefone), cnpjFormatado, 'ativo'
+                0, nome, formatPhone(telefone), cnpjFormatado, statusFinal
             );
             const fornecedorId = await novoFornecedor.Create();
             

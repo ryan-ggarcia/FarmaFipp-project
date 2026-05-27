@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     cargo.includes(term) || telefone.includes(term) ||
                     email.includes(term) || cpf.includes(term);
                 row.style.display = match ? '' : 'none';
-                /* oculta também a linha de detalhes ao filtrar */
                 const id = row.querySelector('.btnDetalhes')?.dataset.id;
                 if (id) {
                     const det = document.getElementById('detalhes-' + id);
@@ -30,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     /* ── Toggle de detalhes do endereço ── */
     document.querySelectorAll('.btnDetalhes').forEach(btn => {
         btn.addEventListener('click', function () {
-            const id   = this.dataset.id;
+            const id    = this.dataset.id;
             const linha = document.getElementById('detalhes-' + id);
             if (!linha) return;
             linha.style.display = (linha.style.display === 'none') ? 'table-row' : 'none';
@@ -41,20 +40,40 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.btnExcluir').forEach(btn => {
         btn.addEventListener('click', function () {
             const id = this.dataset.id;
-            if (confirm("Deseja realmente excluir este funcionário?")) {
-                fetch("/funcionarios/excluir", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id })
-                })
-                .then(r => r.json())
-                .then(dados => {
-                    alert(dados.msg);
-                    if (dados.ok) {
-                        window.location.reload();
-                    }
-                });
-            }
+            Swal.fire({
+                title: 'Excluir funcionário?',
+                text: 'Esta ação não poderá ser desfeita.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#A31621',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch("/admin/funcionarios/excluir", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ id })
+                    })
+                    .then(r => r.json())
+                    .then(dados => {
+                        if (dados.ok) {
+                            Swal.fire({
+                                title: 'Excluído!',
+                                text: dados.msg,
+                                icon: 'success',
+                                confirmButtonColor: '#A31621',
+                                timer: 1800,
+                                timerProgressBar: true,
+                                showConfirmButton: false
+                            }).then(() => window.location.reload());
+                        } else {
+                            Swal.fire({ title: 'Erro!', text: dados.msg, icon: 'error', confirmButtonColor: '#A31621' });
+                        }
+                    });
+                }
+            });
         });
     });
 

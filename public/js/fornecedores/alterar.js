@@ -1,79 +1,87 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const alter_button = document.getElementById('alterar');
 
     alter_button.addEventListener('click', alterar_fornecedor);
 
     function alterar_fornecedor() {
-        const id = document.querySelector('#id');
-        id.style.borderColor = '#ced4da';
-        const nome = document.querySelector('#nome');
-        nome.style.borderColor = '#ced4da';
-        const cnpj = document.querySelector('#cnpj');
-        cnpj.style.borderColor = '#ced4da';
+        const id       = document.querySelector('#id');
+        const nome     = document.querySelector('#nome');
+        const cnpj     = document.querySelector('#cnpj');
         const telefone = document.querySelector('#telefone');
-        telefone.style.borderColor = '#ced4da';
-        const rua = document.querySelector('#rua');
-        rua.style.borderColor = '#ced4da';
-        const numero = document.querySelector('#num');
-        numero.style.borderColor = '#ced4da';
-        const bairro = document.querySelector('#bairro');
-        bairro.style.borderColor = '#ced4da';
-        const cidade = document.querySelector('#cidade');
-        cidade.style.borderColor = '#ced4da';
-        const cep = document.querySelector('#cep');
-        cep.style.borderColor = '#ced4da';
-        const estado = document.querySelector('#estado');
-        estado.style.borderColor = '#ced4da';
-        const uf = document.querySelector('#uf');
-        uf.style.borderColor = '#ced4da';
+        const rua      = document.querySelector('#rua');
+        const numero   = document.querySelector('#num');
+        const bairro   = document.querySelector('#bairro');
+        const cidade   = document.querySelector('#cidade');
+        const cep      = document.querySelector('#cep');
+        const estado   = document.querySelector('#estado');
+        const uf       = document.querySelector('#uf');
+
+        [nome, cnpj, telefone, rua, numero, bairro, cidade, cep, estado, uf].forEach(el => {
+            if (el) el.style.borderColor = '#ced4da';
+        });
 
         let listaValid = [];
-        if(nome.value.length < 3){ listaValid.push('nome'); }
-        if(cnpj.value.length < 14){ listaValid.push('cnpj'); }
-        if(telefone.value.length < 10){ listaValid.push('telefone'); }
-        if(rua.value.length < 3){ listaValid.push('rua'); }
-        if(numero.value.length < 1){ listaValid.push('num'); }
-        if(bairro.value.length < 3){ listaValid.push('bairro'); }
-        if(cidade.value.length < 3){ listaValid.push('cidade'); }
-        if(cep.value.length < 8){ listaValid.push('cep'); }
-        if(estado.value.length < 3){ listaValid.push('estado'); }
-        if(uf.value.length < 2){ listaValid.push('uf'); }
+        if (nome.value.length < 3)      listaValid.push('nome');
+        if (cnpj.value.length < 14)     listaValid.push('cnpj');
+        if (telefone.value.length < 10) listaValid.push('telefone');
+        if (rua.value.length < 3)       listaValid.push('rua');
+        if (numero.value.length < 1)    listaValid.push('num');
+        if (bairro.value.length < 3)    listaValid.push('bairro');
+        if (cidade.value.length < 3)    listaValid.push('cidade');
+        if (cep.value.length < 8)       listaValid.push('cep');
+        if (estado.value.length < 3)    listaValid.push('estado');
+        if (uf.value.length < 2)        listaValid.push('uf');
 
-        if(listaValid.length == 0){
-            fetch('/fornecedores/alterar', {
-                method: "PUT",
-                headers:  {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    id: id.value,
-                    nome: nome.value,
-                    cnpj: cnpj.value,
-                    telefone: telefone.value,
-                    rua: rua.value,
-                    num: numero.value,
-                    bairro: bairro.value,
-                    cidade: cidade.value,
-                    cep: cep.value,
-                    estado: estado.value,
-                    uf: uf.value
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.ok) {
-                    alert(data.msg);
-                    window.location.href = '/fornecedores';
-                } else {
-                    alert(data.msg || 'Erro ao alterar fornecedor.');
-                }
+        if (listaValid.length > 0) {
+            listaValid.forEach(fieldId => {
+                const el = document.getElementById(fieldId);
+                if (el) el.style.borderColor = 'red';
             });
-        }else{
-            alert('Preencha os campos corretamente!');
-            for(let i = 0; i < listaValid.length; i++){
-            let value = document.getElementById(listaValid[i]);
-                value.style.borderColor = 'red';
-            }
+            Swal.fire({
+                title: 'Campos obrigatórios',
+                text: 'Preencha todos os campos destacados.',
+                icon: 'warning',
+                confirmButtonColor: '#A31621'
+            });
+            return;
         }
+
+        fetch('/admin/fornecedores/alterar', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: id.value,
+                nome: nome.value,
+                cnpj: cnpj.value,
+                telefone: telefone.value,
+                status: document.querySelector('#status')?.value || 'ativo',
+                rua: rua.value,
+                num: numero.value,
+                bairro: bairro.value,
+                cidade: cidade.value,
+                cep: cep.value,
+                estado: estado.value,
+                uf: uf.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) {
+                Swal.fire({
+                    title: 'Atualizado!',
+                    text: data.msg,
+                    icon: 'success',
+                    confirmButtonColor: '#A31621',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => window.location.href = '/admin/fornecedores');
+            } else {
+                Swal.fire({ title: 'Erro!', text: data.msg || 'Erro ao alterar fornecedor.', icon: 'error', confirmButtonColor: '#A31621' });
+            }
+        })
+        .catch(() => {
+            Swal.fire({ title: 'Erro!', text: 'Erro ao alterar fornecedor.', icon: 'error', confirmButtonColor: '#A31621' });
+        });
     }
 });

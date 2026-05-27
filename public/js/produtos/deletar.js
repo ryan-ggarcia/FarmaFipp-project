@@ -1,43 +1,49 @@
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener('DOMContentLoaded', function () {
 
-    var listaBtns = document.querySelectorAll(".btnExcluir");
+    document.querySelectorAll('.btnExcluir').forEach(btn => {
+        btn.addEventListener('click', excluirProduto);
+    });
 
-    for(var i = 0; i < listaBtns.length; i++) {
-        listaBtns[i].addEventListener("click", excluirProduto);
-    }
-    
 });
 
 function excluirProduto() {
-    let id = this.dataset.id;
+    const id = this.dataset.id;
 
-    if(confirm("Tem certeza que deseja excluir")) {
-        if(id != ""){
-            let data = {
-                id: id
-            };
-
-            fetch("/produtos/excluir", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
+    Swal.fire({
+        title: 'Excluir produto?',
+        text: 'Esta ação não poderá ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#A31621',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sim, excluir!',
+        cancelButtonText: 'Cancelar'
+    }).then(result => {
+        if (result.isConfirmed && id) {
+            fetch('/admin/produtos/excluir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
             })
-            .then(function(r){
-                return r.json();
-            })
-            .then(function(r){
-                if(r.ok){
-                    window.location.reload();
+            .then(r => r.json())
+            .then(data => {
+                if (data.ok) {
+                    Swal.fire({
+                        title: 'Excluído!',
+                        text: data.msg || 'Produto excluído com sucesso.',
+                        icon: 'success',
+                        confirmButtonColor: '#A31621',
+                        timer: 1800,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(() => window.location.reload());
+                } else {
+                    Swal.fire({ title: 'Erro!', text: data.msg || 'Erro ao excluir produto.', icon: 'error', confirmButtonColor: '#A31621' });
                 }
-                else{
-                    alert("Erro ao excluir produto");
-                }
             })
-            .catch(function(e){
-                console.log(e);
+            .catch(() => {
+                Swal.fire({ title: 'Erro!', text: 'Erro ao excluir produto.', icon: 'error', confirmButtonColor: '#A31621' });
             });
         }
-    }
+    });
 }

@@ -3,58 +3,70 @@ document.addEventListener('DOMContentLoaded', () => {
     cadastrarLote.addEventListener('click', cadastrarLoteProduto);
 
     function cadastrarLoteProduto() {
-        const nome = document.getElementById('nome');
-        nome.style.borderColor = '#ced4da';
-        const validade = document.getElementById('validade');
-        validade.style.borderColor = '#ced4da';
-        const quantidade = document.getElementById('quantidade');
-        quantidade.style.borderColor = '#ced4da';
-        const produtoVal = $('#produto').val();
-        // Remove style update on the hidden select, handled via select2 containers if needed.
-        const fornecedor = document.getElementById('fornecedor');
-        fornecedor.style.borderColor = '#ced4da';
-        
+        const nome      = document.getElementById('nome');
+        const validade  = document.getElementById('validade');
+        const quantidade= document.getElementById('quantidade');
+        const fornecedor= document.getElementById('fornecedor');
+        const produtoVal= $('#produto').val();
+
+        [nome, validade, quantidade, fornecedor].forEach(el => {
+            if (el) el.style.borderColor = '#ced4da';
+        });
+
         let listaValidacao = [];
-        if (nome.value == '') listaValidacao.push('nome');
-        if (validade.value == '') listaValidacao.push('validade');
-        if (quantidade.value == '' || quantidade.value < 0) listaValidacao.push('quantidade');
-        if (!produtoVal || produtoVal.length === 0) listaValidacao.push('produto');
-        if (fornecedor.value == '') listaValidacao.push('fornecedor');
-        if(listaValidacao.length == 0) {
-            fetch('/produtos/cadastrarLote',{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    nome: nome.value,
-                    validade: validade.value,
-                    quantidade: quantidade.value,
-                    produto: produtoVal,
-                    fornecedor: fornecedor.value
-                })
-            })
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                alert(data.msg);
-                if(data.ok) {
-                    window.location.href = '/produtos/';
-                }
-            }).catch(error => {
-                console.error('Erro:', error);
+        if (!nome.value)                                  listaValidacao.push('nome');
+        if (!validade.value)                              listaValidacao.push('validade');
+        if (!quantidade.value || quantidade.value < 0)   listaValidacao.push('quantidade');
+        if (!produtoVal || produtoVal.length === 0)       listaValidacao.push('produto');
+        if (!fornecedor.value)                            listaValidacao.push('fornecedor');
+
+        if (listaValidacao.length > 0) {
+            listaValidacao.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.borderColor = 'red';
             });
-        }else{
-            alert('Preencha os dados corretamente!');
-            for (let i = 0; i < listaValidacao.length; i++) {
-                let campo = document.getElementById(listaValidacao[i]);
-                campo.style.borderColor = 'red';
-            }
+            Swal.fire({
+                title: 'Campos obrigatórios',
+                text: 'Preencha todos os campos destacados.',
+                icon: 'warning',
+                confirmButtonColor: '#A31621'
+            });
+            return;
         }
+
+        fetch('/admin/produtos/cadastrarLote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nome: nome.value,
+                validade: validade.value,
+                quantidade: quantidade.value,
+                produto: produtoVal,
+                fornecedor: fornecedor.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) {
+                Swal.fire({
+                    title: 'Lote cadastrado!',
+                    text: data.msg,
+                    icon: 'success',
+                    confirmButtonColor: '#A31621',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => window.location.href = '/admin/produtos/listar');
+            } else {
+                Swal.fire({ title: 'Erro!', text: data.msg, icon: 'error', confirmButtonColor: '#A31621' });
+            }
+        })
+        .catch(() => {
+            Swal.fire({ title: 'Erro!', text: 'Erro ao cadastrar lote.', icon: 'error', confirmButtonColor: '#A31621' });
+        });
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#produto').select2({
             placeholder: 'Selecione um produto',
             width: '100%'
@@ -64,5 +76,4 @@ document.addEventListener('DOMContentLoaded', () => {
             width: '100%'
         });
     });
-
 });
