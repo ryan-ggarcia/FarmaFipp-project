@@ -70,6 +70,129 @@
 </div>
 <!-- ./wrapper -->
 
+<!-- ══════════════════════════════════════════════════════════
+     MODAL DE PERFIL — fora do .wrapper para evitar conflito
+     com o transform do pushmenu do AdminLTE
+══════════════════════════════════════════════════════════════ -->
+<%
+var __mpUser     = (typeof user !== 'undefined' && user) ? user : null;
+var __mpName     = __mpUser && __mpUser.cliNome  ? __mpUser.cliNome  : 'Admin';
+var __mpEmail    = __mpUser && __mpUser.cliEmail ? __mpUser.cliEmail : '';
+var __mpRole     = __mpUser && __mpUser.perfilId == 3 ? 'Administrador' : 'Usuário';
+%>
+<div class="modal fade" id="perfilModal" tabindex="-1"
+     aria-labelledby="perfilModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+    <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+
+      <!-- ── Banner ── -->
+      <div class="modal-perfil-banner">
+        <div class="modal-perfil-avatar-wrap">
+          <div class="modal-perfil-avatar">
+            <i class="bi bi-person-fill" style="font-size:1.6rem;color:rgba(255,255,255,.85);"></i>
+          </div>
+          <% if(__mpUser && __mpUser.cliStatus == 1){ %>
+            <span class="modal-perfil-status-dot"></span>
+          <% } %>
+        </div>
+        <div class="flex-grow-1 overflow-hidden">
+          <div class="fw-bold text-white lh-sm text-truncate"><%= __mpName %></div>
+          <div class="text-white-50 small text-truncate"><%= __mpEmail %></div>
+          <span class="badge mt-1 fw-normal small"
+                style="background:rgba(255,255,255,.2);color:#fff;">
+            <i class="bi bi-<%= (__mpUser && __mpUser.perfilId == 3) ? 'star' : 'person' %>-fill me-1"></i>
+            <%= __mpRole %>
+          </span>
+        </div>
+        <button type="button"
+                class="btn-close btn-close-white align-self-start ms-2 flex-shrink-0"
+                data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+
+      <!-- ── Corpo ── -->
+      <div class="modal-body px-4 py-3">
+        <% if(__mpUser){ %>
+          <div class="row g-2 mb-3">
+
+            <div class="col-6">
+              <div class="modal-perfil-field">
+                <div class="modal-perfil-field-label"><i class="bi bi-person me-1"></i>CPF</div>
+                <div class="modal-perfil-field-value"><%= __mpUser.cliCpf || '—' %></div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="modal-perfil-field">
+                <div class="modal-perfil-field-label"><i class="bi bi-telephone me-1"></i>Telefone</div>
+                <div class="modal-perfil-field-value"><%= __mpUser.cliTelefone || '—' %></div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="modal-perfil-field">
+                <div class="modal-perfil-field-label"><i class="bi bi-calendar me-1"></i>Nascimento</div>
+                <div class="modal-perfil-field-value">
+                  <% if(__mpUser.cliNascimento){
+                    let _d   = new Date(__mpUser.cliNascimento);
+                    let _dia = String(_d.getDate()).padStart(2,'0');
+                    let _mes = String(_d.getMonth()+1).padStart(2,'0');
+                  %>
+                    <%= _dia + '/' + _mes + '/' + _d.getFullYear() %>
+                  <% } else { %>—<% } %>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="modal-perfil-field">
+                <div class="modal-perfil-field-label"><i class="bi bi-shield-check me-1"></i>Status</div>
+                <div class="modal-perfil-field-value">
+                  <% if(__mpUser.cliStatus == 1){ %>
+                    <span class="qtd-badge qtd-ok">Ativo</span>
+                  <% } else { %>
+                    <span class="qtd-badge qtd-out">Inativo</span>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <% if(__mpUser.endRua){ %>
+          <div class="modal-perfil-address">
+            <i class="bi bi-geo-alt-fill me-2 flex-shrink-0"
+               style="color:var(--primary,#A31621);margin-top:2px;"></i>
+            <span class="small text-secondary">
+              <%= __mpUser.endRua %><% if(__mpUser.endNum){ %>, nº <%= __mpUser.endNum %><% } %>
+              <% if(__mpUser.endBairro){ %> — <%= __mpUser.endBairro %><% } %>
+              <% if(__mpUser.endCidade){ %>, <%= __mpUser.endCidade %><% } %>
+              <% if(__mpUser.endUf){ %>/<%= __mpUser.endUf %><% } %>
+            </span>
+          </div>
+          <% } %>
+
+        <% } else { %>
+          <p class="text-muted small text-center py-2">Informações do perfil indisponíveis.</p>
+        <% } %>
+      </div>
+
+      <!-- ── Rodapé ── -->
+      <div class="modal-footer border-0 px-4 pb-4 pt-0 d-flex gap-2">
+        <a href="/perfil" class="btn btn-primary custom btn-rounded btn-sm">
+          <i class="bi bi-person me-1"></i>Ver Perfil
+        </a>
+        <a href="/perfil/editar" class="btn btn-outline-secondary btn-rounded btn-sm">
+          <i class="bi bi-pencil me-1"></i>Editar
+        </a>
+        <a href="/logout" class="btn btn-outline-danger btn-rounded btn-sm ms-auto">
+          <i class="bi bi-box-arrow-right me-1"></i>Sair
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- ═══ SCRIPTS — carregados no fim do body ══════════════════ -->
 <!-- jQuery (requerido pelo AdminLTE e Select2) -->
 <script src="/js/jquery/jquery.min.js"></script>

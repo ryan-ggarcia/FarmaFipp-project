@@ -13,8 +13,7 @@ class FornecedorController{
     async listaView(req, res){
         const fornecedor = new FornecedorModel();
         const fornecedores = await fornecedor.List();
-        const fonecedoresAtivos = fornecedores.filter(f => f.status === 'ativo');
-        res.render('fornecedores/listar', { fornecedores: fonecedoresAtivos, active: 'fornecedores' });
+        res.render('fornecedores/listar', { fornecedores, active: 'fornecedores' });
     }
 
     async cadastrarView(req, res){

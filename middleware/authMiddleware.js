@@ -22,6 +22,7 @@ class AuthMiddleware{
             let usuario = new ClienteModel()
             usuario = await usuario.Get(usuarioId)
             if(usuario != null && usuario.cliStatus == 1 && usuario.perfilId == 3){
+                res.locals.user = usuario;
                 next()
             }else{
                 res.redirect("/login/")
