@@ -251,7 +251,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const loteId = this.dataset.lote || null;
 
             if(!produtoId){
-                alert('Produto não encontrado!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Produto não encontrado!',
+                    confirmButtonColor: '#A31621'
+                });
                 return;
             }
 
@@ -271,10 +276,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     cartService.addToCart(produto);
                     updateCartBadge();
 
-                    alert(`Produto "${produto.nome}" adicionado ao carrinho!`);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Adicionado!',
+                        text: `"${produto.nome}" foi adicionado ao carrinho.`,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true
+                    });
                 })
                 .catch(() => {
-                    alert('Não foi possível adicionar o produto ao carrinho.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ops!',
+                        text: 'Não foi possível adicionar o produto ao carrinho.',
+                        confirmButtonColor: '#A31621'
+                    });
                 });
         })
     })

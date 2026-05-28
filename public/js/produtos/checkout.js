@@ -179,7 +179,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function gravarPedido() {
         if(listaCarrinho.length === 0) {
-            alert("Nenhum produto adicionado ao carrinho!");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Carrinho vazio',
+                text: 'Adicione produtos antes de finalizar o pedido.',
+                confirmButtonColor: '#A31621'
+            });
             return;
         }
 
@@ -204,15 +209,33 @@ document.addEventListener("DOMContentLoaded", function() {
             return resposta.json();
         })
         .then(function(corpo) {
-            alert(corpo.msg);
             if(corpo.ok) {
-                limparCarrinho();
-                window.location.href = "/shop";
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pedido confirmado!',
+                    text: corpo.msg || 'Seu pedido foi realizado com sucesso.',
+                    confirmButtonColor: '#A31621'
+                }).then(function() {
+                    limparCarrinho();
+                    window.location.href = "/shop";
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro no pedido',
+                    text: corpo.msg || 'Não foi possível concluir o pedido.',
+                    confirmButtonColor: '#A31621'
+                });
             }
         })
         .catch(function(erro) {
             console.error("Erro ao confirmar venda:", erro);
-            alert("Não foi possível concluir a venda. Tente novamente.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Ops!',
+                text: 'Não foi possível concluir a venda. Tente novamente.',
+                confirmButtonColor: '#A31621'
+            });
         });
     }
 
