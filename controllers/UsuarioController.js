@@ -60,6 +60,14 @@ class UsuarioController {
     carrinhoView(req, res) {
         res.render("usuarioView/carrinho", { layout: "layoutPublico" });
     }
+
+    contatoView(req, res) {
+        res.render("usuarioView/contato", { layout: "layoutPublico" });
+    }
+
+    sobreView(req, res) {
+        res.render("usuarioView/sobre", { layout: "layoutPublico" });
+    }
 }
 
 module.exports = UsuarioController

@@ -1,0 +1,157 @@
+<!-- ════════════════════════════════
+     CONTATO HERO
+════════════════════════════════ -->
+<div class="shop-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="/">Início</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Contato</li>
+            </ol>
+        </nav>
+        <h1>Fale Conosco</h1>
+        <p class="subtitle">
+            <i class="bi bi-chat-dots me-1"></i>
+            Estamos aqui para ajudar. Envie sua mensagem e retornaremos em breve.
+        </p>
+    </div>
+</div>
+
+<!-- ════════════════════════════════
+     CONTEÚDO
+════════════════════════════════ -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+
+            <!-- Formulário -->
+            <div class="col-lg-7">
+                <div class="contato-card">
+                    <h4 class="contato-card-title">
+                        <i class="bi bi-envelope-paper me-2"></i>Enviar Mensagem
+                    </h4>
+                    <p class="contato-card-sub">Preencha o formulário abaixo e nossa equipe entrará em contato.</p>
+
+                    <form id="formContato">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nome completo</label>
+                                <input id="contatoNome" type="text" class="form-control" placeholder="Seu nome">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">E-mail</label>
+                                <input id="contatoEmail" type="email" class="form-control" placeholder="seu@email.com">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Telefone <span class="text-muted small">(opcional)</span></label>
+                                <input id="contatoTelefone" type="tel" class="form-control" placeholder="(18) 99999-9999">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Assunto</label>
+                                <select id="contatoAssunto" class="form-select">
+                                    <option value="">-- Selecione --</option>
+                                    <option value="duvida">Dúvida sobre produto</option>
+                                    <option value="pedido">Informações sobre pedido</option>
+                                    <option value="devolucao">Devolução / Troca</option>
+                                    <option value="sugestao">Sugestão</option>
+                                    <option value="outro">Outro</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Mensagem</label>
+                                <textarea id="contatoMensagem" class="form-control" rows="5"
+                                    placeholder="Descreva como podemos ajudar..."></textarea>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <button id="btnEnviarContato" type="button" class="btn btn-contato w-100">
+                                    <i class="bi bi-send me-2"></i>Enviar Mensagem
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Informações de contato -->
+            <div class="col-lg-4">
+                <div class="contato-info-card">
+                    <h5 class="contato-info-title">Informações de Contato</h5>
+
+                    <div class="contato-info-item">
+                        <div class="contato-info-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                        <div>
+                            <div class="contato-info-label">Endereço</div>
+                            <div class="contato-info-value">Presidente Prudente – SP</div>
+                        </div>
+                    </div>
+
+                    <div class="contato-info-item">
+                        <div class="contato-info-icon"><i class="bi bi-telephone-fill"></i></div>
+                        <div>
+                            <div class="contato-info-label">Telefone</div>
+                            <div class="contato-info-value">(18) 99999-9999</div>
+                        </div>
+                    </div>
+
+                    <div class="contato-info-item">
+                        <div class="contato-info-icon"><i class="bi bi-envelope-fill"></i></div>
+                        <div>
+                            <div class="contato-info-label">E-mail</div>
+                            <div class="contato-info-value">contato@farmafipp.com.br</div>
+                        </div>
+                    </div>
+
+                    <div class="contato-info-item">
+                        <div class="contato-info-icon"><i class="bi bi-clock-fill"></i></div>
+                        <div>
+                            <div class="contato-info-label">Horário de Atendimento</div>
+                            <div class="contato-info-value">Seg – Sex: 8h às 18h<br>Sáb: 8h às 13h</div>
+                        </div>
+                    </div>
+
+                    <hr class="contato-divider">
+
+                    <div class="contato-social">
+                        <span class="contato-info-label mb-2 d-block">Redes Sociais</span>
+                        <div class="d-flex gap-2">
+                            <a href="#" class="contato-social-btn"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="contato-social-btn"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="contato-social-btn"><i class="bi bi-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+(function () {
+    document.getElementById('btnEnviarContato').addEventListener('click', function () {
+        var nome     = document.getElementById('contatoNome').value.trim();
+        var email    = document.getElementById('contatoEmail').value.trim();
+        var assunto  = document.getElementById('contatoAssunto').value;
+        var mensagem = document.getElementById('contatoMensagem').value.trim();
+
+        if (!nome || !email || !assunto || !mensagem) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos obrigatórios',
+                text: 'Por favor, preencha todos os campos obrigatórios.',
+                confirmButtonColor: '#A31621'
+            });
+            return;
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Mensagem enviada!',
+            text: 'Em breve nossa equipe entrará em contato com você.',
+            confirmButtonColor: '#A31621'
+        }).then(function () {
+            document.getElementById('formContato').reset();
+        });
+    });
+})();
+</script>
