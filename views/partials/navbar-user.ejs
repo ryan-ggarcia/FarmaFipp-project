@@ -31,34 +31,80 @@
     <div class="collapse navbar-collapse" id="mainNav">
 
       <!-- Links de navegação -->
-      <ul class="navbar-nav me-auto gap-1 mt-3 mt-lg-0">
+      <ul class="navbar-nav me-auto gap-1 mt-3 mt-lg-0" id="mainNavLinks">
         <li class="nav-item">
-          <a class="nav-link active" href="/" aria-current="page">Início</a>
+          <a class="nav-link" href="/" data-nav-path="/" aria-current="page">Início</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/shop">Produtos</a>
+          <a class="nav-link" href="/shop" data-nav-path="/shop">Produtos</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false" data-nav-path="/categorias">
             Categorias
           </a>
           <ul class="dropdown-menu border-0 shadow-sm">
-            <li><a class="dropdown-item" href="/shop">Vitaminas</a></li>
-            <li><a class="dropdown-item" href="/shop">Dermatologia</a></li>
-            <li><a class="dropdown-item" href="/shop">Bebê &amp; Mamãe</a></li>
-            <li><a class="dropdown-item" href="/shop">Higiene Pessoal</a></li>
+            <li><a class="dropdown-item" href="/shop?categoria=vitaminas">Vitaminas</a></li>
+            <li><a class="dropdown-item" href="/shop?categoria=dermatologia">Dermatologia</a></li>
+            <li><a class="dropdown-item" href="/shop?categoria=cuidado-ocular">Cuidado Ocular</a></li>
+            <li><a class="dropdown-item" href="/shop?categoria=bebe-e-mamae">Bebê &amp; Mamãe</a></li>
+            <li><a class="dropdown-item" href="/shop?categoria=saude-cardiaca">Saúde Cardíaca</a></li>
+            <li><a class="dropdown-item" href="/shop?categoria=suplementos">Suplementos</a></li>
+            <li><a class="dropdown-item" href="/shop?categoria=higiene-pessoal">Higiene Pessoal</a></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/pos-venda/online" id="btnNavbarPosVenda">Pós-Venda</a>
+          <a class="nav-link" href="/pos-venda/online" data-nav-path="/pos-venda" id="btnNavbarPosVenda">Pós-Venda</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Contato</a>
+          <a class="nav-link" href="/contato" data-nav-path="/contato">Contato</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/logout">Sair</a>
+          <a class="nav-link" href="#" id="btnNavbarLogout">Sair</a>
         </li>
       </ul>
+
+      <script>
+        (function () {
+          // Active nav link
+          var path = window.location.pathname;
+          var links = document.querySelectorAll('#mainNavLinks [data-nav-path]');
+          links.forEach(function (link) {
+            var navPath = link.getAttribute('data-nav-path');
+            var match = navPath === '/'
+              ? path === '/'
+              : path.startsWith(navPath);
+            if (match) {
+              link.classList.add('active');
+              link.setAttribute('aria-current', 'page');
+            } else {
+              link.classList.remove('active');
+              link.removeAttribute('aria-current');
+            }
+          });
+
+          // Logout com confirmação SweetAlert
+          var btnLogout = document.getElementById('btnNavbarLogout');
+          if (btnLogout) {
+            btnLogout.addEventListener('click', function (e) {
+              e.preventDefault();
+              Swal.fire({
+                title: 'Sair da conta?',
+                text: 'Você será redirecionado para a página de login.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#A31621',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, sair',
+                cancelButtonText: 'Cancelar'
+              }).then(function (result) {
+                if (result.isConfirmed) {
+                  window.location.href = '/logout';
+                }
+              });
+            });
+          }
+        })();
+      </script>
 
       <!-- Ações desktop -->
       <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">

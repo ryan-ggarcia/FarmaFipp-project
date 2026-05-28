@@ -186,7 +186,6 @@ if (Array.isArray(produtosPromocao)) {
     <% } %>
 </div>
 
-<script src="/js/produtos/cartService.js"></script>
 <script>
 (function () {
     var grid = document.getElementById('productsGrid');
@@ -200,6 +199,26 @@ if (Array.isArray(produtosPromocao)) {
     if (!grid) return;
 
     var cards = Array.from(grid.querySelectorAll('.product-col'));
+
+    function normalizeStr(s) {
+        return (s || '').toLowerCase()
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/&/g, 'e')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    // Pré-aplica filtro de categoria vindo da URL (?categoria=vitaminas)
+    var urlCat = new URLSearchParams(window.location.search).get('categoria');
+    if (urlCat && categoryFilter) {
+        var normalizedParam = normalizeStr(urlCat);
+        for (var i = 0; i < categoryFilter.options.length; i++) {
+            if (normalizeStr(categoryFilter.options[i].value) === normalizedParam) {
+                categoryFilter.value = categoryFilter.options[i].value;
+                break;
+            }
+        }
+    }
 
     function updateCount() {
         var visible = cards.filter(function (c) { return c.style.display !== 'none'; }).length;

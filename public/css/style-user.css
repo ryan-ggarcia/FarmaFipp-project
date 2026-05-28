@@ -329,12 +329,25 @@ body {
   height: 8px;
   border-radius: 50%;
   background: rgba(255,255,255,.5);
+  border: 0;
+  box-sizing: border-box;
+  opacity: 1;
+  margin: 0 4px;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .carousel-indicators .active {
   background: var(--clr-yellow);
   width: 28px;
   border-radius: 4px;
+}
+
+.carousel-indicators {
+  margin-right: 0;
+  margin-left: 0;
+  bottom: 1rem;
+  gap: 4px;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -512,7 +525,7 @@ body {
   border-radius: var(--card-radius);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
-  transition: transform .22s, box-shadow .22s;
+  transition: var(--t-spring);
   border: none;
   position: relative;
   display: flex;
@@ -521,8 +534,8 @@ body {
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Badge de desconto */
@@ -571,16 +584,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f0f4f8, #e8f0fe);
-  padding: 1rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
+  padding: 1.5rem;
   overflow: hidden;
+  position: relative;
 }
 
 .product-card .img-wrap img {
-  max-height: 130px;
+  max-height: 100%;
   max-width: 100%;
   object-fit: contain;
-  transition: transform .25s;
+  transition: transform .3s var(--t-spring);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.08));
 }
 
 .product-card:hover .img-wrap img { transform: scale(1.05); }
@@ -637,20 +652,26 @@ body {
 /* Botão adicionar ao carrinho */
 .btn-add {
   width: 100%;
-  background: var(--primary-red);
+  background: linear-gradient(135deg, var(--clr-red), var(--clr-red-dark));
   color: #fff;
   border: none;
-  border-radius: var(--radius-sm);
-  padding: .45rem;
-  font-size: .85rem;
-  font-weight: var(--fw-semibold);
-  transition: background .18s, transform .12s;
+  border-radius: var(--radius-md);
+  padding: .55rem;
+  font-size: var(--text-sm);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition: var(--t-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
 }
 
 .btn-add:hover {
-  background: var(--clr-red-dark);
+  background: linear-gradient(135deg, var(--clr-red-deeper), var(--clr-red));
   color: #fff;
   transform: translateY(-2px);
+  box-shadow: var(--shadow-red);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -746,7 +767,7 @@ body {
   margin: 2rem 0 1rem;
 }
 
-.social-btn {
+.site-footer .social-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -756,12 +777,18 @@ body {
   background: rgba(255,255,255,.1);
   color: #fff;
   font-size: 1rem;
+  line-height: 1;
   transition: background .18s, color .18s;
   margin-right: .4rem;
   text-decoration: none;
 }
 
-.social-btn:hover {
+.site-footer .social-btn i {
+  display: block;
+  line-height: 1;
+}
+
+.site-footer .social-btn:hover {
   background: var(--primary-red);
   color: #fff;
 }

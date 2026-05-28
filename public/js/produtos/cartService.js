@@ -54,14 +54,16 @@ function CartService() {
 
     // ── Badge ───────────────────────────────────────────────
     function updateBadge() {
-        var badge = document.getElementById('cartBadgeCount');
-        if (!badge) return;
         loadCart();
         var total = cartList.reduce(function (sum, item) {
             return sum + (Number(item.quantidade) || 0);
         }, 0);
-        badge.textContent = String(total);
-        badge.style.display = total > 0 ? 'inline-block' : 'none';
+        ['cartBadgeCount', 'cartBadgeCountMobile'].forEach(function (id) {
+            var badge = document.getElementById(id);
+            if (!badge) return;
+            badge.textContent = String(total);
+            badge.style.display = total > 0 ? 'inline-block' : 'none';
+        });
     }
 
     // ── Public: addToCart ────────────────────────────────────
@@ -229,11 +231,13 @@ const cartService = CartService();
 window.cartService = cartService;
 
 function updateCartBadge() {
-    var badge = document.getElementById('cartBadgeCount');
-    if (!badge) return;
     var total = cartService.getTotalItems();
-    badge.textContent = String(total);
-    badge.style.display = total > 0 ? 'inline-block' : 'none';
+    ['cartBadgeCount', 'cartBadgeCountMobile'].forEach(function (id) {
+        var badge = document.getElementById(id);
+        if (!badge) return;
+        badge.textContent = String(total);
+        badge.style.display = total > 0 ? 'inline-block' : 'none';
+    });
 }
 window.updateCartBadge = updateCartBadge;
 

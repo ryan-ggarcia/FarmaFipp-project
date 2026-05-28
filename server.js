@@ -40,6 +40,11 @@ server.use(express.json());
 // ==============================
 server.use("/login", loginRouter);
 
+server.get("/logout", function (req, res) {
+    res.clearCookie("usuarioLogado");
+    res.redirect("/login");
+});
+
 // ==============================
 // ROTAS ADMIN (layout admin)
 // ==============================
