@@ -63,6 +63,35 @@
         </li>
       </ul>
 
+      <!-- Ações desktop -->
+      <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+        <!-- Busca — visível apenas em md+ -->
+        <div class="navbar-search d-none d-md-block">
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <input type="text"
+                 id="navbarSearchInput"
+                 placeholder="Buscar produto…"
+                 aria-label="Busca de produto">
+        </div>
+
+        <!-- Perfil -->
+        <a href="/perfil"
+           class="text-muted fs-5"
+           title="Minha Conta"
+           aria-label="Meu perfil">
+          <i class="bi bi-person-circle"></i>
+        </a>
+
+        <!-- Carrinho (desktop) -->
+        <a href="/carrinho" class="btn-cart position-relative d-none d-lg-inline-flex" aria-label="Carrinho">
+          <i class="bi bi-bag me-1"></i> Carrinho
+          <span id="cartBadgeCount"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark navbar-badge-xs">0</span>
+        </a>
+
+      </div>
+
       <script>
         (function () {
           // Active nav link
@@ -81,6 +110,27 @@
               link.removeAttribute('aria-current');
             }
           });
+
+          // Busca: Enter redireciona para /shop?busca=termo
+          // Se já estiver na shop, apenas aplica o filtro sem recarregar
+          var navSearch = document.getElementById('navbarSearchInput');
+          if (navSearch) {
+            navSearch.addEventListener('keydown', function (e) {
+              if (e.key !== 'Enter') return;
+              var term = navSearch.value.trim();
+              if (!term) return;
+              if (window.location.pathname === '/shop') {
+                var shopSearch = document.getElementById('searchInput');
+                if (shopSearch) {
+                  shopSearch.value = term;
+                  shopSearch.dispatchEvent(new Event('input'));
+                  navSearch.blur();
+                  return;
+                }
+              }
+              window.location.href = '/shop?busca=' + encodeURIComponent(term);
+            });
+          }
 
           // Logout com confirmação SweetAlert
           var btnLogout = document.getElementById('btnNavbarLogout');
@@ -106,33 +156,6 @@
         })();
       </script>
 
-      <!-- Ações desktop -->
-      <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
-
-        <!-- Busca — visível apenas em md+ -->
-        <div class="navbar-search d-none d-md-block">
-          <i class="bi bi-search" aria-hidden="true"></i>
-          <input type="text"
-                 placeholder="Buscar produto…"
-                 aria-label="Busca de produto">
-        </div>
-
-        <!-- Perfil -->
-        <a href="/perfil"
-           class="text-muted fs-5"
-           title="Minha Conta"
-           aria-label="Meu perfil">
-          <i class="bi bi-person-circle"></i>
-        </a>
-
-        <!-- Carrinho (desktop) -->
-        <a href="/carrinho" class="btn-cart position-relative d-none d-lg-inline-flex" aria-label="Carrinho">
-          <i class="bi bi-bag me-1"></i> Carrinho
-          <span id="cartBadgeCount"
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark navbar-badge-xs">0</span>
-        </a>
-
-      </div>
     </div>
     <!-- /.collapse -->
 

@@ -208,8 +208,10 @@ if (Array.isArray(produtosPromocao)) {
             .replace(/^-+|-+$/g, '');
     }
 
-    // Pré-aplica filtro de categoria vindo da URL (?categoria=vitaminas)
-    var urlCat = new URLSearchParams(window.location.search).get('categoria');
+    // Pré-aplica filtros vindos da URL
+    var urlParams = new URLSearchParams(window.location.search);
+
+    var urlCat = urlParams.get('categoria');
     if (urlCat && categoryFilter) {
         var normalizedParam = normalizeStr(urlCat);
         for (var i = 0; i < categoryFilter.options.length; i++) {
@@ -218,6 +220,11 @@ if (Array.isArray(produtosPromocao)) {
                 break;
             }
         }
+    }
+
+    var urlBusca = urlParams.get('busca');
+    if (urlBusca && searchInput) {
+        searchInput.value = urlBusca;
     }
 
     function updateCount() {
