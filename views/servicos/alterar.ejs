@@ -4,10 +4,12 @@
     <div class="card-body">
       <h4 class="mb-3 admin-section-title">Alterar de Serviços</h4>
       <form id="formAlterar">
+        <input id="id" type="hidden" value="<%= servico.getID() %>">
         <div class="row g-3">
           <div class="col-md-4">
             <label class="form-label">Data</label>
-            <input id="data" type="date" class="form-control" value="<%= servico.getDATA().toISOString().split('T')[0] %>">
+            <% const _dataServico = servico.getDATA() ? new Date(servico.getDATA()) : null; %>
+            <input id="data" type="date" class="form-control" value="<%= _dataServico && !Number.isNaN(_dataServico.getTime()) ? _dataServico.toISOString().split('T')[0] : '' %>">
           </div>
           <div class="col-md-4">
             <label class="form-label">Hora</label>
@@ -20,10 +22,10 @@
          <div class="col-md-4">
             <div class="form-group">
               <label for="tipo">Tipo</label>
-              <select name="tipo" id="tipo" class="form-control" value="<%=servico.getTIPO()%>">
+              <select name="tipo" id="tipo" class="form-control">
                 <option value="0">--Nenhum--</option>
                <% for(let i = 0; i < listaTipos.length; i++) { %>
-                   <option value="<%= listaTipos[i].id %>"><%= listaTipos[i].getNOME() %></option>
+                   <option value="<%= listaTipos[i].getID() %>" <%= String(listaTipos[i].getID()) === String(servico.getTIPO()) ? 'selected' : '' %>><%= listaTipos[i].getNOME() %></option>
                <% } %>
               </select>
             </div>
@@ -33,7 +35,7 @@
             <select id="func" class="form-control">
               <option value="0">--Nenhum--</option>
                 <%for(let i = 0; i < listaFunc.length; i++ ){%>
-                  <option value="<%=listaFunc[i].funcId%>"><%= listaFunc[i].funcNome%></option>
+                  <option value="<%=listaFunc[i].funcId%>" <%= String(listaFunc[i].funcId) === String(servico.getFUNC()) ? 'selected' : '' %>><%= listaFunc[i].funcNome%></option>
                 <%}%>
             </select>
           </div>
@@ -43,7 +45,7 @@
               <option value="0">--Nenhum--</option>
               <%if(listaCliente.length > 0){%>
                 <%for(let i = 0; i < listaCliente.length; i++ ){%>
-                  <option value="<%=listaCliente[i].cliId%>"><%= listaCliente[i].cliNome%></option>
+                  <option value="<%=listaCliente[i].cliId%>" <%= String(listaCliente[i].cliId) === String(servico.getCLIE()) ? 'selected' : '' %>><%= listaCliente[i].cliNome%></option>
                 <%}%>
               <%}%> 
                 </select>
@@ -53,15 +55,15 @@
               <label for="status">Status</label>
               <select name="status" id="status" class="form-control">
                 <option value="0">--Nenhum--</option>
-                <option value="aprovado">Aprovado</option>
-                <option value="nao_aprovado">Não Aprovado</option>
-                <option value="aguardando">Aguardando Aprovação</option>
+                <option value="aprovado" <%= String(servico.getSTATUS()) === 'aprovado' ? 'selected' : '' %>>Aprovado</option>
+                <option value="nao_aprovado" <%= String(servico.getSTATUS()) === 'nao_aprovado' ? 'selected' : '' %>>Não Aprovado</option>
+                <option value="aguardando" <%= String(servico.getSTATUS()) === 'aguardando' ? 'selected' : '' %>>Aguardando Aprovação</option>
               </select>
             </div>
           </div>
           <div class="col-12">
             <label class="form-label">Observações</label>
-            <textarea id="obs" class="form-control" rows="3" value="<%=servico.getOBS()%>"></textarea>
+            <textarea id="obs" class="form-control" rows="3"><%= servico.getOBS() || '' %></textarea>
           </div>
 
           <div class="col-12 d-flex gap-2 mt-2">

@@ -99,7 +99,7 @@ class ProdutoModel{
 
 
     async Read(){
-        const sql = `SELECT p.*, c.cat_nome, l.lot_name, l.lot_validade, l.lot_qnt, f.forn_nome
+        const sql = `SELECT p.*, c.cat_nome, l.lot_id, l.lot_name, l.lot_validade, l.lot_qnt, f.forn_nome
                     FROM produto p
                     LEFT JOIN categoria c ON p.Categoria_Produto = c.idCategoria
                     left join produto_lote pl on p.idProduto = pl.produto_idProduto

@@ -8,7 +8,12 @@ class UsuarioController {
     async produtosView(req, res) {
         try {
             const produtos = new ProdutoModel();
-            const lista = await produtos.Read();
+            const listaBruta = await produtos.Read();
+            const lista = (Array.isArray(listaBruta) ? listaBruta : []).filter((produto) => {
+                const possuiLote = produto && produto.id_lote != null;
+                const estoque = Number(produto?.quantidade || 0);
+                return possuiLote && !Number.isNaN(estoque) && estoque > 0;
+            });
 
             const categoriasMap = new Map();
             const marcasMap = new Map();

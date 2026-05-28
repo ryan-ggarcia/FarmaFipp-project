@@ -63,7 +63,6 @@ class ServicoModel{
             this.getPRECO(), 
             this.getSTATUS(), 
             this.getOBS(), 
-            this.getDESC(), 
             this.getTIPO(), 
             this.getFUNC(), 
             this.getCLIE()
@@ -91,7 +90,6 @@ class ServicoModel{
                 rows[0]["serv_preco"],
                 rows[0]["serv_status"],
                 rows[0]["serv_observacoes"],
-                rows[0]["serv_descricao"],
                 rows[0]["serv_tipo"],
                 rows[0]["funcionario_agenda"],
                 rows[0]["cliente_agenda"]
@@ -112,7 +110,6 @@ class ServicoModel{
             this.getPRECO(),
             this.getSTATUS(),
             this.getOBS(),
-            this.getDESC(),
             this.getTIPO(),
             this.getFUNC(),
             this.getCLIE(),
@@ -146,7 +143,9 @@ class ServicoModel{
         
         let sql = `
             select 
-                s.idAgendar_Servico, s.serv_data, s.serv_hora, s.serv_preco, s.serv_status, s.serv_observacoes, t.tipo_nome, f.func_nome, c.cli_nome
+                s.idAgendar_Servico, s.serv_data, s.serv_hora, s.serv_preco, s.serv_status, s.serv_observacoes,
+                s.serv_tipo, s.funcionario_agenda, s.cliente_agenda,
+                t.tipo_nome, f.func_nome, c.cli_nome
             from 
                 agendar_servico s
             inner join Tipo_Servico t on s.serv_tipo = t.tipo_id

@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     function carregarVendas(params){
-        fetch("/vendas/listar" + (params ? "?produto=" + params: ""))
+        fetch("/venda/listar" + (params ? "?produto=" + params: ""))
         .then(res =>{
             return res.json()
         })

@@ -14,9 +14,13 @@ class ServicoController {
     async cadastrarView(req, res) {
         let tipoServico = new TipoServico();
         let listaTipos = await tipoServico.listar();
-        let listaCliente = new ClienteModel()
-        listaCliente = await listaCliente.Read()
-        res.render("servicos/cadastrar", { listaTipos, listaCliente, active: 'servicos' });
+        let listaCliente = new ClienteModel();
+        let listaFunc = new FuncionarioModel();
+
+        listaCliente = await listaCliente.Read();
+        listaFunc = await listaFunc.Read();
+
+        res.render("servicos/cadastrar", { listaTipos, listaCliente, listaFunc, active: 'servicos' });
     }
 
     async alterarView(req, res) {
@@ -33,51 +37,128 @@ class ServicoController {
     }
 
     async cadastrar(req, res) {
-        console.log(req.body);
         let ok = false;
         let msg = "";
-        // Treat status as optional; default to false => 'nao aprovado'
-        let { data, hora, preco, status, obs, descricao, tipo, func, clie } = req.body;
-        if (data != "" && tipo != "" && descricao != "" && typeof status !== 'undefined' && hora != "" && preco != "" && func != "" && clie != "" && obs != "") {
-            let statusStr = typeof status === 'undefined' ? 'Aguardando' : (status ? 'Ativo' : 'Inativo');
-            let servico = new ServicoModel(0, data, tipo, statusStr, descricao);
+        let { data, hora, preco, status, obs, tipo, func, clie } = req.body;
+
+        const vazio = (v) => v === undefined || v === null || String(v).trim() === '';
+
+        const precoNum = Number(preco);
+        const horaValida = /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(hora || ''));
+        const hoje = new Date().toISOString().split('T')[0];
+        const statusNormalizado = String(status || '').toLowerCase();
+
+        const camposInvalidos = [];
+        if (vazio(data)) camposInvalidos.push('data');
+        if (vazio(hora)) camposInvalidos.push('hora');
+        if (vazio(preco)) camposInvalidos.push('preco');
+        if (vazio(obs)) camposInvalidos.push('obs');
+        if (vazio(statusNormalizado) || statusNormalizado === '0') camposInvalidos.push('status');
+        if (vazio(tipo) || String(tipo) === '0') camposInvalidos.push('tipo');
+        if (vazio(func) || String(func) === '0') camposInvalidos.push('func');
+        if (vazio(clie) || String(clie) === '0') camposInvalidos.push('clie');
+
+        if (camposInvalidos.length > 0) {
+            return res.send({ ok: false, msg: `Campos obrigatórios inválidos: ${camposInvalidos.join(', ')}.` });
+        }
+
+        if (!horaValida) {
+            return res.send({ ok: false, msg: "Hora inválida. Informe um horário entre 00:00 e 23:59." });
+        }
+
+        if (Number.isNaN(precoNum) || precoNum < 0) {
+            return res.send({ ok: false, msg: "Preço inválido. Informe um valor numérico não negativo." });
+        }
+
+        if (data < hoje) {
+            return res.send({ ok: false, msg: "Não é permitido cadastrar serviço em data anterior à atual." });
+        }
+
+        const statusMap = {
+            aprovado: 'Ativo',
+            ativo: 'Ativo',
+            aguardando: 'Aguardando',
+            inativo: 'Inativo',
+            nao_aprovado: 'Inativo'
+        };
+
+        const statusFinal = statusMap[statusNormalizado];
+
+        if (!statusFinal) {
+            return res.send({ ok: false, msg: 'Status inválido para cadastro de serviço.' });
+        }
+
+        try {
+            let servico = new ServicoModel(0, data, hora, precoNum, statusFinal, obs, Number(tipo), Number(func), Number(clie));
             let result = await servico.cadastrar();
 
             if (result) {
                 ok = true;
-            }
-            else {
+                msg = "Serviço cadastrado com sucesso!";
+            } else {
                 ok = false;
+                msg = "Erro ao cadastrar serviço no banco de dados!";
             }
-        }
-        else {
+        } catch (error) {
+            console.error('Erro ao cadastrar serviço:', error.message);
             ok = false;
-            msg = "Erro durante a validação das informações do serviço!";
-
+            msg = 'Erro ao cadastrar serviço. Verifique os dados informados.';
         }
 
-        res.send({ ok, msg })
+        res.send({ ok, msg });
     }
 
     async alterar(req, res) {
         let ok = false;
         let msg = "";
-        const statusBool = (typeof req.body.status !== 'undefined') ? (req.body.status === true || req.body.status === 'true') : false;
-        if (req.body.id != "0" && req.body.data != "" && req.body.tipo != "" && req.body.descricao != "") {
-            let servico = new ServicoModel(req.body.id, req.body.data, req.body.tipo, statusBool ? 'aprovado' : 'nao aprovado', req.body.descricao);
-            let result = await servico.atualizar();
-            if (result) {
-                ok = true;
-                msg = "Serviço alterado!";
-            }
-            else {
-                ok = false;
-                msg = "Erro ao alterar serviço no banco de dados";
-            }
+
+        const { id, data, hora, preco, status, obs, tipo, func, clie } = req.body;
+        const vazio = (v) => v === undefined || v === null || String(v).trim() === '';
+        const precoNum = Number(preco);
+        const horaValida = /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(hora || ''));
+
+        if (
+            vazio(id) || String(id) === '0' ||
+            vazio(data) ||
+            vazio(hora) ||
+            vazio(preco) ||
+            vazio(obs) ||
+            vazio(status) || String(status) === '0' ||
+            vazio(tipo) || String(tipo) === '0' ||
+            vazio(func) || String(func) === '0' ||
+            vazio(clie) || String(clie) === '0'
+        ) {
+            return res.send({ ok: false, msg: "Erro ao validar as informações do serviço!" });
+        }
+
+        if (!horaValida) {
+            return res.send({ ok: false, msg: "Hora inválida. Informe um horário entre 00:00 e 23:59." });
+        }
+
+        if (Number.isNaN(precoNum) || precoNum < 0) {
+            return res.send({ ok: false, msg: "Preço inválido. Informe um valor numérico não negativo." });
+        }
+
+        const statusMap = {
+            aprovado: 'Ativo',
+            ativo: 'Ativo',
+            aguardando: 'Aguardando',
+            inativo: 'Inativo',
+            nao_aprovado: 'Inativo'
+        };
+
+        const statusFinal = statusMap[String(status).toLowerCase()] || status;
+
+        let servico = new ServicoModel(Number(id), data, hora, precoNum, statusFinal, obs, Number(tipo), Number(func), Number(clie));
+        let result = await servico.atualizar();
+
+        if (result) {
+            ok = true;
+            msg = "Serviço alterado!";
         }
         else {
             ok = false;
-            msg = "Erro ao validar as informações do serviço!";
+            msg = "Erro ao alterar serviço no banco de dados";
         }
 
         res.send({ ok, msg });
