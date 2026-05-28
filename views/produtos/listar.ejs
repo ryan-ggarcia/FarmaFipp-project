@@ -11,9 +11,9 @@
         <i class="fas fa-search search-icon"></i>
         <input type="text" id="searchInput" class="search-input" placeholder="Buscar produto..." />
       </div>
-      <a class="btn btn-primary custom btn-rounded" href="/produtos/cadastrarLote"><i class="fas fa-plus me-2"></i>
+      <a class="btn btn-primary custom btn-rounded" href="/admin/produtos/cadastrarLote"><i class="fas fa-plus me-2"></i>
         Cadastrar Novo Lote</a>
-      <a class="btn btn-primary custom btn-rounded" href="/produtos/cadastrar"><i class="fas fa-plus me-2"></i>
+      <a class="btn btn-primary custom btn-rounded" href="/admin/produtos/cadastrar"><i class="fas fa-plus me-2"></i>
         Cadastrar Produtos</a>
     </div>
   </div>
@@ -56,7 +56,7 @@
                     <i class="fas fa-box-open"></i>
                     <h5>Nenhum produto cadastrado</h5>
                     <p>Comece adicionando um novo produto ao sistema.</p>
-                    <a href="/produtos/cadastrar" class="btn btn-primary custom btn-rounded btn-sm">
+                    <a href="/admin/produtos/cadastrar" class="btn btn-primary custom btn-rounded btn-sm">
                       <i class="fas fa-plus me-1"></i> Cadastrar Produto
                     </a>
                   </div>
@@ -165,7 +165,7 @@
                   <div class="acoes-wrap">
                     <button data-id="<%= lista[i].id%>" class="btn btn-sm btn-action btn-delete btnExcluir"
                       title="Excluir"><i class="fas fa-trash"></i></button>
-                      <a href="/produtos/alterar/<%= lista[i].id %>" class="btn btn-sm btn-action btn-edit" title="Alterar"><i class="fas fa-edit"></i></a>
+                      <a href="/admin/produtos/alterar/<%= lista[i].id %>" class="btn btn-sm btn-action btn-edit" title="Alterar"><i class="fas fa-edit"></i></a>
                   </div>
                 </td>
               </tr>

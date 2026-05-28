@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function() {
             alert(corpo.msg);
             if(corpo.ok) {
                 limparCarrinho();
-                window.location.href = "/usuario/shop";
+                window.location.href = "/shop";
             }
         })
         .catch(function(erro) {

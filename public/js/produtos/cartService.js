@@ -1,50 +1,90 @@
-function CartService(){
+/**
+ * CartService — Serviço de carrinho de compras (localStorage)
+ *
+ * Expõe uma API pública via window.cartService:
+ *   addToCart(produto), removeFromCart(id), getTotalItems(),
+ *   loadCart(), renderCart(), updateBadge()
+ */
+function CartService() {
     const CART_KEY = "cart";
 
-    function loadCart(){
-        try{
-            const data = localStorage.getItem(CART_KEY);
-            return data ? JSON.parse(data) : [];
-        }
-        catch{
-            return [];
-        }
+    // ── Estado interno ──────────────────────────────────────
+    var cartList = [];
+
+    try {
+        var stored = localStorage.getItem(CART_KEY);
+        cartList = stored ? JSON.parse(stored) : [];
+    } catch (_e) {
+        cartList = [];
     }
 
-    function saveCart(cart){
-        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    // ── Helpers ─────────────────────────────────────────────
+    function saveCart() {
+        localStorage.setItem(CART_KEY, JSON.stringify(cartList));
     }
 
-    function addToCart(produto){
-        const cart = loadCart();
-
-        const item = cart.find(item => String(item.id) === String(produto.id));
-
-        if(item){
-            item.quantidade = Number(item.quantidade || 0) + 1;
+    function loadCart() {
+        try {
+            var data = localStorage.getItem(CART_KEY);
+            cartList = data ? JSON.parse(data) : [];
+        } catch (_e) {
+            cartList = [];
         }
-        else{
-            cart.push({
+        return cartList;
+    }
+
+    function formatCurrency(value) {
+        return 'R$ ' + Number(value || 0).toFixed(2).replace('.', ',');
+    }
+
+    function getItemKey(item) {
+        var lote = item.id_lote || item.idLote || '';
+        return item.id + '::' + lote;
+    }
+
+    // ── Badge ───────────────────────────────────────────────
+    function updateBadge() {
+        var badge = document.getElementById('cartBadgeCount');
+        if (!badge) return;
+        var total = cartList.reduce(function (sum, item) {
+            return sum + (Number(item.quantidade) || 0);
+        }, 0);
+        badge.textContent = String(total);
+        badge.style.display = total > 0 ? 'inline-block' : 'none';
+    }
+
+    // ── Public: addToCart ────────────────────────────────────
+    function addToCart(produto) {
+        var existing = cartList.find(function (item) {
+            return String(item.id) === String(produto.id);
+        });
+
+        if (existing) {
+            existing.quantidade = (Number(existing.quantidade) || 0) + 1;
+        } else {
+            cartList.push({
                 id: produto.id,
                 nome: produto.nome,
                 preco: Number(produto.preco),
                 quantidade: 1,
                 descricao: produto.descricao,
-                imagem: produto.imagem
-            })
+                imagem: produto.imagem || produto.img,
+                id_lote: produto.id_lote || produto.idLote || null
+            });
         }
-        saveCart(cart);
+
+        saveCart();
+        updateBadge();
     }
 
-    function removeFromCart(id){
-        const cart = loadCart().filter(item => String(item.id) !== String(id));
-        saveCart(cart);
-        return cart;
-    }
-
-    function getItemKey(item) {
-        const lote = item.id_lote || item.idLote || '';
-        return `${item.id}::${lote}`;
+    // ── Public: removeFromCart ───────────────────────────────
+    function removeFromCart(id) {
+        cartList = cartList.filter(function (item) {
+            return String(item.id) !== String(id);
+        });
+        saveCart();
+        updateBadge();
+        return cartList;
     }
 
     function updateBadge() {
@@ -55,9 +95,21 @@ function CartService(){
         badge.style.display = total > 0 ? 'inline-block' : 'none';
     }
 
-    function getTotalItems(){
-        return loadCart().reduce((total, item) => total + (item.quantidade || 0), 0);
-    }
+    // ── Public: renderCart (modal) ──────────────────────────
+    function renderCart() {
+        var empty  = document.getElementById('cartModalEmpty');
+        var items  = document.getElementById('cartModalItems');
+        var footer = document.getElementById('cartModalFooter');
+        var body   = document.getElementById('cartModalBody');
+
+        loadCart();
+
+        if (cartList.length === 0) {
+            if (empty)  empty.classList.remove('d-none');
+            if (items)  items.classList.add('d-none');
+            if (footer) footer.classList.add('d-none');
+            return;
+        }
 
     function formatCurrency(value) {
         return Number(value || 0).toLocaleString('pt-BR', {
@@ -85,46 +137,46 @@ function CartService(){
         if (items)  items.classList.remove('d-none');
         if (footer) footer.classList.remove('d-none');
 
-        const rows = cartList.map(item => {
-            const subtotal = Number(item.preco || 0) * Number(item.quantidade || 0);
-            const imagem   = item.imagem || '/img/produtos/barra-de-imagem.png';
-            const descricao = item.descricao || 'Sem descrição';
-            const itemKey = getItemKey(item);
-            return `
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <img src="${imagem}" alt="${item.nome}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid #eee;" />
-                            <div>
-                                <div class="fw-semibold small">${item.nome}</div>
-                                <small class="text-muted">${descricao}</small>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="text-center">
-                        <div class="d-flex align-items-center justify-content-center gap-1">
-                            <button class="btn btn-sm btn-outline-secondary btn-modal-decrease" data-key="${itemKey}" type="button">-</button>
-                            <span class="px-2">${Number(item.quantidade || 0)}</span>
-                            <button class="btn btn-sm btn-outline-secondary btn-modal-increase" data-key="${itemKey}" type="button">+</button>
-                        </div>
-                    </td>
-                    <td class="text-end small">${formatCurrency(item.preco)}</td>
-                    <td class="text-end fw-semibold small">${formatCurrency(subtotal)}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-danger btn-modal-remove" data-key="${itemKey}" type="button">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>`;
+        var rows = cartList.map(function (item) {
+            var subtotal  = Number(item.preco || 0) * Number(item.quantidade || 0);
+            var imagem    = item.imagem || '/img/produtos/barra-de-imagem.png';
+            var descricao = item.descricao || 'Sem descrição';
+            var itemKey   = getItemKey(item);
+            return '' +
+                '<tr>' +
+                '    <td>' +
+                '        <div class="d-flex align-items-center gap-2">' +
+                '            <img src="' + imagem + '" alt="' + item.nome + '" style="width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid #eee;" />' +
+                '            <div>' +
+                '                <div class="fw-semibold small">' + item.nome + '</div>' +
+                '                <small class="text-muted">' + descricao + '</small>' +
+                '            </div>' +
+                '        </div>' +
+                '    </td>' +
+                '    <td class="text-center">' +
+                '        <div class="d-flex align-items-center justify-content-center gap-1">' +
+                '            <button class="btn btn-sm btn-outline-secondary btn-modal-decrease" data-key="' + itemKey + '" type="button">-</button>' +
+                '            <span class="px-2">' + Number(item.quantidade || 0) + '</span>' +
+                '            <button class="btn btn-sm btn-outline-secondary btn-modal-increase" data-key="' + itemKey + '" type="button">+</button>' +
+                '        </div>' +
+                '    </td>' +
+                '    <td class="text-end small">' + formatCurrency(item.preco) + '</td>' +
+                '    <td class="text-end fw-semibold small">' + formatCurrency(subtotal) + '</td>' +
+                '    <td class="text-end">' +
+                '        <button class="btn btn-sm btn-outline-danger btn-modal-remove" data-key="' + itemKey + '" type="button">' +
+                '            <i class="bi bi-trash"></i>' +
+                '        </button>' +
+                '    </td>' +
+                '</tr>';
         }).join('');
 
         if (body) body.innerHTML = rows;
 
-        const totalItems = cartList.reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0);
-        const totalPrice = cartList.reduce((sum, item) => sum + (Number(item.preco) * Number(item.quantidade)), 0);
+        var totalItems = cartList.reduce(function (sum, item) { return sum + (Number(item.quantidade) || 0); }, 0);
+        var totalPrice = cartList.reduce(function (sum, item) { return sum + (Number(item.preco) * Number(item.quantidade)); }, 0);
 
-        const elTotalItems = document.getElementById('cartModalTotalItems');
-        const elTotalPrice = document.getElementById('cartModalTotalPrice');
+        var elTotalItems = document.getElementById('cartModalTotalItems');
+        var elTotalPrice = document.getElementById('cartModalTotalPrice');
         if (elTotalItems) elTotalItems.textContent = String(totalItems);
         if (elTotalPrice) elTotalPrice.textContent = formatCurrency(totalPrice);
 
@@ -137,10 +189,13 @@ function CartService(){
             });
         });
 
-        document.querySelectorAll('.btn-modal-increase').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = cartList.find(item => getItemKey(item) === String(btn.dataset.key));
-                if(target) {
+        // ── Event: Increase ──
+        document.querySelectorAll('.btn-modal-increase').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = cartList.find(function (item) {
+                    return getItemKey(item) === String(btn.dataset.key);
+                });
+                if (target) {
                     target.quantidade = (Number(target.quantidade) || 0) + 1;
                     saveCart(cartList);
                     updateBadge();
@@ -149,10 +204,13 @@ function CartService(){
             });
         });
 
-        document.querySelectorAll('.btn-modal-decrease').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = cartList.find(item => getItemKey(item) === String(btn.dataset.key));
-                if(target) {
+        // ── Event: Decrease ──
+        document.querySelectorAll('.btn-modal-decrease').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = cartList.find(function (item) {
+                    return getItemKey(item) === String(btn.dataset.key);
+                });
+                if (target) {
                     target.quantidade = (Number(target.quantidade) || 0) - 1;
                     cartList = cartList.filter(item => Number(item.quantidade) > 0);
                     saveCart(cartList);
@@ -162,9 +220,10 @@ function CartService(){
             });
         });
 
-        const btnClear = document.getElementById('btnModalClearCart');
+        // ── Event: Clear cart ──
+        var btnClear = document.getElementById('btnModalClearCart');
         if (btnClear) {
-            btnClear.onclick = () => {
+            btnClear.onclick = function () {
                 cartList = [];
                 saveCart(cartList);
                 updateBadge();
@@ -187,19 +246,16 @@ const cartService = CartService();
 window.cartService = cartService;
 
 function updateCartBadge() {
-    const badge = document.getElementById('cartBadgeCount');
-    if (!badge) {
-        return;
-    }
-
-    const total = cartService.getTotalItems();
+    var badge = document.getElementById('cartBadgeCount');
+    if (!badge) return;
+    var total = cartService.getTotalItems();
     badge.textContent = String(total);
     badge.style.display = total > 0 ? 'inline-block' : 'none';
 }
 window.updateCartBadge = updateCartBadge;
 
-
-document.addEventListener('DOMContentLoaded', function(){
+// ── DOMContentLoaded: wire up add-to-cart buttons ───────────
+document.addEventListener('DOMContentLoaded', function () {
     updateCartBadge();
 
     document.querySelectorAll('.add-to-cart').forEach(btn =>{

@@ -9,7 +9,7 @@
     
     <h1>Listar Fornecedores</h1>
 
-    <button><a href="/fornecedores/cadastrar">Cadastrar Novo Fornecedor</a></button>
+    <button><a href="/admin/fornecedores/cadastrar">Cadastrar Novo Fornecedor</a></button>
 
     <table>
         <thead>
@@ -33,7 +33,7 @@
                         <td><%= fornecedor.telefone %></td>
                         </td>
                         <td>
-                            <a href="/fornecedores/alterar/<%= fornecedor.id %>" class="btn btn-primary btn-sm">Alterar</a>
+                            <a href="/admin/fornecedores/alterar/<%= fornecedor.id %>" class="btn btn-primary btn-sm">Alterar</a>
                             <button data-id="<%= fornecedor.id %>"   class="btn btn-danger btn-sm btnExcluir">Excluir</button>
                         </td>
                     </tr>
