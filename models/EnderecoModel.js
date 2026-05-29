@@ -107,9 +107,9 @@ class EnderecoModel{
     }
 
     async Create(){
-        let sql = "insert into endereco (end_rua, end_bairro, end_cidade, end_num, end_estado, end_uf, end_cep, cli_id, idFornecedor) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        let sql = "insert into endereco (end_rua, end_bairro, end_cidade, end_num, end_estado, end_uf, end_cep, idFornecedor) values (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        let values = [this.#endRua, this.#endBairro, this.#endCidade, this.#endNum, this.#endEstado, this.#endUf, this.#endCep, this.#cliId, this.#idFornecedor];
+        let values = [this.#endRua, this.#endBairro, this.#endCidade, this.#endNum, this.#endEstado, this.#endUf, this.#endCep, this.#idFornecedor];
 
         let result = await banco.ExecutaComandoLastInserted(sql, values);
 

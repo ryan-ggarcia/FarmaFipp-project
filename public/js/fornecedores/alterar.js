@@ -1,6 +1,58 @@
 document.addEventListener('DOMContentLoaded', function () {
     const alter_button = document.getElementById('alterar');
 
+    // ── Máscaras ──────────────────────────────────────────────────────────────
+    document.getElementById('cnpj').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '');
+        if (v.length > 14) v = v.slice(0, 14);
+        if (v.length > 12)      v = v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8,12)+'-'+v.slice(12);
+        else if (v.length > 8)  v = v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8);
+        else if (v.length > 5)  v = v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5);
+        else if (v.length > 2)  v = v.slice(0,2)+'.'+v.slice(2);
+        this.value = v;
+    });
+
+    document.getElementById('telefone').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 7)       v = '('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7);
+        else if (v.length > 2)  v = '('+v.slice(0,2)+') '+v.slice(2);
+        else if (v.length > 0)  v = '('+v.slice(0,2);
+        this.value = v;
+    });
+
+    document.getElementById('cep').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '');
+        if (v.length > 8) v = v.slice(0, 8);
+        if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
+        this.value = v;
+    });
+
+    // ── Busca ViaCEP no blur ──────────────────────────────────────────────────
+    document.getElementById('cep').addEventListener('blur', async function () {
+        const cep = this.value.replace(/\D/g, '');
+        if (cep.length !== 8) return;
+        const campos = ['rua', 'bairro', 'cidade', 'estado', 'uf'];
+        campos.forEach(id => { const el = document.getElementById(id); if (el) el.value = '...'; });
+        try {
+            const res  = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await res.json();
+            if (data.erro) {
+                campos.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+                Swal.fire({ title: 'CEP não encontrado!', icon: 'warning', confirmButtonColor: '#A31621' });
+                return;
+            }
+            document.getElementById('rua').value    = data.logradouro || '';
+            document.getElementById('bairro').value = data.bairro     || '';
+            document.getElementById('cidade').value = data.localidade || '';
+            document.getElementById('estado').value = data.uf         || '';
+            document.getElementById('uf').value     = data.uf         || '';
+        } catch {
+            campos.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            Swal.fire({ title: 'Erro ao consultar CEP', text: 'Tente novamente mais tarde.', icon: 'error', confirmButtonColor: '#A31621' });
+        }
+    });
+
     alter_button.addEventListener('click', alterar_fornecedor);
 
     function alterar_fornecedor() {

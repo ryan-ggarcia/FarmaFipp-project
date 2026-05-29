@@ -23,13 +23,15 @@
         <div class="col-md-4">
           <label class="form-label">CNPJ</label>
           <input type="text" id="cnpj" class="form-control" maxlength="18"
-                 value="<%= fornecedor.cnpj %>" placeholder="00.000.000/0000-00">
+                 value="<%= fornecedor.cnpj %>" placeholder="00.000.000/0000-00"
+                 autocomplete="off">
         </div>
 
         <div class="col-md-4">
           <label class="form-label">Telefone</label>
           <input type="text" id="telefone" class="form-control" maxlength="15"
-                 value="<%= fornecedor.telefone %>" placeholder="(00) 00000-0000">
+                 value="<%= fornecedor.telefone %>" placeholder="(00) 00000-0000"
+                 autocomplete="off">
         </div>
 
         <div class="col-md-4">
@@ -90,7 +92,7 @@
 
         <div class="col-md-4">
           <label class="form-label">CEP</label>
-          <input type="text" id="cep" class="form-control"
+          <input type="text" id="cep" class="form-control" maxlength="9"
                  value="<%= endereco.endCep %>" placeholder="00000-000">
         </div>
 
