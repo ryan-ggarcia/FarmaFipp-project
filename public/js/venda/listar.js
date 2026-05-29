@@ -3,6 +3,12 @@ document.addEventListener("DOMContentLoaded", function(){
     carregarVendas();
     let input = document.querySelector("#txtSearch");
     let btn = document.querySelector("#btnBuscar");
+    let btnExportar = document.querySelector("#btnExportar");
+
+    btnExportar.addEventListener("click", function(){
+        let wb = XLSX.utils.table_to_book(document.getElementById("tabelaPedidos"));
+        XLSX.writeFile(wb, "vendas.xlsx");
+    })
 
     function buscarVendas(){
         let params = input.value;
