@@ -9,6 +9,7 @@ class VendaModel{
     #quantidade
     #valorFinal
     #funcionarioId
+    #formaPagamento
 
     get id(){
         return this.#id
@@ -66,7 +67,15 @@ class VendaModel{
         this.#funcionarioId = value
     }
 
-    constructor(id, data, status, tipo, quantidade, valorFinal, funcionarioId){
+    get formaPagamento(){
+        return this.#formaPagamento
+    }
+
+    set formaPagamento(value){
+        this.#formaPagamento = value
+    }
+
+    constructor(id, data, status, tipo, quantidade, valorFinal, funcionarioId, formaPagamento = 'PIX'){
         this.id = id
         this.data = data
         this.status = status
@@ -74,14 +83,15 @@ class VendaModel{
         this.quantidade = quantidade
         this.valorFinal = valorFinal
         this.funcionarioId = funcionarioId
+        this.formaPagamento = formaPagamento
     }
 
     async RegistrarVenda(){
-        let sql = `INSERT INTO efetuar_venda 
-            (vend_dataVenda, vend_status, vend_quantidade, vend_valor, vend_valorFinal, Funcionario_EfetuarVenda) 
-            VALUES (NOW(), ?, ?, ?, ?, ?)`
+        let sql = `INSERT INTO venda_teste 
+            (ven_status, ven_forma_pagamento, ven_total) 
+            VALUES (?, ?, ?)`
 
-        let values = [this.status, this.quantidade, this.valorFinal, this.valorFinal, this.funcionarioId]
+        let values = [this.status || 'PENDENTE', this.formaPagamento || 'PIX', this.valorFinal || 0]
 
         let result = await banco.ExecutaComandoLastInserted(sql, values)
         
@@ -91,10 +101,9 @@ class VendaModel{
     }
 
     async ListarVendas(){
-        let sql = `SELECT ev.*, f.func_nome 
-                   FROM efetuar_venda ev
-                   LEFT JOIN funcionario f ON ev.Funcionario_EfetuarVenda = f.idFuncionario
-                   ORDER BY ev.idEfetuar_Venda DESC`
+        let sql = `SELECT v.id_venda, v.ven_data, v.ven_status, v.ven_total
+                   FROM venda_teste v
+                   ORDER BY v.id_venda DESC`
 
         let result = await banco.ExecutaComando(sql)
 
@@ -102,22 +111,21 @@ class VendaModel{
 
         for (let item of result){
             let venda = new VendaModel(
-                item.idEfetuar_Venda, 
-                item.vend_dataVenda, 
-                item.vend_status, 
+                item.id_venda,
+                item.ven_data,
+                item.ven_status,
                 null, 
-                item.vend_quantidade,
-                item.vend_valorFinal,
-                item.Funcionario_EfetuarVenda
+                null,
+                item.ven_total,
+                null
             )
-            venda.funcNome = item.func_nome || null
             lista.push(venda)
         }
         return lista
     }
 
     async Get(id){
-        let sql = "SELECT * FROM efetuar_venda WHERE idEfetuar_Venda = ?"
+        let sql = "SELECT * FROM venda_teste WHERE id_venda = ?"
         
         let values = [id]
 
@@ -126,13 +134,14 @@ class VendaModel{
         if(rows.length > 0){
             let item = rows[0]
             let venda = new VendaModel(
-                item.idEfetuar_Venda, 
-                item.vend_dataVenda, 
-                item.vend_status, 
+                item.id_venda,
+                item.ven_data,
+                item.ven_status,
                 null, 
-                item.vend_quantidade,
-                item.vend_valorFinal,
-                item.Funcionario_EfetuarVenda
+                null,
+                item.ven_total,
+                null,
+                item.ven_forma_pagamento
             )
             return venda
         }
@@ -140,7 +149,7 @@ class VendaModel{
     }
 
     async AtualizarVenda(){
-        let sql = "UPDATE efetuar_venda SET vend_valorFinal = ?, vend_status = ? WHERE idEfetuar_Venda = ?"
+        let sql = "UPDATE venda_teste SET ven_total = ?, ven_status = ? WHERE id_venda = ?"
 
         let values = [this.valorFinal, this.status, this.id]
 

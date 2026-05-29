@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //validação dos campos
         let listaValidacao = [];
-       if (inputData.value == "")
+        if (inputData.value == "")
             listaValidacao.push("data");
         if (inputTipo.value == "0")
             listaValidacao.push("tipo");
@@ -42,9 +42,24 @@ document.addEventListener("DOMContentLoaded", function () {
         if (selectStatus.value == "0")
             listaValidacao.push("status");
 
+        const precoNum = Number(String(inputPreco.value || '').replace(',', '.'));
+        const horaValida = /^([01]\d|2[0-3]):([0-5]\d)$/.test(inputHora.value);
+
+        if (!horaValida) {
+            inputHora.style.borderColor = 'red';
+            Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe uma hora válida entre 00:00 e 23:59.' });
+            return;
+        }
+
+        if (Number.isNaN(precoNum) || precoNum < 0) {
+            inputPreco.style.borderColor = 'red';
+            Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Informe um preço válido (não negativo).' });
+            return;
+        }
+
         if (listaValidacao.length == 0) {
             //segue com o envio dos dados para o backend
-            fetch("/servicos/cadastrar", {
+            fetch("/admin/servicos/cadastrar", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -52,10 +67,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify({
                     data: inputData.value,
                     hora: inputHora.value,
-                    preco: inputPreco.value,
+                    preco: precoNum,
                     status: selectStatus.value,
                     obs: inputObs.value,
-                    descricao: inputDescricao.value,
                     tipo: inputTipo.value,
                     func: inputFunc.value,
                     clie: inputClie.value
@@ -73,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             timer: 1500,
                             showConfirmButton: false
                         }).then(() => {
-                            window.location.href = "/servicos";
+                            window.location.href = "/admin/servicos";
                         });
                     }
                     else {

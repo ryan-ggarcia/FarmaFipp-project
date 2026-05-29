@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (listaValidacao.length === 0) {
             let observacao = document.getElementById("observacao").value;
 
-            fetch("/pos-venda/presencial", {
+            fetch("/admin/pos-venda/presencial", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        window.location.href = "/pos-venda";
+                        window.location.href = "/admin/pos-venda";
                     });
                 } else {
                     Swal.fire({ icon: 'error', title: 'Erro', text: corpo.msg });

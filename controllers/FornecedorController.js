@@ -177,6 +177,19 @@ class FornecedorController{
             const fornecedorModel = new FornecedorModel();
             const cnpjFormatado = formatCnpj(cnpj);
 
+            // Verifica se já existe fornecedor com o mesmo CNPJ
+            const fornecedoresExistentes = await fornecedorModel.ValidateByCnpj(cnpjFormatado);
+            const fornecedorAtivo = Array.isArray(fornecedoresExistentes)
+                ? fornecedoresExistentes.find(f => String(f.forn_status).toLowerCase() === 'ativo')
+                : null;
+
+            if(fornecedorAtivo){
+                return res.send({
+                    ok: false,
+                    msg: "CNPJ já cadastrado no sistema!"
+                });
+            }
+
             // Busca apenas fornecedores INATIVOS para reativação
             const fornecedoresInativos = await fornecedorModel.ValidateByCnpjInativo(cnpjFormatado);
 
@@ -227,7 +240,7 @@ class FornecedorController{
             })
 
         } catch (error) {
-            console.log("Erro ao cadastrar fornecedor:", error);
+            console.error("Erro ao cadastrar fornecedor:", error.message);
 
             if(error.code === 'ER_DUP_ENTRY'){
                 return res.send({

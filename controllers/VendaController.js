@@ -46,7 +46,8 @@ class VendaController {
                 return res.send({ ok: false, msg: 'Nenhum item enviado ao servidor!' });
             }
             let venda = new VendaModel()
-            venda.status = 'Pendente'
+            venda.status = 'PENDENTE'
+            venda.formaPagamento = 'PIX'
             let id = await venda.RegistrarVenda();
             venda.valorFinal = 0;
 
@@ -88,6 +89,7 @@ class VendaController {
                     await estoque.AddToInventory();
                     await produto.Update();
                 }
+                venda.status = 'PAGO';
                 await venda.AtualizarVenda();
                 return res.send({ ok: true, msg: 'Venda registrada com sucesso!' });
             } else {

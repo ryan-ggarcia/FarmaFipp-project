@@ -192,6 +192,20 @@ class ItemVendaModel{
         });
     }
 
+    async ListarPorVenda(idVenda) {
+        const vendaId = Number(idVenda);
+        if (Number.isNaN(vendaId) || vendaId <= 0) {
+            return [];
+        }
+
+        const sql = `SELECT id_venda_item, id_venda, id_produto, id_lote, vitem_quant, vitem_valoruni, vitem_valortotal
+                     FROM venda_item_teste
+                     WHERE id_venda = ?`;
+        const values = [vendaId];
+
+        return await banco.ExecutaComando(sql, values);
+    }
+
     toJSON(){
         return{
             vendaId: this.#id_venda,

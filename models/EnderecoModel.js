@@ -143,7 +143,7 @@ class EnderecoModel{
                 rows[0]["end_estado"],
                 rows[0]["end_uf"],
                 rows[0]["end_cep"],
-                rows[0]["cli_id"],
+                null,
                 rows[0]["idFornecedor"]);
 
             return endereco;
@@ -167,7 +167,7 @@ class EnderecoModel{
                 rows[0]["end_estado"],
                 rows[0]["end_uf"],
                 rows[0]["end_cep"],
-                rows[0]["cli_id"],
+                null,
                 rows[0]["idFornecedor"]);
 
             return endereco;
@@ -176,13 +176,9 @@ class EnderecoModel{
     }
 
     async DeleteByCliente(id){
-        let sql = "delete from endereco where cli_id = ? ";
-
-        let values = [id];
-
-        let result = await banco.ExecutaComandoNonQuery(sql, values);
-        
-        return result;
+        // A tabela `endereco` não possui relacionamento direto com cliente (coluna `cli_id`).
+        // Esse vínculo é mantido em tabelas específicas de cliente.
+        return false;
     }
     async DeleteByFornecedor(id){
         let sql = "delete from endereco where idFornecedor = ? ";
