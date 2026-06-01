@@ -95,6 +95,10 @@ class UsuarioController {
         if(!data || !hora || !tipo){
             return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
         }
+
+        if(data < new Date().toISOString().split("T")[0]){
+            return res.send({ ok: false, msg: "Insira uma data válida!" });
+        }
         
         let servico = new ServicosCliente();
         servico.serv_id = null;

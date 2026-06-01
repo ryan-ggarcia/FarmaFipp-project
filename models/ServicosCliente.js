@@ -57,7 +57,7 @@ class ServicosCliente {
     }
 
     async cadastrar(){
-        let sql = "insert into servicos_cliente (serv_data, serv_obs, serv_tipo, cliente_id) values (?,?,?,?)";
+        let sql = "insert into servicos_cliente (serv_data, serv_obs, serv_tipo, cli_id) values (?,?,?,?)";
 
         let values = [this.#serv_data, this.#serv_obs, this.#serv_tipo, this.#cliente_id];
 
@@ -80,7 +80,7 @@ class ServicosCliente {
                     row.serv_data,
                     row.serv_obs,
                     row.serv_tipo,
-                    row.cliente_id
+                    row.cli_id
                 );
                 servico.tipo_nome = row.tipo_nome;
                 lista.push(servico);
