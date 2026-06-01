@@ -1,5 +1,8 @@
 const ProdutoModel = require('../models/ProdutoModel');
 const ProdutoPromocaoModel = require('../models/ProdutoPromocaoModel');
+const TipoServicoModel = require('../models/TipoServicoModel');
+const ServicosCliente = require("../models/ServicosCliente");
+const ClienteModel = require("../models/ClienteModel");
 
 class UsuarioController {
     homeView(req, res) {
@@ -72,6 +75,36 @@ class UsuarioController {
 
     sobreView(req, res) {
         res.render("usuarioView/sobre", { layout: "layoutPublico" });
+    }
+
+    async cadastrarServicoView(req, res){
+        let tipoServico = new TipoServicoModel();
+        let listaServicos = await tipoServico.listar();
+        res.render("usuarioView/servicos", { layout: "layoutPublico", listaServicos });
+    }
+
+    async cadastrarServico(req, res){
+        let usuarioModel = new ClienteModel();
+        let usuario = await usuarioModel.Get(req.usuarioId);
+
+        let usuarioId = usuario.cliId;
+        console.log(usuarioId);
+
+        const { data, hora, tipo, obs } = req.body;
+        console.log(req.body);
+        if(!data || !hora || !tipo){
+            return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
+        }
+        
+        let servico = new ServicosCliente();
+        servico.serv_id = null;
+        servico.serv_data = new Date(`${data}T${hora}`);
+        servico.serv_obs = obs || "";
+        servico.serv_tipo = tipo;
+        servico.cliente_id = usuarioId;
+        await servico.cadastrar();
+
+        return res.send({ ok: true, msg: "Serviço cadastrado com sucesso!" });
     }
 }
 

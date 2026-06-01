@@ -9,5 +9,7 @@ router.get("/shop", controller.produtosView)
 router.get("/carrinho", controller.carrinhoView)
 router.get("/contato", controller.contatoView)
 router.get("/sobre", controller.sobreView)
+router.get("/servicos", controller.cadastrarServicoView)
+router.post("/cadastrar", controller.cadastrarServico)
 
 module.exports = router

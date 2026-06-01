@@ -176,6 +176,29 @@ class ServicoModel{
         }
         return lista;
     }
+
+    async listarServicos(){
+        let sql = "select * from agendar_servico";
+        let banco = new Database();
+
+        let rows = await banco.ExecutaComando(sql);
+
+        let lista = [];
+
+        if(rows.length > 0){
+            rows.forEach(row =>{
+                let servico = new ServicoModel(
+                    row.id,
+                    row.serv_data,
+                    row.serv_hora,
+                    row.serv_observacoes,
+                    row.serv_tipo,
+                );
+                lista.push(servico);
+            })
+        }
+        return lista;
+    }
 }
 
 module.exports = ServicoModel;

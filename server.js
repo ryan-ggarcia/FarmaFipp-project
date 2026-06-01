@@ -14,6 +14,7 @@ const EstoqueRouter = require('./routes/EstoqueRoute');
 const FuncionarioRouter = require('./routes/FuncionarioRoute');
 const DevolucaoRouter = require('./routes/DevolucaoRouter');
 
+
 // Rotas públicas e cliente
 const usuarioRouter = require("./routes/UsuarioRouter");
 const loginRouter = require('./routes/loginRouter');
