@@ -105,10 +105,48 @@ class UsuarioController {
         servico.serv_data = new Date(`${data}T${hora}`);
         servico.serv_obs = obs || "";
         servico.serv_tipo = tipo;
+        servico.serv_status = 1 // Definindo o status como ativo
         servico.cliente_id = usuarioId;
         await servico.cadastrar();
 
         return res.send({ ok: true, msg: "Serviço cadastrado com sucesso!" });
+    }
+
+    async listarServicos(req, res){
+        let usuarioModel = new ClienteModel();
+        let usuario = await usuarioModel.Get(req.usuarioId);
+
+        let usuarioId = usuario.cliId;
+
+        let servico = new ServicosCliente();
+        let listaServicos = await servico.listar();
+        let servicosUsuario = listaServicos
+            .filter(serv => {
+                const mesmoCliente = Number(serv.cliente_id) === usuarioId;
+                const status = String(serv.serv_status).toLowerCase();
+                const ativo = status === "1" || status === "ativo";
+                return mesmoCliente && ativo;
+            })
+            .sort((a, b) => new Date(a.serv_data) - new Date(b.serv_data));
+
+        res.render("usuarioView/listarServicos", { layout: "layoutPublico", listaServicos: servicosUsuario });
+    }
+
+    async excluirServico(req, res){
+        const id = req.body?.id || req.params?.id;
+
+        if(!id){
+            return res.send({ ok: false, msg: "ID do serviço é obrigatório!" });
+        }
+
+        let servico = new ServicosCliente();
+        let result = await servico.deletar(id);
+
+        if(result){
+            return res.send({ ok: true, msg: "Serviço cancelado com sucesso!" });
+        } else {
+            return res.send({ ok: false, msg: "Erro ao cancelar o serviço." });
+        }
     }
 }
 

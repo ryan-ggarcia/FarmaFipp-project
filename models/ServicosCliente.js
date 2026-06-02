@@ -6,6 +6,7 @@ class ServicosCliente {
     #serv_data
     #serv_obs
     #serv_tipo
+    #serv_status
     #cliente_id
 
     get serv_id(){
@@ -40,6 +41,14 @@ class ServicosCliente {
         this.#serv_tipo = value;
     }
 
+    get serv_status(){
+        return this.#serv_status;
+    }
+
+    set serv_status(value){
+        this.#serv_status = value;
+    }
+
     get cliente_id(){
         return this.#cliente_id;
     }
@@ -48,18 +57,19 @@ class ServicosCliente {
         this.#cliente_id = value;
     }
 
-    constructor(serv_id, serv_data, serv_obs, serv_tipo, cliente_id){
+    constructor(serv_id, serv_data, serv_obs, serv_tipo, serv_status, cliente_id){
         this.#serv_id = serv_id;
         this.#serv_data = serv_data;
         this.#serv_obs = serv_obs;
         this.#serv_tipo = serv_tipo;
+        this.#serv_status = serv_status;
         this.#cliente_id = cliente_id;
     }
 
     async cadastrar(){
-        let sql = "insert into servicos_cliente (serv_data, serv_obs, serv_tipo, cli_id) values (?,?,?,?)";
+        let sql = "insert into servicos_cliente (serv_data, serv_obs, serv_tipo, serv_status, cli_id) values (?,?,?,?,?)";
 
-        let values = [this.#serv_data, this.#serv_obs, this.#serv_tipo, this.#cliente_id];
+        let values = [this.#serv_data, this.#serv_obs, this.#serv_tipo, this.#serv_status, this.#cliente_id];
 
         let result = await banco.ExecutaComandoLastInserted(sql, values);
 
@@ -67,7 +77,7 @@ class ServicosCliente {
     }
 
     async listar(){
-        let sql = "select * from servicos_cliente sc inner join tipo_servico ts on sc.serv_tipo = ts.idTipo_Servico";
+        let sql = "select * from servicos_cliente sc inner join Tipo_Servico ts on sc.serv_tipo = ts.tipo_id";
 
         let rows = await banco.ExecutaComando(sql);
 
@@ -80,6 +90,7 @@ class ServicosCliente {
                     row.serv_data,
                     row.serv_obs,
                     row.serv_tipo,
+                    row.serv_status,
                     row.cli_id
                 );
                 servico.tipo_nome = row.tipo_nome;
@@ -87,6 +98,16 @@ class ServicosCliente {
             });
         }
         return lista;
+    }
+
+    async deletar(id){
+        let sql = "update servicos_cliente set serv_status = 'Inativo' where serv_id = ?";
+
+        let values = [id];
+
+        let result = await banco.ExecutaComando(sql, values);
+
+        return result;
     }
 }
 
