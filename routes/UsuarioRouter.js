@@ -13,5 +13,7 @@ router.get("/servicos", controller.cadastrarServicoView)
 router.get("/servicos/listar", controller.listarServicos)
 router.post("/servicos/cadastrar", controller.cadastrarServico)
 router.post("/servicos/cancelar/:id", controller.excluirServico)
+router.get("/servicos/alterar/:id", controller.alterarView)
+router.post("/servicos/alterar/:id", controller.alterarServico)
 
 module.exports = router

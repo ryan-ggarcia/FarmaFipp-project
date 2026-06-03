@@ -1,0 +1,63 @@
+<%
+const servico = lista || {};
+const tiposServico = Array.isArray(tipos) ? tipos : [];
+
+function formatDateInput(value) {
+	if (!value) return "";
+	const data = new Date(value);
+	if (Number.isNaN(data.getTime())) return "";
+	return data.toISOString().slice(0, 10);
+}
+
+function formatTimeInput(value) {
+	if (!value) return "";
+	const data = new Date(value);
+	if (Number.isNaN(data.getTime())) return "";
+	return data.toTimeString().slice(0, 5);
+}
+%>
+
+<div class="container py-4 py-md-5">
+	<div class="row justify-content-center">
+		<div class="col-12 col-lg-9">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4 p-md-5">
+					<h1 class="h3 mb-4">Alterar Serviço</h1>
+					<input type="hidden" id="servId" value="<%= servico.serv_id || '' %>">
+
+					<div class="row g-3">
+						<div class="col-12 col-md-6">
+							<label for="data" class="form-label">Data</label>
+							<input type="date" class="form-control" id="data" name="data" required value="<%= formatDateInput(servico.serv_data) %>">
+						</div>
+
+						<div class="col-12 col-md-6">
+							<label for="hora" class="form-label">Hora</label>
+							<input type="time" class="form-control" id="hora" name="hora" required value="<%= formatTimeInput(servico.serv_data) %>">
+						</div>
+
+						<div class="col-12 col-md-6">
+							<label for="tipo" class="form-label">Tipo de serviço</label>
+                            <select class="form-select" id="tipo" name="tipo" required>
+                                <option value="">Selecione o tipo de serviço</option>
+								<% tiposServico.forEach(tipo => { %>
+									<option value="<%= tipo.getID() %>" <%= Number(tipo.getID()) === Number(servico.serv_tipo) ? "selected" : "" %>><%= tipo.getNOME() %></option>
+                                <% }) %>
+                            </select>
+						</div>
+
+						<div class="col-12">
+							<label for="obs" class="form-label">Observações</label>
+							<textarea class="form-control" id="obs" name="obs" rows="4" required><%= servico.serv_obs || "" %></textarea>
+							<small class="form-text text-muted" style="color: red;">A cada serviço é adiconado uma taxa de mão de obra de R$ 7,00.</small>
+						</div>
+                        <div>
+                            <button class="btn btn-primary" id="btnAlterar">Alterar</button>
+                        </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="/js/clientes/alterarServico.js"></script>

@@ -65,7 +65,7 @@ function mapearStatus(status) {
 											<span class="badge <%= status.classe %>"><%= status.texto %></span>
 										</td>
                                         <td class="text-center">
-                                            <a href="/servicos/editar/<%= servico.serv_id %>" class="btn btn-sm btn-outline-primary">Editar</a>
+                                            <a href="/servicos/alterar/<%= servico.serv_id %>" class="btn btn-sm btn-outline-primary">Editar</a>
                                             <button data-id="<%= servico.serv_id %>" class="btn btn-sm btn-outline-danger btnExcluir">Cancelar</button>
                                         </td>
 									</tr>

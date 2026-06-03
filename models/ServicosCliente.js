@@ -109,6 +109,40 @@ class ServicosCliente {
 
         return result;
     }
+
+    async update (id){
+            let sql = "update servicos_cliente set serv_data = ?, serv_obs = ?, serv_tipo = ? where serv_id = ?";
+
+            let values = [this.#serv_data, this.#serv_obs, this.#serv_tipo, id];
+
+            let result = await banco.ExecutaComando(sql, values);
+
+            return result;
+    }
+
+    async get(id){
+        let sql = "select * from servicos_cliente where serv_id = ?";
+
+        let values = [id];
+
+        let rows = await banco.ExecutaComando(sql, values);
+        let lista = [];
+
+        if(rows.length > 0){
+            for(let row of rows){
+                let servico = new ServicosCliente(
+                    row.serv_id,
+                    row.serv_data,
+                    row.serv_obs,
+                    row.serv_tipo,
+                    row.serv_status,
+                    row.cli_id
+                );
+                lista.push(servico);
+            }
+        }
+        return lista;
+    }
 }
 
 module.exports = ServicosCliente;

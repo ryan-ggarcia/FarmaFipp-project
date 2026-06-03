@@ -148,6 +148,51 @@ class UsuarioController {
             return res.send({ ok: false, msg: "Erro ao cancelar o serviço." });
         }
     }
+
+    async alterarView(req, res){
+        let servico = new ServicosCliente();
+        let lista = await servico.get(req.params.id);
+        let servicoSelecionado = Array.isArray(lista) ? lista[0] : null;
+
+        if(!servicoSelecionado){
+            return res.redirect("/servicos/listar");
+        }
+
+        let tipoServico = new TipoServicoModel();
+        let tipos = await tipoServico.listar();
+
+        res.render("usuarioView/alterarServico", {
+            layout: "layoutPublico",
+            lista: servicoSelecionado,
+            tipos
+        });
+    }
+
+    async alterarServico(req, res){
+        const id = req.params?.id || req.body?.id;
+        const { data, hora, tipo, obs, status } = req.body;
+
+        if(!id){
+            return res.send({ ok: false, msg: "ID do serviço é obrigatório!" });
+        }
+
+        if(!data || !hora || !tipo){
+            return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
+        }
+
+        if(data < new Date().toISOString().split("T")[0]){
+            return res.send({ ok: false, msg: "Insira uma data válida!" });
+        }
+
+        let servico = new ServicosCliente(id, new Date(`${data}T${hora}`), obs || "", tipo, status || "Ativo", null);
+        let result = await servico.update(id);
+
+        if(result){
+            return res.send({ ok: true, msg: "Serviço alterado com sucesso!" });
+        } else {
+            return res.send({ ok: false, msg: "Erro ao alterar o serviço." });
+        }
+    }
 }
 
 module.exports = UsuarioController
