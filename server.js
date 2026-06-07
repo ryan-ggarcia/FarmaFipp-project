@@ -13,6 +13,7 @@ const ProdutoRouter = require('./routes/ProdutoRouter');
 const EstoqueRouter = require('./routes/EstoqueRoute');
 const FuncionarioRouter = require('./routes/FuncionarioRoute');
 const DevolucaoRouter = require('./routes/DevolucaoRouter');
+const PromocaoRouter = require('./routes/PromocaoRouter');
 
 // Rotas públicas e cliente
 const usuarioRouter = require("./routes/UsuarioRouter");
@@ -55,6 +56,7 @@ server.use("/admin/fornecedores", middleware.validarAdmin, FornecedorRouter);
 server.use("/admin/funcionarios", middleware.validarAdmin, FuncionarioRouter);
 server.use("/admin/estoque", middleware.validarAdmin, EstoqueRouter);
 server.use("/admin/pos-venda", middleware.validarAdmin, DevolucaoRouter);
+server.use("/admin/promocoes", middleware.validarAdmin, PromocaoRouter);
 server.use("/admin", middleware.validarAdmin, homeRouter);
 
 // ==============================

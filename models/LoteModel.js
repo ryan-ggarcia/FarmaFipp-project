@@ -24,33 +24,53 @@ class LoteModel {
         this.#lot_name = lot_name;
     }
 
-    async #CreateRelationWithProduto(id) {
+    async #CreateRelationWithProduto(id, transactionConnection = null) {
         const banco = new Database();
-        let prod_ids = Array.isArray(this.#prod_id) ? this.#prod_id : [this.#prod_id];
+        let raw_prod_ids = Array.isArray(this.#prod_id) ? this.#prod_id : [this.#prod_id];
+        let prod_ids = [...new Set(raw_prod_ids.map(String))];
         
         for (let prod of prod_ids) {
-            const sql = 'insert into produto_lote (produto_idProduto, lote_lot_id) values (?, ?)';
+            const sql = 'insert ignore into produto_lote (produto_idProduto, lote_lot_id) values (?, ?)';
             const values = [prod, id];
-            let result = await banco.ExecutaComandoNonQuery(sql, values);
+            let result;
+            if(transactionConnection){
+                result = await banco.ExecutaComandoNonQueryTransacao(sql, values, transactionConnection);
+            } else {
+                result = await banco.ExecutaComandoNonQuery(sql, values);
+            }
             if (!result) return false;
         }
         return true;
     }
-    async #CreateRelationWithFornecedor(id) {
+    async #CreateRelationWithFornecedor(id, transactionConnection = null) {
         const sql = 'insert into fornecedor_lote (idFornecedor, lot_id) values (?, ?)';
         const values = [this.#forn_id, id];
         const banco = new Database();
-        let result =  await banco.ExecutaComandoNonQuery(sql, values);   
+        let result;
+        if(transactionConnection){
+            result = await banco.ExecutaComandoNonQueryTransacao(sql, values, transactionConnection);
+        } else {
+            result = await banco.ExecutaComandoNonQuery(sql, values);
+        }
         return result;
     }
 
-    async Create() {
+    async Create(transactionConnection = null) {
+        const firstProdId = Array.isArray(this.#prod_id) ? this.#prod_id[0] : this.#prod_id;
         const sql = 'insert into Lote (lot_qnt, lot_name, lot_validade, prod_id) values (?, ?, ?, ?)';
-        const values = [this.#quantidade, this.#lot_name, this.#validade, this.#prod_id];
+        const values = [this.#quantidade, this.#lot_name, this.#validade, firstProdId];
         const banco = new Database();
-        let result =  await banco.ExecutaComandoLastInserted(sql, values);
-        let relationProduto = await this.#CreateRelationWithProduto(result);
-        let relationFornecedor = await this.#CreateRelationWithFornecedor(result);
+        
+        let result;
+        if(transactionConnection){
+            result = await banco.ExecutaComandoLastInsertedTransacao(sql, values, transactionConnection);
+        } else {
+            result = await banco.ExecutaComandoLastInserted(sql, values);
+        }
+        
+        let relationProduto = await this.#CreateRelationWithProduto(result, transactionConnection);
+        let relationFornecedor = await this.#CreateRelationWithFornecedor(result, transactionConnection);
+        
         if(!relationProduto || !relationFornecedor) {
             return 'Erro ao criar as relações do lote!';
         }

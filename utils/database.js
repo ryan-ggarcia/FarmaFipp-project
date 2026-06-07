@@ -6,7 +6,7 @@ class Database {
 
     #conexao;
 
-    get conexao() { return this.#conexao;} set conexao(conexao) { this.#conexao = conexao; }
+    get conexao() { return this.#conexao; } set conexao(conexao) { this.#conexao = conexao; }
 
     constructor() {
 
@@ -22,23 +22,23 @@ class Database {
 
     ExecutaComando(sql, valores) {
         var cnn = this.#conexao;
-        return new Promise(function(res, rej) {
+        return new Promise(function (res, rej) {
             cnn.query(sql, valores, function (error, results, fields) {
-                if (error) 
+                if (error)
                     rej(error);
-                else 
+                else
                     res(results);
             });
         })
     }
-    
+
     ExecutaComandoNonQuery(sql, valores) {
         var cnn = this.#conexao;
-        return new Promise(function(res, rej) {
+        return new Promise(function (res, rej) {
             cnn.query(sql, valores, function (error, results, fields) {
-                if (error) 
+                if (error)
                     rej(error);
-                else 
+                else
                     res(results.affectedRows > 0);
             });
         })
@@ -46,18 +46,84 @@ class Database {
 
     ExecutaComandoLastInserted(sql, valores) {
         var cnn = this.#conexao;
-        return new Promise(function(res, rej) {
+        return new Promise(function (res, rej) {
             cnn.query(sql, valores, function (error, results, fields) {
-                if (error) 
+                if (error)
                     rej(error);
-                else 
+                else
                     res(results.insertId);
             });
         })
     }
 
-}
+    // Transações
+    async BeginTransaction() {
+        return new Promise((resolve, reject) => {
+            this.#conexao.getConnection((err, connection) => {
+                if (err) return reject(err);
+                connection.beginTransaction(err => {
+                    if (err) {
+                        connection.release();
+                        return reject(err);
+                    }
+                    resolve(connection);
+                });
+            });
+        });
+    }
 
+    async Commit(connection) {
+        return new Promise((resolve, reject) => {
+            connection.commit(err => {
+                if (err) {
+                    return connection.rollback(() => {
+                        connection.release();
+                        reject(err);
+                    });
+                }
+                connection.release();
+                resolve();
+            });
+        });
+    }
+
+    async Rollback(connection) {
+        return new Promise((resolve, reject) => {
+            connection.rollback(() => {
+                connection.release();
+                resolve();
+            });
+        });
+    }
+
+    // Comandos usando uma conexão específica de transação
+    async ExecutaComandoTransacao(sql, valores, connection) {
+        return new Promise((resolve, reject) => {
+            connection.query(sql, valores, (error, results) => {
+                if (error) reject(error);
+                else resolve(results);
+            });
+        });
+    }
+
+    async ExecutaComandoNonQueryTransacao(sql, valores, connection) {
+        return new Promise((resolve, reject) => {
+            connection.query(sql, valores, (error, results) => {
+                if (error) reject(error);
+                else resolve(results.affectedRows > 0);
+            });
+        });
+    }
+
+    async ExecutaComandoLastInsertedTransacao(sql, valores, connection) {
+        return new Promise((resolve, reject) => {
+            connection.query(sql, valores, (error, results) => {
+                if (error) reject(error);
+                else resolve(results.insertId);
+            });
+        });
+    }
+}
 module.exports = Database;
 
 

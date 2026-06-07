@@ -76,12 +76,18 @@ class EstoqueModel{
         this.#itensId = itensId;
     }
 
-    async AddToInventory(){
+    async AddToInventory(transactionConnection = null){
         let sql = 'insert into movimentacao_estoque (prd_id, lote_id, tipo, origem, quantidade) values (?, ?, ?, ?, ?)';
 
         const values = [this.#produtoId, this.#loteId, this.#tipo, this.#origem, this.#quantidade];
 
-        let result = await banco.ExecutaComandoLastInserted(sql, values);
+        let result;
+        if(transactionConnection){
+            result = await banco.ExecutaComandoLastInsertedTransacao(sql, values, transactionConnection);
+        } else {
+            result = await banco.ExecutaComandoLastInserted(sql, values);
+        }
+        
         this.#id = result;
 
         return result;

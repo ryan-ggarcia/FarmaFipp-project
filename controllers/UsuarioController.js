@@ -2,9 +2,24 @@ const ProdutoModel = require('../models/ProdutoModel');
 const ProdutoPromocaoModel = require('../models/ProdutoPromocaoModel');
 
 class UsuarioController {
-    homeView(req, res) {
-        res.render("usuarioView/home", { layout: "layoutPublico" })
+    async homeView(req, res) {
+        try {
+            const promoModel = new ProdutoPromocaoModel();
+            const promocoes = await promoModel.ReadPromocoes();
+
+            res.render("usuarioView/home", {
+                layout: "layoutPublico",
+                promocoes: Array.isArray(promocoes) ? promocoes : []
+            });
+        } catch (error) {
+            console.error('Erro ao carregar home do usuário:', error);
+            res.render("usuarioView/home", {
+                layout: "layoutPublico",
+                promocoes: []
+            });
+        }
     }
+
     async produtosView(req, res) {
         try {
             const produtos = new ProdutoModel();
@@ -50,11 +65,24 @@ class UsuarioController {
             const promProducts = new ProdutoPromocaoModel();
             const produtosPromocao = await promProducts.ReadProductExpirationDateNear();
 
+            // Cria um mapa de promoções indexado por ID do produto
+            const promoMap = {};
+            if (Array.isArray(produtosPromocao)) {
+                produtosPromocao.forEach(p => {
+                    promoMap[String(p.id)] = {
+                        precoOriginal: Number(p.precoOriginal || p.preco),
+                        precoPromocional: Number(p.precoPromocional || p.preco),
+                        porcentagem: Number(p.porcentagemDesconto || 15)
+                    };
+                });
+            }
+
             res.render("usuarioView/produtos", {
                 layout: "layoutPublico",
                 lista,
                 categorias,
-                produtosPromocao: Array.isArray(produtosPromocao) ? produtosPromocao : []
+                produtosPromocao: Array.isArray(produtosPromocao) ? produtosPromocao : [],
+                promoMap
             });
         } catch (error) {
             console.error('Erro ao carregar produtos para usuário:', error);

@@ -34,18 +34,29 @@ class LoteController {
         }
 
         let loteModel = new LoteModel(null, produto, validade, qtdNum, fornecedor, nome);
+        
+        const Database = require('../utils/database');
+        const banco = new Database();
+        let connection;
+        
         try {
-            let result = await loteModel.Create();
+            connection = await banco.BeginTransaction();
+            
+            let result = await loteModel.Create(connection);
+            
             if (typeof result === 'string') {
-                // Error message returned from model
+                await banco.Rollback(connection);
                 return res.status(500).send({ ok: false, msg: result });
             }
             if (result) {
+                await banco.Commit(connection);
                 return res.status(200).send({ ok: true, msg: 'Lote cadastrado com sucesso!' });
             } else {
+                await banco.Rollback(connection);
                 return res.status(500).send({ ok: false, msg: 'Erro ao cadastrar o lote!' });
             }
         } catch (error) {
+            if(connection) await banco.Rollback(connection);
             console.error('Erro ao cadastrar o lote:', error);
             return res.status(500).send({ ok: false, msg: 'Erro interno ao cadastrar o lote!' });
         }

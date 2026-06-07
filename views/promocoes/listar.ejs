@@ -1,0 +1,324 @@
+<%
+const listaPromocoes = Array.isArray(promocoes) ? promocoes : [];
+const ativas = listaPromocoes.filter(p => p.status === 'Ativa');
+const expiradas = listaPromocoes.filter(p => p.status === 'Expirada');
+%>
+
+<!-- ════════════════════════════════
+     CABEÇALHO
+════════════════════════════════ -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0" style="font-family: var(--font-display, 'Syne', sans-serif);">
+            <i class="bi bi-tag-fill text-danger me-2"></i>Promoções
+        </h2>
+        <p class="text-muted mb-0 mt-1">Gerencie as promoções automáticas de produtos próximos ao vencimento</p>
+    </div>
+</div>
+
+<!-- ════════════════════════════════
+     CARDS DE CONTROLE
+════════════════════════════════ -->
+<div class="row g-3 mb-4">
+
+    <!-- Card: Desconto Atual -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                         style="width:48px;height:48px;background:linear-gradient(135deg,#ff4757,#ff6b81);">
+                        <i class="bi bi-percent text-white fs-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Desconto Padrão</div>
+                        <div class="fw-bold fs-4" id="descontoDisplay"><%= descontoAtual %>%</div>
+                    </div>
+                </div>
+                <form id="formDesconto" class="d-flex gap-2">
+                    <input type="number" class="form-control form-control-sm" id="inputDesconto"
+                           min="1" max="100" step="1" value="<%= descontoAtual %>"
+                           placeholder="%" style="max-width:80px;">
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-check-lg me-1"></i>Salvar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card: Promoções Ativas -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                         style="width:48px;height:48px;background:linear-gradient(135deg,#2ed573,#7bed9f);">
+                        <i class="bi bi-check-circle text-white fs-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Promoções Ativas</div>
+                        <div class="fw-bold fs-4"><%= ativas.length %></div>
+                    </div>
+                </div>
+                <small class="text-muted">Produtos com desconto automático aplicado</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card: Executar Automática -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                         style="width:48px;height:48px;background:linear-gradient(135deg,#3742fa,#70a1ff);">
+                        <i class="bi bi-lightning-charge-fill text-white fs-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Promoção Automática</div>
+                        <div class="fw-bold small">Lotes vencendo em 90 dias</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm mt-auto" id="btnExecutarAuto">
+                    <i class="bi bi-lightning-charge-fill me-1"></i>Executar Agora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════
+     TABELA DE PROMOÇÕES ATIVAS
+════════════════════════════════ -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white border-bottom d-flex align-items-center">
+        <i class="bi bi-tag-fill text-success me-2"></i>
+        <h6 class="mb-0 fw-bold">Promoções Ativas (<%= ativas.length %>)</h6>
+    </div>
+    <div class="card-body p-0">
+        <% if (ativas.length === 0) { %>
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-tag d-block fs-1 mb-2" style="opacity:.3;"></i>
+                <p class="mb-0">Nenhuma promoção ativa no momento.</p>
+                <small>Clique em "Executar Agora" para verificar produtos próximos ao vencimento.</small>
+            </div>
+        <% } else { %>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr class="bg-light">
+                            <th class="ps-3">Produto</th>
+                            <th>Categoria</th>
+                            <th class="text-end">Preço Original</th>
+                            <th class="text-end">Preço Promo</th>
+                            <th class="text-center">Desconto</th>
+                            <th>Data Início</th>
+                            <th>Data Final</th>
+                            <th>Validade Lote</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% ativas.forEach(function(promo) { %>
+                            <tr>
+                                <td class="ps-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <% if (promo.pro_img) { %>
+                                            <img src="/img/produtos/<%= promo.pro_img %>" 
+                                                 alt="" width="36" height="36" 
+                                                 class="rounded" style="object-fit:cover;">
+                                        <% } else { %>
+                                            <div class="rounded d-flex align-items-center justify-content-center"
+                                                 style="width:36px;height:36px;background:#f0f0f0;">
+                                                <i class="bi bi-box-seam text-muted small"></i>
+                                            </div>
+                                        <% } %>
+                                        <span class="fw-semibold"><%= promo.pro_nome %></span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-light text-dark"><%= promo.cat_nome || '—' %></span></td>
+                                <td class="text-end">R$ <%= Number(promo.pro_preco).toFixed(2) %></td>
+                                <td class="text-end fw-bold text-success">R$ <%= Number(promo.prom_valor).toFixed(2) %></td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger"><%= Number(promo.prom_porcentagem).toFixed(0) %>%</span>
+                                </td>
+                                <td><%= promo.prom_dataInicio ? new Date(promo.prom_dataInicio).toLocaleDateString('pt-BR') : '—' %></td>
+                                <td><%= promo.prom_dataFinal ? new Date(promo.prom_dataFinal).toLocaleDateString('pt-BR') : '—' %></td>
+                                <td>
+                                    <% if (promo.lot_validade) {
+                                        var diasRestantes = Math.ceil((new Date(promo.lot_validade) - new Date()) / (1000*60*60*24));
+                                        var urgenciaClass = diasRestantes <= 30 ? 'text-danger fw-bold' : (diasRestantes <= 60 ? 'text-warning' : 'text-muted');
+                                    %>
+                                        <span class="<%= urgenciaClass %>">
+                                            <%= new Date(promo.lot_validade).toLocaleDateString('pt-BR') %>
+                                            <small>(<%= diasRestantes %>d)</small>
+                                        </span>
+                                    <% } else { %>—<% } %>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-danger btnRemoverPromo"
+                                            data-id="<%= promo.idPromocao %>"
+                                            title="Remover promoção">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- ════════════════════════════════
+     TABELA DE PROMOÇÕES EXPIRADAS
+════════════════════════════════ -->
+<% if (expiradas.length > 0) { %>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white border-bottom d-flex align-items-center">
+        <i class="bi bi-clock-history text-secondary me-2"></i>
+        <h6 class="mb-0 fw-bold">Promoções Expiradas (<%= expiradas.length %>)</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr class="bg-light">
+                        <th class="ps-3">Produto</th>
+                        <th class="text-end">Preço Promo</th>
+                        <th class="text-center">Desconto</th>
+                        <th>Data Final</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% expiradas.forEach(function(promo) { %>
+                        <tr class="table-light" style="opacity:.7;">
+                            <td class="ps-3"><%= promo.pro_nome %></td>
+                            <td class="text-end">R$ <%= Number(promo.prom_valor).toFixed(2) %></td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary"><%= Number(promo.prom_porcentagem).toFixed(0) %>%</span>
+                            </td>
+                            <td><%= promo.prom_dataFinal ? new Date(promo.prom_dataFinal).toLocaleDateString('pt-BR') : '—' %></td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-secondary btnRemoverPromo"
+                                        data-id="<%= promo.idPromocao %>"
+                                        title="Remover registro">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<!-- ════════════════════════════════
+     SCRIPTS
+════════════════════════════════ -->
+<script>
+(function() {
+
+    // Alterar desconto
+    var formDesconto = document.getElementById('formDesconto');
+    if (formDesconto) {
+        formDesconto.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var val = document.getElementById('inputDesconto').value;
+            fetch('/admin/promocoes/alterar-desconto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ percentual: val })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.ok) {
+                    Swal.fire({ icon: 'success', title: 'Sucesso', text: data.msg, timer: 2000, showConfirmButton: false });
+                    document.getElementById('descontoDisplay').textContent = val + '%';
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: data.msg });
+                }
+            })
+            .catch(function() {
+                Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha na comunicação.' });
+            });
+        });
+    }
+
+    // Executar promoção automática
+    var btnAuto = document.getElementById('btnExecutarAuto');
+    if (btnAuto) {
+        btnAuto.addEventListener('click', function() {
+            btnAuto.disabled = true;
+            btnAuto.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Processando...';
+            fetch('/admin/promocoes/executar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: '{}'
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                Swal.fire({
+                    icon: data.ok ? 'success' : 'warning',
+                    title: data.ok ? 'Concluído' : 'Atenção',
+                    text: data.msg,
+                    timer: 3000,
+                    showConfirmButton: true
+                }).then(function() {
+                    if (data.ok) window.location.reload();
+                });
+            })
+            .catch(function() {
+                Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha ao executar.' });
+            })
+            .finally(function() {
+                btnAuto.disabled = false;
+                btnAuto.innerHTML = '<i class="bi bi-lightning-charge-fill me-1"></i>Executar Agora';
+            });
+        });
+    }
+
+    // Remover promoção
+    document.querySelectorAll('.btnRemoverPromo').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var id = this.dataset.id;
+            Swal.fire({
+                title: 'Remover promoção?',
+                text: 'O produto voltará ao preço original.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, remover',
+                cancelButtonText: 'Cancelar'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    fetch('/admin/promocoes/remover', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (data.ok) {
+                            Swal.fire({ icon: 'success', title: 'Removida', text: data.msg, timer: 1500, showConfirmButton: false })
+                            .then(function() { window.location.reload(); });
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Erro', text: data.msg });
+                        }
+                    })
+                    .catch(function() {
+                        Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha na comunicação.' });
+                    });
+                }
+            });
+        });
+    });
+
+})();
+</script>

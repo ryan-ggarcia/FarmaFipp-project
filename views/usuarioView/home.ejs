@@ -170,59 +170,53 @@
 <!-- ════════════════════════════════
      MELHORES OFERTAS DO DIA
 ════════════════════════════════ -->
+<%
+var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) ? promocoes : [];
+%>
 <section class="py-5">
     <div class="container">
         <div class="section-header">
             <h2 class="section-title mb-0">Melhores Ofertas do Dia</h2>
-            <a href="/shop" class="see-all-link">Ver todas <i class="bi bi-arrow-right"></i></a>
+            <a href="/shop?filtro=promocao" class="see-all-link">Ver todas <i class="bi bi-arrow-right"></i></a>
         </div>
 
         <div class="row g-3">
 
-
-            <!-- Produto 1 -->
-            <div class="col-6 col-md-4 col-lg-3 col-xl-2-4">
-                <div class="product-card h-100">
-                    <span class="badge-discount">-20%</span>
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap">
-                        <img src="https://placehold.co/160x130/e8f0fe/4E8098?text=Óleo+CBD" alt="Gold Value Oil" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">NaturVital</div>
-                        <div class="prod-title">Óleo de CBD 500mg 30ml</div>
-                        <div class="price-row">
-                            <span class="price-now">R$ 89,90</span>
-                            <span class="price-old">R$ 112,00</span>
+        <% if (promosList.length > 0) { %>
+            <% promosList.slice(0, 5).forEach(function(promo, idx) {
+                var imgSrc = promo.imgProduto
+                    ? '/img/produtos/' + promo.imgProduto
+                    : 'https://placehold.co/160x130/e8f0fe/4E8098?text=Produto';
+                var desconto = Number(promo.porcentagem || 0);
+                var precoOrig = Number(promo.precoOriginal || 0);
+                var precoPromo = Number(promo.precoPromocional || 0);
+                var hideOnMobile = idx >= 4 ? ' d-none d-lg-block' : '';
+            %>
+                <div class="col-6 col-md-4 col-lg-3 col-xl-2-4<%= hideOnMobile %>">
+                    <div class="product-card h-100">
+                        <span class="badge-discount">-<%= desconto.toFixed(0) %>%</span>
+                        <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
+                        <div class="img-wrap">
+                            <img src="<%= imgSrc %>" alt="<%= promo.nomeProduto %>" />
                         </div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
+                        <div class="card-body">
+                            <div class="brand-tag"><%= promo.marca || 'FarmaFipp' %></div>
+                            <div class="prod-title"><%= promo.nomeProduto %></div>
+                            <div class="price-row">
+                                <span class="price-now">R$ <%= precoPromo.toFixed(2).replace('.', ',') %></span>
+                                <% if (precoOrig > precoPromo) { %>
+                                    <span class="price-old">R$ <%= precoOrig.toFixed(2).replace('.', ',') %></span>
+                                <% } %>
+                            </div>
+                            <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Produto 2 -->
+            <% }); %>
+        <% } else { %>
+            <!-- Fallback: produtos estáticos quando não há promoções -->
             <div class="col-6 col-md-4 col-lg-3 col-xl-2-4">
                 <div class="product-card h-100">
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap">
-                        <img src="https://placehold.co/160x130/f0f4f8/A31621?text=Ácido+Hialurôn"
-                            alt="Ácido Hialurônico" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">DermaClin</div>
-                        <div class="prod-title">Ácido Hialurônico 150mg 60 cáps.</div>
-                        <div class="price-row">
-                            <span class="price-now">R$ 54,90</span>
-                        </div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Produto 3 -->
-            <div class="col-6 col-md-4 col-lg-3 col-xl-2-4">
-                <div class="product-card h-100">
-                    <span class="badge-discount">-15%</span>
                     <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
                     <div class="img-wrap">
                         <img src="https://placehold.co/160x130/e8f5e9/2D6A4F?text=Vitamina+C" alt="Vitamina C" />
@@ -232,14 +226,11 @@
                         <div class="prod-title">Vitamina C 1000mg + Zinco 60 cáps.</div>
                         <div class="price-row">
                             <span class="price-now">R$ 29,90</span>
-                            <span class="price-old">R$ 35,20</span>
                         </div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
+                        <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
                     </div>
                 </div>
             </div>
-
-            <!-- Produto 4 -->
             <div class="col-6 col-md-4 col-lg-3 col-xl-2-4">
                 <div class="product-card h-100">
                     <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
@@ -252,31 +243,11 @@
                         <div class="price-row">
                             <span class="price-now">R$ 42,90</span>
                         </div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
+                        <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
                     </div>
                 </div>
             </div>
-
-            <!-- Produto 5 -->
-            <div class="col-6 col-md-4 col-lg-3 col-xl-2-4 d-none d-lg-block">
-                <div class="product-card h-100">
-                    <span class="badge-discount">-25%</span>
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap">
-                        <img src="https://placehold.co/160x130/fce4ec/A31621?text=Protetor+Solar"
-                            alt="Protetor Solar" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">SkinShield</div>
-                        <div class="prod-title">Protetor Solar FPS 60 120ml</div>
-                        <div class="price-row">
-                            <span class="price-now">R$ 34,90</span>
-                            <span class="price-old">R$ 46,50</span>
-                        </div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
-                    </div>
-                </div>
-            </div>
+        <% } %>
 
         </div><!-- /.row -->
     </div>

@@ -1,5 +1,6 @@
 const FornecedorModel = require('../models/FornecedorModel')
 const ProdutoModel = require('../models/ProdutoModel')
+const ProdutoPromocaoModel = require('../models/ProdutoPromocaoModel')
 const LoteModel = require('../models/LoteModel')
 const EstoqueModel = require('../models/EstoqueModel')
 
@@ -90,7 +91,11 @@ class ProdutoController {
                     : null;
                 const idLote = loteDisponivel ? loteDisponivel.lot_id : null;
 
-                res.send({ ok: true, produto: {
+                // Verifica se existe promoção ativa
+                const promoModel = new ProdutoPromocaoModel();
+                const promo = await promoModel.GetPromocaoByProdutoId(produtoId);
+
+                const resposta = {
                     id: produto.id,
                     nome: produto.nome,
                     descricao: produto.descricao,
@@ -98,7 +103,14 @@ class ProdutoController {
                     quantidade: produto.quantidade,
                     img: produto.img,
                     id_lote: idLote
-                }});
+                };
+
+                if (promo) {
+                    resposta.precoPromocional = promo.precoPromocional;
+                    resposta.porcentagemDesconto = promo.porcentagem;
+                }
+
+                res.send({ ok: true, produto: resposta });
             }
         }
         catch(error){
@@ -126,25 +138,35 @@ class ProdutoController {
         }
 
         let produto = new ProdutoModel(null, nome, descricao, null, precoNum, qtdNum, categoria, fornecedor, marca, null, img);
+        
+        const Database = require('../utils/database');
+        const banco = new Database();
+        let connection;
+        
         try {
-            let result = await produto.Create();
+            connection = await banco.BeginTransaction();
+
+            let result = await produto.Create(connection);
             if (result) {
                 let estoque = new EstoqueModel()
                 estoque.id = 0
                 estoque.loteId = null
                 estoque.tipo = 'ENTRADA'
                 estoque.origem = `Cadastro do produto ${nome}`
-                estoque.produtoId = produto.id
+                estoque.produtoId = result // result é o insertId
                 estoque.itensId = null
                 estoque.quantidade = produto.quantidade
 
-                await estoque.AddToInventory();
+                await estoque.AddToInventory(connection);
 
+                await banco.Commit(connection);
                 return res.send({ ok: true, msg: 'Produto registrado no estoque!' });
             } else {
+                await banco.Rollback(connection);
                 return res.send({ ok: false, msg: 'Erro ao cadastrar o produto!' });
             }
         } catch (error) {
+            if(connection) await banco.Rollback(connection);
             console.error('Erro ao cadastrar o produto:', error);
             return res.status(500).send({ ok: false, msg: 'Erro interno ao cadastrar o produto!' });
         }
@@ -159,6 +181,13 @@ class ProdutoController {
             let produto = new ProdutoModel();
             let result = await produto.Delete(id);
             if (result) {
+                // Invalida/Remove as promoções vinculadas
+                const promoModel = new ProdutoPromocaoModel();
+                const promoAtiva = await promoModel.GetPromocaoByProdutoId(id);
+                if (promoAtiva) {
+                    await promoModel.RemoverPromocao(promoAtiva.idPromocao);
+                }
+
                 return res.send({ ok: true, msg: 'Produto inativado com sucesso!' });
             } else {
                 return res.send({ ok: false, msg: 'Erro ao excluir o produto!' });
@@ -195,12 +224,18 @@ class ProdutoController {
             }
 
             if(req.file != null){
-                const caminhoImgAbs = global.CAMINHO_IMG_ABS || 'public/img/produtos/';
+                const path = require('path');
+                const pastaImg = path.resolve(__dirname, '..', 'public', 'img', 'produtos');
                 produto.img = req.file.filename;
 
-                const nomeArquivoAnterior = (produtoOld.img || '').split('/').pop();
-                if(nomeArquivoAnterior && fs.existsSync(caminhoImgAbs + nomeArquivoAnterior)){
-                    fs.unlinkSync(caminhoImgAbs + nomeArquivoAnterior);
+                if (produtoOld.img) {
+                    const nomeArquivoAnterior = path.basename(produtoOld.img);
+                    const caminhoAnteriorAbs = path.join(pastaImg, nomeArquivoAnterior);
+                    
+                    // Valida se o caminho absoluto realmente aponta para dentro da pasta public/img/produtos
+                    if (caminhoAnteriorAbs.startsWith(pastaImg) && fs.existsSync(caminhoAnteriorAbs)) {
+                        fs.unlinkSync(caminhoAnteriorAbs);
+                    }
                 }
             }
 

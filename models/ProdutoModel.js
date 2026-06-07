@@ -71,11 +71,17 @@ class ProdutoModel{
         return true;
     }
 
-    async Create() {
+    async Create(transactionConnection = null) {
         const sql = 'insert into produto (pro_nome, descricao,  pro_preco, pro_quantidade,  Categoria_Produto, marca, idFornecedor, pro_img) values (?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [this.#nome, this.#descricao, this.#preco, this.#quantidade, this.#categoria, this.#marca,  this.#fornecedor, this.#img];
         const banco = new Database();
-        let result =  await banco.ExecutaComandoLastInserted(sql, values);
+        
+        let result;
+        if(transactionConnection){
+            result = await banco.ExecutaComandoLastInsertedTransacao(sql, values, transactionConnection);
+        } else {
+            result = await banco.ExecutaComandoLastInserted(sql, values);
+        }
         return result;
     }
 

@@ -414,3 +414,74 @@
         padding: 1rem 2rem;
     }
 }
+
+/* ══ PROMOÇÃO — Preço original riscado e preço promocional ══ */
+
+.price-promo-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+
+.price-original {
+    font-size: .82rem;
+    color: var(--gray-400);
+    text-decoration: line-through;
+    font-weight: var(--fw-regular);
+    line-height: 1;
+}
+
+.price-promo {
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    font-weight: var(--fw-extra);
+    color: #2ed573;
+    font-family: var(--font-display);
+    line-height: 1;
+}
+
+/* Card com promoção — glow sutil */
+.shop-product-card.card-promo-highlight {
+    border: 2px solid rgba(255, 71, 87, .25);
+    box-shadow: 0 0 0 3px rgba(255, 71, 87, .06), var(--shadow-sm);
+}
+
+.shop-product-card.card-promo-highlight:hover {
+    box-shadow: 0 0 0 3px rgba(255, 71, 87, .12), var(--shadow-lg);
+}
+
+/* Badge com percentual de desconto */
+.card-badge-promo {
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: var(--fw-bold);
+    letter-spacing: .04em;
+}
+
+/* Botão filtro de promoções */
+.btn-filter-promo {
+    background: transparent;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--gray-500);
+    font-size: var(--text-sm);
+    font-weight: var(--fw-semibold);
+    padding: .55rem 1.2rem;
+    transition: var(--t-fast);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-filter-promo:hover {
+    border-color: #ff4757;
+    color: #ff4757;
+    background: rgba(255, 71, 87, .06);
+}
+
+.btn-filter-promo.active {
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
+    color: #fff;
+    border-color: #ff4757;
+}
+

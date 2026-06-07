@@ -2,6 +2,7 @@
 const produtosLista = Array.isArray(lista) ? lista : [];
 const categoriasLista = Array.isArray(categorias) ? categorias : [];
 const totalProdutos = produtosLista.length;
+const promoData = (typeof promoMap !== 'undefined' && promoMap) ? promoMap : {};
 
 const promoIds = new Set();
 if (Array.isArray(produtosPromocao)) {
@@ -65,6 +66,11 @@ if (Array.isArray(produtosPromocao)) {
                 </select>
             </div>
             <div class="col-auto">
+                <button class="btn-filter-promo" id="btnFilterPromo" type="button">
+                    <i class="bi bi-tag-fill me-1"></i>Promoções
+                </button>
+            </div>
+            <div class="col-auto">
                 <button class="btn-reset" id="btnResetFilters" type="button">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>Limpar
                 </button>
@@ -105,17 +111,22 @@ if (Array.isArray(produtosPromocao)) {
                     ? produto.img
                     : '/img/produtos/imagem.png';
                 var isPromo = promoIds.has(String(produtoId));
+                var promoInfo = promoData[String(produtoId)];
+                var precoOriginal = promoInfo ? Number(promoInfo.precoOriginal) : preco;
+                var precoPromo = promoInfo ? Number(promoInfo.precoPromocional) : preco;
+                var porcentagem = promoInfo ? Number(promoInfo.porcentagem) : 0;
             %>
                 <div
                     class="col-12 col-sm-6 col-lg-4 col-xl-3 product-col"
                     data-product-name="<%= nome.toLowerCase() %>"
                     data-product-category="<%= categoria.toLowerCase() %>"
-                    data-product-price="<%= preco %>"
+                    data-product-price="<%= isPromo ? precoPromo : preco %>"
+                    data-is-promo="<%= isPromo ? 'true' : 'false' %>"
                 >
-                    <article class="shop-product-card">
+                    <article class="shop-product-card<%= isPromo ? ' card-promo-highlight' : '' %>">
                         <!-- Badge -->
                         <% if (isPromo) { %>
-                            <span class="card-badge card-badge-promo"><i class="bi bi-tag-fill me-1"></i>Promoção</span>
+                            <span class="card-badge card-badge-promo"><i class="bi bi-tag-fill me-1"></i>-<%= porcentagem %>%</span>
                         <% } else if (quantidade <= 0) { %>
                             <span class="card-badge card-badge-esgotado">Esgotado</span>
                         <% } else if (quantidade <= 10) { %>
@@ -155,7 +166,14 @@ if (Array.isArray(produtosPromocao)) {
                             </div>
 
                             <div class="card-price-row">
-                                <span class="price-current">R$ <%= preco.toFixed(2) %></span>
+                                <% if (isPromo && promoInfo) { %>
+                                    <div class="price-promo-wrap">
+                                        <span class="price-original">R$ <%= precoOriginal.toFixed(2) %></span>
+                                        <span class="price-promo">R$ <%= precoPromo.toFixed(2) %></span>
+                                    </div>
+                                <% } else { %>
+                                    <span class="price-current">R$ <%= preco.toFixed(2) %></span>
+                                <% } %>
                                 <% if (produto.validade) { %>
                                     <span class="price-validity">Val: <%= new Date(produto.validade).toLocaleDateString('pt-BR') %></span>
                                 <% } %>
@@ -193,12 +211,14 @@ if (Array.isArray(produtosPromocao)) {
     var categoryFilter = document.getElementById('categoryFilter');
     var sortFilter = document.getElementById('sortFilter');
     var btnReset = document.getElementById('btnResetFilters');
+    var btnPromo = document.getElementById('btnFilterPromo');
     var visibleCount = document.getElementById('visibleCount');
     var noResults = document.getElementById('noResultsMsg');
 
     if (!grid) return;
 
     var cards = Array.from(grid.querySelectorAll('.product-col'));
+    var promoFilterActive = false;
 
     function normalizeStr(s) {
         return (s || '').toLowerCase()
@@ -227,6 +247,12 @@ if (Array.isArray(produtosPromocao)) {
         searchInput.value = urlBusca;
     }
 
+    var urlFiltro = urlParams.get('filtro');
+    if (urlFiltro === 'promocao') {
+        promoFilterActive = true;
+        if (btnPromo) btnPromo.classList.add('active');
+    }
+
     function updateCount() {
         var visible = cards.filter(function (c) { return c.style.display !== 'none'; }).length;
         if (visibleCount) visibleCount.textContent = String(visible);
@@ -240,9 +266,11 @@ if (Array.isArray(produtosPromocao)) {
         cards.forEach(function (card) {
             var name = (card.dataset.productName || '').toLowerCase();
             var itemCat = (card.dataset.productCategory || '').toLowerCase();
+            var isPromo = card.dataset.isPromo === 'true';
             var matchName = !term || name.includes(term) || itemCat.includes(term);
             var matchCategory = !category || itemCat === category;
-            card.style.display = (matchName && matchCategory) ? '' : 'none';
+            var matchPromo = !promoFilterActive || isPromo;
+            card.style.display = (matchName && matchCategory && matchPromo) ? '' : 'none';
         });
 
         updateCount();
@@ -277,11 +305,22 @@ if (Array.isArray(produtosPromocao)) {
         });
     }
 
+    // Botão filtro de promoções
+    if (btnPromo) {
+        btnPromo.addEventListener('click', function() {
+            promoFilterActive = !promoFilterActive;
+            btnPromo.classList.toggle('active', promoFilterActive);
+            applyFilters();
+        });
+    }
+
     if (btnReset) {
         btnReset.addEventListener('click', function () {
             if (searchInput) searchInput.value = '';
             if (categoryFilter) categoryFilter.value = '';
             if (sortFilter) sortFilter.value = 'name';
+            promoFilterActive = false;
+            if (btnPromo) btnPromo.classList.remove('active');
             sortCards();
             applyFilters();
         });

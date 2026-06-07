@@ -1,6 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
+const fs = require('fs');
+const fileType = require('file-type'); // import file-type
 const ProdutoController = require('../controllers/ProdutoController');
 const LoteController = require('../controllers/LoteController');
 const ctrl = new ProdutoController();
@@ -20,6 +22,7 @@ let storage = multer.diskStorage({
 let upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
+        // Filtro superficial (mimetype do Header)
         const allowed = ['image/jpeg', 'image/png', 'image/webp'];
         if (allowed.includes(file.mimetype)) {
             cb(null, true);
@@ -30,16 +33,41 @@ let upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
 });
 
+// Middleware para verificar Magic Bytes (CWE-434 mitigation)
+const magicBytesValidator = async (req, res, next) => {
+    if (!req.file) {
+        return next(); // Se não há arquivo (cadastro sem imagem), segue normal.
+    }
+    try {
+        const filePath = req.file.path;
+        const type = await fileType.fromFile(filePath);
+        
+        // Verifica se a assinatura bate com extensões válidas e se mime-type é de imagem
+        if (!type || !['jpg', 'png', 'webp'].includes(type.ext) || !type.mime.startsWith('image/')) {
+            // Arquivo malicioso/falsificado! Apaga o arquivo
+            fs.unlinkSync(filePath);
+            return res.status(400).send({ ok: false, msg: 'Arquivo corrompido ou malicioso detectado. Operação cancelada.' });
+        }
+        next();
+    } catch (error) {
+        if(req.file && fs.existsSync(req.file.path)){
+            fs.unlinkSync(req.file.path);
+        }
+        console.error("Erro na verificação de file-type:", error);
+        return res.status(500).send({ ok: false, msg: 'Erro interno ao validar a imagem.' });
+    }
+};
+
 // Produto routes
 router.get('/', ctrl.listar);
 router.get('/cadastrar', ctrl.cadastrarView);
-router.post('/cadastrar', upload.single('img'), ctrl.cadastrar);
+router.post('/cadastrar', upload.single('img'), magicBytesValidator, ctrl.cadastrar);
 router.get('/cadastrarLote', loteCtrl.CadastroLoteView);
 router.post('/cadastrarLote', loteCtrl.CadastroLote);
 router.get('/listar', ctrl.listar);
 router.get('/obter/:produtoId', ctrl.obterProduto);
 router.get('/alterar/:id', ctrl.AlterarView);
-router.post('/alterar', upload.single('img'), ctrl.alterar);
+router.post('/alterar', upload.single('img'), magicBytesValidator, ctrl.alterar);
 router.post('/excluir', ctrl.excluir);
 
 
