@@ -2,6 +2,36 @@ document.addEventListener("DOMContentLoaded", function(){
     let btn = document.getElementById("btnAlterar");
     btn.addEventListener("click", alterar);
 
+    // ── Preenchimento automático de endereço pelo CEP (ViaCEP) ──
+    const cepEl = document.getElementById("endCep");
+    if (cepEl) cepEl.addEventListener("blur", buscarCep);
+
+    async function buscarCep(){
+        const cep = document.getElementById("endCep").value.replace(/\D/g, '');
+        if(!cep) return;
+        if(!/^\d{8}$/.test(cep)){
+            Swal.fire({ title: 'CEP inválido!', icon: 'warning', confirmButtonColor: '#A31621' });
+            return;
+        }
+        try{
+            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            if(!res.ok) throw new Error();
+            const data = await res.json();
+            if(data.erro){
+                Swal.fire({ title: 'CEP não encontrado!', icon: 'warning', confirmButtonColor: '#A31621' });
+                return;
+            }
+            const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ""; };
+            set("endRua",    data.logradouro);
+            set("endBairro", data.bairro);
+            set("endCidade", data.localidade);
+            set("endEstado", data.uf);
+            set("endUf",     data.uf);
+        } catch(e){
+            Swal.fire({ title: 'Erro ao consultar CEP', text: 'Tente novamente mais tarde.', icon: 'error', confirmButtonColor: '#A31621' });
+        }
+    }
+
     function alterar(){
         let inputId       = document.getElementById("funcId").value;
         let inputMatricula= document.getElementById("funcMatricula").value;

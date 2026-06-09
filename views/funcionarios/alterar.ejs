@@ -73,6 +73,12 @@
       <div class="row g-3">
 
         <div class="col-md-4">
+          <label class="form-label">CEP</label>
+          <input type="text" id="endCep" class="form-control"
+                 value="<%= funcionario.endCep %>" placeholder="00000-000">
+        </div>
+
+        <div class="col-md-4">
           <label class="form-label">Rua</label>
           <input type="text" id="endRua" class="form-control"
                  value="<%= funcionario.endRua %>" placeholder="Nome da rua">
@@ -106,12 +112,6 @@
           <label class="form-label">UF</label>
           <input type="text" id="endUf" class="form-control" maxlength="2"
                  value="<%= funcionario.endUf %>" placeholder="SP">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">CEP</label>
-          <input type="text" id="endCep" class="form-control"
-                 value="<%= funcionario.endCep %>" placeholder="00000-000">
         </div>
 
         <div class="col-12 d-flex gap-2 mt-1">

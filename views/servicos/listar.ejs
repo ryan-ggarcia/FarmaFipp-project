@@ -2,11 +2,21 @@
 <script src="/js/servicos/listar.js"></script>
 
 <%
+/* ── Normaliza o status do banco (Ativo/Aguardando/Inativo) para as
+   categorias canônicas usadas na exibição (aprovado/aguardando/nao_aprovado) ── */
+function _statusCanon(raw){
+  const s = String(raw || '').trim().toLowerCase();
+  if (s === 'ativo' || s === 'aprovado')        return 'aprovado';
+  if (s === 'aguardando')                       return 'aguardando';
+  if (s === 'inativo' || s === 'nao_aprovado')  return 'nao_aprovado';
+  return '';
+}
+
 /* ── contadores para os stat cards ── */
 const _total       = lista.length;
-const _aprovados   = lista.filter(s => s.getSTATUS() === 'aprovado').length;
-const _aguardando  = lista.filter(s => s.getSTATUS() === 'aguardando').length;
-const _naoAprov    = lista.filter(s => s.getSTATUS() === 'nao_aprovado').length;
+const _aprovados   = lista.filter(s => _statusCanon(s.getSTATUS()) === 'aprovado').length;
+const _aguardando  = lista.filter(s => _statusCanon(s.getSTATUS()) === 'aguardando').length;
+const _naoAprov    = lista.filter(s => _statusCanon(s.getSTATUS()) === 'nao_aprovado').length;
 %>
 
 <div class="p-3 p-1-25">
@@ -100,7 +110,7 @@ const _naoAprov    = lista.filter(s => s.getSTATUS() === 'nao_aprovado').length;
             <% for(let i = 0; i < lista.length; i++){ %>
               <%
                 const s        = lista[i];
-                const status   = s.getSTATUS();
+                const status   = _statusCanon(s.getSTATUS());
                 const dataRaw  = s.getDATA();
                 let dataFmt = '—';
                 if(dataRaw){

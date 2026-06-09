@@ -75,7 +75,11 @@ class ServicoModel{
     }
 
     async obter(id) {
-        let sql = "select * from agendar_servico where idAgendar_Servico = ?";
+        let sql = `select idAgendar_Servico, serv_data, serv_hora, serv_preco, serv_status,
+                          serv_observacoes, serv_tipo,
+                          Funcionario_Agenda as funcionario_agenda,
+                          Cliente_Agenda as cliente_agenda
+                   from agendar_servico where idAgendar_Servico = ?`;
         let valores = [id];
 
         let banco = new Database();

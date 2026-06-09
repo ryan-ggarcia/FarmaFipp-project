@@ -4,67 +4,54 @@
 
 const { mockExecutaComando, mockExecutaComandoNonQuery } = require('../setup');
 
-// Mock do fs para GetDescontoAtual/SetDesconto
-jest.mock('fs', () => ({
-    existsSync: jest.fn(() => false),
-    readFileSync: jest.fn(() => '{}'),
-    writeFileSync: jest.fn()
-}));
-
 const ProdutoPromocaoModel = require('../../models/ProdutoPromocaoModel');
 
 describe('ProdutoPromocaoModel', () => {
 
     describe('GetDescontoAtual', () => {
-        it('deve retornar 15 como padrão quando config não existe', () => {
-            const fs = require('fs');
-            fs.existsSync.mockReturnValue(false);
+        it('deve retornar 15 como padrão quando config não existe no banco', async () => {
+            mockExecutaComando.mockResolvedValueOnce([]);
 
-            const desconto = ProdutoPromocaoModel.GetDescontoAtual();
+            const desconto = await ProdutoPromocaoModel.GetDescontoAtual();
             expect(desconto).toBe(15);
         });
 
-        it('deve retornar o valor do arquivo de configuração', () => {
-            const fs = require('fs');
-            fs.existsSync.mockReturnValue(true);
-            fs.readFileSync.mockReturnValue('{"percentualDesconto": 20}');
+        it('deve retornar o valor armazenado no banco', async () => {
+            mockExecutaComando.mockResolvedValueOnce([{ valor: '20' }]);
 
-            const desconto = ProdutoPromocaoModel.GetDescontoAtual();
+            const desconto = await ProdutoPromocaoModel.GetDescontoAtual();
             expect(desconto).toBe(20);
         });
 
-        it('deve retornar 15 se o arquivo contém valor inválido', () => {
-            const fs = require('fs');
-            fs.existsSync.mockReturnValue(true);
-            fs.readFileSync.mockReturnValue('{"percentualDesconto": -5}');
+        it('deve retornar 15 se o banco contém valor inválido', async () => {
+            mockExecutaComando.mockResolvedValueOnce([{ valor: '-5' }]);
 
-            const desconto = ProdutoPromocaoModel.GetDescontoAtual();
+            const desconto = await ProdutoPromocaoModel.GetDescontoAtual();
             expect(desconto).toBe(15);
         });
     });
 
     describe('SetDesconto', () => {
-        it('deve salvar o desconto e retornar true', () => {
-            const fs = require('fs');
-            fs.writeFileSync.mockImplementation(() => {});
+        it('deve salvar o desconto no banco e retornar true', async () => {
+            mockExecutaComandoNonQuery.mockResolvedValueOnce(true);
 
-            const result = ProdutoPromocaoModel.SetDesconto(25);
+            const result = await ProdutoPromocaoModel.SetDesconto(25);
             expect(result).toBe(true);
-            expect(fs.writeFileSync).toHaveBeenCalled();
+            expect(mockExecutaComandoNonQuery).toHaveBeenCalled();
         });
 
-        it('deve retornar false para valor inválido (0)', () => {
-            const result = ProdutoPromocaoModel.SetDesconto(0);
+        it('deve retornar false para valor inválido (0)', async () => {
+            const result = await ProdutoPromocaoModel.SetDesconto(0);
             expect(result).toBe(false);
         });
 
-        it('deve retornar false para valor inválido (101)', () => {
-            const result = ProdutoPromocaoModel.SetDesconto(101);
+        it('deve retornar false para valor inválido (101)', async () => {
+            const result = await ProdutoPromocaoModel.SetDesconto(101);
             expect(result).toBe(false);
         });
 
-        it('deve retornar false para valor NaN', () => {
-            const result = ProdutoPromocaoModel.SetDesconto('abc');
+        it('deve retornar false para valor NaN', async () => {
+            const result = await ProdutoPromocaoModel.SetDesconto('abc');
             expect(result).toBe(false);
         });
     });

@@ -53,11 +53,21 @@
           <div class="col-md-4">
             <div class="form-group">
               <label for="status">Status</label>
+              <%
+                /* Normaliza o status do banco (Ativo/Aguardando/Inativo) para a opção correspondente */
+                const _st = (function(r){
+                  r = String(r || '').trim().toLowerCase();
+                  if (r === 'ativo' || r === 'aprovado')        return 'aprovado';
+                  if (r === 'aguardando')                       return 'aguardando';
+                  if (r === 'inativo' || r === 'nao_aprovado')  return 'nao_aprovado';
+                  return '';
+                })(servico.getSTATUS());
+              %>
               <select name="status" id="status" class="form-control">
                 <option value="0">--Nenhum--</option>
-                <option value="aprovado" <%= String(servico.getSTATUS()) === 'aprovado' ? 'selected' : '' %>>Aprovado</option>
-                <option value="nao_aprovado" <%= String(servico.getSTATUS()) === 'nao_aprovado' ? 'selected' : '' %>>Não Aprovado</option>
-                <option value="aguardando" <%= String(servico.getSTATUS()) === 'aguardando' ? 'selected' : '' %>>Aguardando Aprovação</option>
+                <option value="aprovado" <%= _st === 'aprovado' ? 'selected' : '' %>>Aprovado</option>
+                <option value="nao_aprovado" <%= _st === 'nao_aprovado' ? 'selected' : '' %>>Não Aprovado</option>
+                <option value="aguardando" <%= _st === 'aguardando' ? 'selected' : '' %>>Aguardando Aprovação</option>
               </select>
             </div>
           </div>

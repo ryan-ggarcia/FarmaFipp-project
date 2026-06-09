@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
     carregarVendas();
     let input = document.querySelector("#txtSearch");
-    let btn = document.querySelector("#btnBuscar");
     let btnExportar = document.querySelector("#btnExportar");
 
     btnExportar.addEventListener("click", function(){
@@ -22,9 +21,14 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    btn.addEventListener("click", function(){
-        let params = input.value;
-        buscarVendas(params)
+    // Busca enquanto o usuário digita (com pequeno atraso para não
+    // disparar uma consulta ao banco a cada tecla)
+    let debounceTimer;
+    input.addEventListener("keyup", function(){
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function(){
+            buscarVendas(input.value);
+        }, 350);
     });
 
     function carregarVendas(params){
@@ -55,15 +59,15 @@ document.addEventListener("DOMContentLoaded", function(){
             const itemValorTotal = Number(venda.itemValorTotal ?? venda.item_valor_total ?? 0);
 
             
-            html += 
+            html +=
                `
             <tr>
-                <td>${vendaId}</td>
-                <td>${vendaValor.toFixed(2)}</td>
+                <td class="ps-3">${vendaId}</td>
+                <td class="text-end">${vendaValor.toFixed(2)}</td>
                 <td>${itemNome}</td>
-                <td>${itemQuant}</td>
-                <td>${itemValor.toFixed(2)}</td>
-                <td>${itemValorTotal.toFixed(2)}</td>
+                <td class="text-center">${itemQuant}</td>
+                <td class="text-end">${itemValor.toFixed(2)}</td>
+                <td class="text-end pe-3">${itemValorTotal.toFixed(2)}</td>
             </tr>`;
         }
 

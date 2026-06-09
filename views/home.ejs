@@ -22,8 +22,8 @@ function _brl(v){ return 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionD
     <div class="d-flex align-items-center gap-2">
       <span class="text-muted small">Período:</span>
       <div class="btn-group btn-group-sm" id="periodFilter" role="group" aria-label="Filtro de período">
-        <button type="button" class="btn btn-outline-secondary period-btn" data-period="dia">Dia</button>
-        <button type="button" class="btn btn-outline-secondary period-btn active" data-period="mes">Mês</button>
+        <button type="button" class="btn btn-outline-secondary period-btn active" data-period="dia">Dia</button>
+        <button type="button" class="btn btn-outline-secondary period-btn" data-period="mes">Mês</button>
         <button type="button" class="btn btn-outline-secondary period-btn" data-period="ano">Ano</button>
       </div>
     </div>
@@ -327,7 +327,7 @@ function _brl(v){ return 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionD
   const _vendasData   = <%- JSON.stringify(vendasData)   %>;
   const _servicosData = <%- JSON.stringify(servicosData) %>;
 
-  let _period = 'mes';
+  let _period = 'dia';
 
   /* ── instâncias dos gráficos ── */
   let _chartVendas, _chartServicos, _chartStatus;
@@ -439,42 +439,46 @@ function _brl(v){ return 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionD
     });
   }
 
-  /* ── Chart Status (donut) — estático ── */
+  /* ── Chart Status (donut) — dinâmico e case-insensitive ── */
   function initStatusChart() {
-    const approved = _servicosData.filter(s => s.status === 'aprovado').length;
-    const pending  = _servicosData.filter(s => s.status === 'aguardando').length;
-    const rejected = _servicosData.filter(s => s.status === 'nao_aprovado').length;
-    const none     = _servicosData.filter(s => !s.status || s.status === '0').length;
+    const LABELS = { aprovado: 'Aprovado', aguardando: 'Aguardando', nao_aprovado: 'Não Aprovado' };
+    const COLORS = {
+      aprovado: 'rgba(45,106,79,.85)', aguardando: 'rgba(244,211,94,.9)',
+      nao_aprovado: 'rgba(163,22,33,.85)', sem_status: 'rgba(173,181,189,.7)'
+    };
+    const palette = ['rgba(78,128,152,.8)','rgba(120,80,160,.8)','rgba(200,120,60,.8)','rgba(80,160,160,.8)'];
 
-    /* atualiza resumo lateral */
+    // Conta por status real (normalizado)
+    const counts = {};
+    _servicosData.forEach(s => {
+      const key = (!s.status || s.status === '0') ? 'sem_status' : String(s.status).trim().toLowerCase();
+      counts[key] = (counts[key] || 0) + 1;
+    });
+
+    // Resumo lateral (categorias canônicas)
     const el = id => document.getElementById(id);
-    if (el('resumoAprovados'))   el('resumoAprovados').innerHTML   = '<strong>' + approved + '</strong>';
-    if (el('resumoPendentes'))   el('resumoPendentes').innerHTML   = '<strong>' + pending  + '</strong>';
-    if (el('resumoNaoAprovados'))el('resumoNaoAprovados').innerHTML = '<strong>' + rejected + '</strong>';
+    if (el('resumoAprovados'))    el('resumoAprovados').innerHTML    = '<strong>' + (counts['aprovado']    || 0) + '</strong>';
+    if (el('resumoPendentes'))    el('resumoPendentes').innerHTML    = '<strong>' + (counts['aguardando']   || 0) + '</strong>';
+    if (el('resumoNaoAprovados')) el('resumoNaoAprovados').innerHTML = '<strong>' + (counts['nao_aprovado'] || 0) + '</strong>';
+
+    // Monta dados do donut dinamicamente
+    const keys = Object.keys(counts);
+    const labels = [], data = [], bg = [];
+    let pi = 0;
+    keys.forEach(k => {
+      labels.push(LABELS[k] || (k === 'sem_status' ? 'Sem status' : (k.charAt(0).toUpperCase() + k.slice(1))));
+      data.push(counts[k]);
+      bg.push(COLORS[k] || palette[pi++ % palette.length]);
+    });
+    if (!keys.length) { labels.push('Sem dados'); data.push(1); bg.push('rgba(173,181,189,.4)'); }
 
     if (_chartStatus) _chartStatus.destroy();
     _chartStatus = new Chart(document.getElementById('chartStatus'), {
       type: 'doughnut',
-      data: {
-        labels: ['Aprovado', 'Aguardando', 'Não Aprovado', 'Sem status'],
-        datasets: [{
-          data: [approved, pending, rejected, none],
-          backgroundColor: [
-            'rgba(45,106,79,.85)',
-            'rgba(244,211,94,.9)',
-            'rgba(163,22,33,.85)',
-            'rgba(173,181,189,.7)'
-          ],
-          borderWidth: 0,
-          hoverOffset: 6
-        }]
-      },
+      data: { labels, datasets: [{ data, backgroundColor: bg, borderWidth: 0, hoverOffset: 6 }] },
       options: {
-        responsive: true,
-        cutout: '65%',
-        plugins: {
-          legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } }
-        }
+        responsive: true, cutout: '65%',
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } }
       }
     });
   }
@@ -489,8 +493,12 @@ function _brl(v){ return 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionD
     });
   });
 
-  /* ── inicialização ── */
-  updateCharts();
-  initStatusChart();
+  /* ── inicialização ──
+     O Chart.js é carregado no fim do layout (DEPOIS deste script),
+     então só desenhamos os gráficos quando a página terminar de carregar. */
+  window.addEventListener('load', function () {
+    updateCharts();
+    initStatusChart();
+  });
 })();
 </script>

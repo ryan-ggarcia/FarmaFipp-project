@@ -55,6 +55,12 @@
       <div class="row g-3">
 
         <div class="col-md-4">
+          <label class="form-label">CEP</label>
+          <input type="text" id="cep" class="form-control" maxlength="9"
+                 value="<%= endereco.endCep %>" placeholder="00000-000">
+        </div>
+
+        <div class="col-md-4">
           <label class="form-label">Rua</label>
           <input type="text" id="rua" class="form-control"
                  value="<%= endereco.endRua %>" placeholder="Nome da rua">
@@ -88,12 +94,6 @@
           <label class="form-label">UF</label>
           <input type="text" id="uf" class="form-control" maxlength="2"
                  value="<%= endereco.endUf %>" placeholder="SP">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">CEP</label>
-          <input type="text" id="cep" class="form-control" maxlength="9"
-                 value="<%= endereco.endCep %>" placeholder="00000-000">
         </div>
 
         <div class="col-12 d-flex gap-2 mt-1">

@@ -1,31 +1,58 @@
-<script src="/js/venda/listar.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<div>
-    <h1>Pedidos</h1>
-    <div class="form-group">
-        <label>Busca de pedidos:</label>
-        <input type="text" id="txtSearch" class="form-control" placeholder="Digite o número do pedido ou o nome do produto">
-    </div>
-    <div>
-        <button id="btnBuscar" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
-        <button id="btnExportar" class="btn btn-success"><i class="fas fa-file-excel"></i> Exportar para Excel</button>
-    </div>
-    <br>
-    <div class="table-responsive">
-        <table id="tabelaPedidos" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID Pedido</th>
-                    <th>Valor Pedido</th>
-                    <th>Produto</th>
-                    <th>Quantidade</th>
-                    <th>Valor Unitário</th>
-                    <th>Valor Total do Produto</th>
-                </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-        </table>
-    </div>
+<!-- ════════════════════════════════
+     CABEÇALHO
+════════════════════════════════ -->
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+  <div>
+    <h2 class="fw-bold mb-0" style="font-family: var(--font-display, 'Syne', sans-serif);">
+      <i class="bi bi-receipt text-primary me-2"></i>Produtos Vendidos
+    </h2>
+    <p class="text-muted mb-0 mt-1">Consulte os pedidos e os itens vendidos</p>
+  </div>
+  <button id="btnExportar" class="btn btn-success btn-rounded">
+    <i class="bi bi-file-earmark-excel me-1"></i>Exportar para Excel
+  </button>
 </div>
+
+<!-- ════════════════════════════════
+     BUSCA
+════════════════════════════════ -->
+<div class="card card-saas no-hover mb-4">
+  <div class="card-body">
+    <label for="txtSearch" class="form-label text-muted small mb-1">Busca de pedidos</label>
+    <input type="text" id="txtSearch" class="form-control"
+           placeholder="Digite o número do pedido ou o nome do produto">
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     TABELA DE ITENS VENDIDOS
+════════════════════════════════ -->
+<div class="card card-saas no-hover">
+  <div class="card-header bg-white border-bottom d-flex align-items-center">
+    <i class="bi bi-cart-check text-success me-2"></i>
+    <h6 class="mb-0 fw-bold">Itens Vendidos</h6>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table id="tabelaPedidos" class="table table-hover table-striped mb-0 align-middle">
+        <thead>
+          <tr class="bg-light">
+            <th class="ps-3">ID Pedido</th>
+            <th class="text-end">Valor Pedido</th>
+            <th>Produto</th>
+            <th class="text-center">Quantidade</th>
+            <th class="text-end">Valor Unitário</th>
+            <th class="text-end pe-3">Valor Total do Produto</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     SCRIPTS
+════════════════════════════════ -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="/js/venda/listar.js"></script>

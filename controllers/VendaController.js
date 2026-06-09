@@ -15,6 +15,7 @@ function toMySqlDateTime(value) {
 class VendaController {
 
     async VendasView(req, res){
+        res.locals.active = 'vendas';
         res.render('vendas/index');
     }
 

@@ -207,19 +207,21 @@ class ProdutoPromocaoModel extends ProdutoModel {
      * Lista todas as promoções (ativas + expiradas) para o painel admin.
      */
     async ReadTodasPromocoes() {
-        const sql = `SELECT pr.idPromocao, pr.prom_dataInicio, pr.prom_dataFinal, 
+        const sql = `SELECT pr.idPromocao, pr.prom_dataInicio, pr.prom_dataFinal,
                             pr.prom_valor, pr.prom_porcentagem, pr.idProduto,
                             p.pro_nome, p.pro_preco, p.pro_img,
-                            c.cat_nome, l.lot_validade,
-                            CASE 
+                            c.cat_nome,
+                            (SELECT MIN(l.lot_validade)
+                                FROM produto_lote pl
+                                INNER JOIN Lote l ON pl.lote_lot_id = l.lot_id
+                                WHERE pl.produto_idProduto = p.idProduto) AS lot_validade,
+                            CASE
                                 WHEN pr.prom_dataFinal < CURDATE() THEN 'Expirada'
                                 ELSE 'Ativa'
                             END AS status
                     FROM promocao pr
                     INNER JOIN produto p ON pr.idProduto = p.idProduto
                     LEFT JOIN categoria c ON p.Categoria_Produto = c.idCategoria
-                    LEFT JOIN produto_lote pl ON p.idProduto = pl.produto_idProduto
-                    LEFT JOIN Lote l ON pl.lote_lot_id = l.lot_id
                     ORDER BY pr.prom_dataFinal DESC`;
         const banco = new Database();
         const rows = await banco.ExecutaComando(sql);

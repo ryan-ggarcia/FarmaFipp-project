@@ -1,5 +1,21 @@
 const Database = require('../utils/database')
 const fs = require('fs')
+const path = require('path')
+
+// Resolve o caminho da imagem do produto para o navegador.
+// Lida com: valor nulo, coluna BLOB (Buffer), caminhos já prefixados
+// (ex.: "/img/produtos/x.jpg") e arquivos que não existem em disco.
+function resolverImagem(raw){
+    const FALLBACK = '/img/produtos/barra-de-imagem.png';
+    if(raw == null) return FALLBACK;
+    let nome = Buffer.isBuffer(raw) ? raw.toString('utf8') : String(raw);
+    nome = nome.trim().replace(/^.*[\\/]/, ''); // remove qualquer caminho, deixa só o nome do arquivo
+    if(!nome) return FALLBACK;
+    const baseAbs = global.CAMINHO_IMG_ABS || (path.join(__dirname, '..', 'public', 'img', 'produtos') + path.sep);
+    if(!fs.existsSync(baseAbs + nome)) return FALLBACK;
+    return '/img/produtos/' + nome;
+}
+
 class ProdutoModel{
 
     #id
@@ -117,12 +133,8 @@ class ProdutoModel{
         let lista = []
         for(let i=0;i < result.length; i++){
 
-            let imagem = '/img/produtos/barra-de-imagem.png'
+            let imagem = resolverImagem(result[i]['pro_img'])
 
-            if(result[i]['pro_img'] != null){
-                imagem = '/img/produtos/' + result[i]['pro_img']
-            }
-            
             let produtos = new ProdutoModel(
                 result[i]['idProduto'],
                 result[i]['pro_nome'],
@@ -151,18 +163,10 @@ class ProdutoModel{
         let rows = await banco.ExecutaComando(sql, values);
 
         if(rows.length > 0){
-            const caminhoImgAbs = global.CAMINHO_IMG_ABS || 'public/img/produtos/';
-            const caminhoImgNavegador = global.CAMINHO_IMG_NAVEGADOR || '/img/produtos/';
-            let img = ""
             let produto = null;
 
             rows.forEach(row =>{
-                if(row.pro_img != null && fs.existsSync(caminhoImgAbs + row.pro_img)){
-                    img = caminhoImgNavegador + row.pro_img
-                }
-                else{
-                    img = '/img/produtos/barra-de-imagem.png'
-                }
+                let img = resolverImagem(row.pro_img)
 
                 produto = new ProdutoModel(
                     row.idProduto,
