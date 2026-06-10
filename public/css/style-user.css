@@ -119,11 +119,12 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   HERO CAROUSEL
+   HERO CAROUSEL  — design moderno (depth + glass + motion)
 ════════════════════════════════════════════════════════════════ */
 #heroCarousel {
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   overflow: hidden;
+  box-shadow: var(--shadow-lg);
 }
 
 .hero-slide {
@@ -132,12 +133,26 @@ body {
   padding: 0;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
-/* Variantes de cor dos slides */
+/* Camada de profundidade: glow radial + leve textura de grid.
+   Dá sensação de luz natural sem pesar o background. */
+.hero-slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 120% at 85% 0%, rgba(255,255,255,.22), transparent 55%),
+    radial-gradient(90% 90% at 15% 110%, rgba(0,0,0,.28), transparent 60%);
+}
+
+/* Variantes de cor dos slides — gradientes diagonais ricos */
 .hero-slide-1 {
   background: linear-gradient(135deg,
-    #1a4731 0%,
+    #133626 0%,
     var(--clr-green) 55%,
     var(--clr-green-light) 100%
   );
@@ -145,7 +160,7 @@ body {
 
 .hero-slide-2 {
   background: linear-gradient(135deg,
-    #1a3a4d 0%,
+    #16303f 0%,
     var(--clr-blue) 60%,
     #6aaecc 100%
   );
@@ -169,17 +184,21 @@ body {
 }
 
 .hero-badge {
-  display: inline-block;
-  background: rgba(255,255,255,.15);
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,.14);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   color: #fff;
   font-size: .78rem;
   font-weight: var(--fw-semibold);
   letter-spacing: .08em;
   text-transform: uppercase;
-  padding: .3rem .9rem;
+  padding: .35rem .95rem;
   border-radius: var(--radius-pill);
-  margin-bottom: 1rem;
-  border: 1px solid rgba(255,255,255,.25);
+  margin-bottom: 1.1rem;
+  border: 1px solid rgba(255,255,255,.3);
+  box-shadow: 0 4px 14px rgba(0,0,0,.12);
 }
 
 .hero-title {
@@ -188,13 +207,14 @@ body {
   font-size: clamp(2rem, 5.5vw, 5rem);
   font-weight: var(--fw-extra);
   color: var(--clr-yellow);
-  line-height: 1.0;
+  line-height: 1.02;
   letter-spacing: -2px;
-  margin-bottom: .5rem;
+  margin-bottom: .6rem;
+  text-shadow: 0 4px 24px rgba(0,0,0,.18);
 }
 
 .hero-subtitle {
-  color: rgba(255,255,255,.85);
+  color: rgba(255,255,255,.88);
   font-size: clamp(.9rem, 1.2vw, 1.1rem);
   font-weight: var(--fw-regular);
   max-width: min(340px, 90%);
@@ -204,50 +224,66 @@ body {
 
 /* Botões do hero */
 .btn-hero {
-  background: var(--clr-yellow);
+  background: linear-gradient(135deg, var(--clr-yellow), var(--clr-yellow-dark));
   color: #1a3a00;
   border: none;
   border-radius: var(--radius-pill);
-  padding: .7rem 2rem;
+  padding: .72rem 2rem;
   font-weight: var(--fw-bold);
   font-size: .95rem;
   text-decoration: none;
   display: inline-block;
+  box-shadow: 0 6px 18px rgba(244,211,94,.32);
   transition: transform .18s, box-shadow .18s;
 }
 
-.btn-hero:hover {
+.btn-hero:hover,
+.btn-hero:focus-visible {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(244,211,94,.45);
+  box-shadow: 0 12px 30px rgba(244,211,94,.5);
   color: #1a3a00;
 }
 
 .btn-hero-outline {
-  background: transparent;
+  background: rgba(255,255,255,.06);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   color: #fff;
-  border: 2px solid rgba(255,255,255,.55);
+  border: 1.5px solid rgba(255,255,255,.55);
   border-radius: var(--radius-pill);
-  padding: .65rem 1.6rem;
+  padding: .68rem 1.6rem;
   font-weight: var(--fw-semibold);
   font-size: .95rem;
   margin-left: .75rem;
   text-decoration: none;
   display: inline-block;
-  transition: border-color .18s, background .18s;
+  transition: border-color .18s, background .18s, transform .18s;
 }
 
-.btn-hero-outline:hover {
+.btn-hero-outline:hover,
+.btn-hero-outline:focus-visible {
   border-color: #fff;
-  background: rgba(255,255,255,.1);
+  background: rgba(255,255,255,.16);
   color: #fff;
+  transform: translateY(-3px);
 }
 
-/* Círculos decorativos do hero — tamanhos fluidos */
+/* Acessibilidade: foco visível claro sobre fundo escuro */
+.btn-hero:focus-visible,
+.btn-hero-outline:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* Círculos decorativos do hero — tamanhos fluidos, leve blur */
 .hero-circle {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255,255,255,.06);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.16), rgba(255,255,255,.04));
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
   pointer-events: none;
+  z-index: 1;
 }
 
 .hero-circle-1 {
@@ -274,6 +310,7 @@ body {
   align-items: flex-end;
   justify-content: center;
   pointer-events: none;
+  z-index: 2;
 }
 
 .hero-img-wrap img {
@@ -281,19 +318,22 @@ body {
   max-height: clamp(160px, 30vw, 460px);
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 12px 32px rgba(0,0,0,.3));
+  filter: drop-shadow(0 18px 40px rgba(0,0,0,.35));
 }
 
-/* Badge flutuante de produto — POSIÇÃO RESPONSIVA */
+/* Badge flutuante de produto — glassmorphism, POSIÇÃO RESPONSIVA */
 .hero-product-badge {
   position: absolute;
   /* Posiciona-se à esquerda da imagem (que ocupa ~28% da largura) */
   right: clamp(160px, calc(22% + 40px), 400px);
   bottom: clamp(1.5rem, 5vh, 4rem);
-  background: var(--bg-white);
+  background: rgba(255,255,255,.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.6);
   border-radius: var(--radius-lg);
   padding: 1rem 1.25rem;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   min-width: 140px;
   z-index: 3;
   /* Oculto por padrão em mobile — mostrado em ≥768px */
@@ -312,16 +352,35 @@ body {
   color: var(--primary-red);
 }
 
-/* Controles do carrossel */
+/* Controles do carrossel — glass + micro-interação */
 .carousel-control-prev,
 .carousel-control-next {
-  width: 44px;
-  height: 44px;
-  background: rgba(255,255,255,.2);
+  width: 46px;
+  height: 46px;
+  background: rgba(255,255,255,.18);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.25);
   border-radius: 50%;
   top: 50%;
   transform: translateY(-50%);
   margin: 0 .75rem;
+  opacity: 1;
+  transition: background .2s, transform .2s;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background: rgba(255,255,255,.32);
+}
+
+.carousel-control-prev:hover { transform: translateY(-50%) scale(1.08); }
+.carousel-control-next:hover { transform: translateY(-50%) scale(1.08); }
+
+.carousel-control-prev:focus-visible,
+.carousel-control-next:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .carousel-indicators [data-bs-target] {
@@ -335,6 +394,7 @@ body {
   margin: 0 4px;
   padding: 0;
   flex-shrink: 0;
+  transition: width .3s ease, background .3s ease;
 }
 
 .carousel-indicators .active {
@@ -348,6 +408,42 @@ body {
   margin-left: 0;
   bottom: 1rem;
   gap: 4px;
+}
+
+/* ── Animação de entrada do conteúdo no slide ativo ── */
+@keyframes heroContentIn {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.carousel-item.active .hero-badge,
+.carousel-item.active .hero-title,
+.carousel-item.active .hero-subtitle,
+.carousel-item.active .hero-content .btn-hero,
+.carousel-item.active .hero-content .btn-hero-outline {
+  animation: heroContentIn .6s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.carousel-item.active .hero-title       { animation-delay: .08s; }
+.carousel-item.active .hero-subtitle    { animation-delay: .16s; }
+.carousel-item.active .hero-content .btn-hero,
+.carousel-item.active .hero-content .btn-hero-outline { animation-delay: .24s; }
+
+.carousel-item.active .hero-product-badge {
+  animation: heroContentIn .6s cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: .32s;
+}
+
+/* Respeita a preferência de redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  .carousel-item.active .hero-badge,
+  .carousel-item.active .hero-title,
+  .carousel-item.active .hero-subtitle,
+  .carousel-item.active .hero-content .btn-hero,
+  .carousel-item.active .hero-content .btn-hero-outline,
+  .carousel-item.active .hero-product-badge {
+    animation: none;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -609,19 +705,19 @@ body {
 
 .product-card .brand-tag {
   font-size: .7rem;
-  font-weight: var(--fw-semibold);
+  font-weight: var(--fw-bold);
   color: var(--primary-blue);
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .08em;
   margin-bottom: .25rem;
 }
 
 .product-card .prod-title {
-  font-size: .9rem;
-  font-weight: var(--fw-semibold);
-  color: #222;
-  margin-bottom: .4rem;
-  line-height: 1.3;
+  font-size: var(--text-sm);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin-bottom: .35rem;
+  line-height: var(--leading-tight);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -638,15 +734,17 @@ body {
 }
 
 .product-card .price-now {
-  font-size: 1.05rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: var(--fw-extra);
   color: var(--primary-red);
+  font-family: var(--font-display);
 }
 
 .product-card .price-old {
-  font-size: .8rem;
+  font-size: .82rem;
   text-decoration: line-through;
-  color: var(--gray-500);
+  color: var(--gray-400);
+  font-weight: var(--fw-regular);
 }
 
 /* Botão adicionar ao carrinho */

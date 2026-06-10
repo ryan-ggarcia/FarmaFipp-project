@@ -1,23 +1,40 @@
 const ProdutoModel = require('../models/ProdutoModel');
 const ProdutoPromocaoModel = require('../models/ProdutoPromocaoModel');
+const ServicoModel = require('../models/ServicoModel');
+const TipoServico = require('../models/TipoServicoModel');
+const FuncionarioModel = require('../models/FuncionarioModel');
 
 class UsuarioController {
     async homeView(req, res) {
-        try {
-            const promoModel = new ProdutoPromocaoModel();
-            const promocoes = await promoModel.ReadPromocoes();
+        const promoModel = new ProdutoPromocaoModel();
+        const promocoes = await promoModel.ReadPromocoes();
 
-            res.render("usuarioView/home", {
-                layout: "layoutPublico",
-                promocoes: Array.isArray(promocoes) ? promocoes : []
-            });
-        } catch (error) {
-            console.error('Erro ao carregar home do usuário:', error);
-            res.render("usuarioView/home", {
-                layout: "layoutPublico",
-                promocoes: []
-            });
-        }
+        // Produtos reais em destaque — deduplicados por id (o Read traz 1 linha por lote)
+        const listaBruta = await new ProdutoModel().Read();
+        const vistos = new Set();
+        const produtos = (Array.isArray(listaBruta) ? listaBruta : []).filter(p => {
+            if (!p || p.id == null || vistos.has(p.id)) return false;
+            vistos.add(p.id);
+            return true;
+        }).slice(0, 8);
+
+        // Categorias populares — apenas as selecionadas, na ordem definida (somente as que existem no banco)
+        const todasCategorias = await new ProdutoModel().ListNomesCategorias();
+        const populares = [
+            'Higiene Pessoal e Cuidados',
+            'Saúde Infantil e Bebês',
+            'Vitaminas e Suplementos',
+            'Primeiros Socorros',
+            'Analgésicos e Antitérmicos'
+        ];
+        const categorias = populares.filter(nome => todasCategorias.includes(nome));
+
+        res.render("usuarioView/home", {
+            layout: "layoutPublico",
+            promocoes: Array.isArray(promocoes) ? promocoes : [],
+            produtos,
+            categorias
+        });
     }
 
     async produtosView(req, res) {
@@ -100,6 +117,51 @@ class UsuarioController {
 
     sobreView(req, res) {
         res.render("usuarioView/sobre", { layout: "layoutPublico" });
+    }
+
+    async agendarServicoView(req, res) {
+        const listaTipos = await new TipoServico().listar();
+        const listaFunc = await new FuncionarioModel().Read();
+        res.render("usuarioView/agendar-servico", {
+            layout: "layoutPublico",
+            listaTipos,
+            listaFunc
+        });
+    }
+
+    async agendarServico(req, res) {
+        const { data, hora, tipo, func, obs } = req.body;
+        const clie = req.cookies.usuarioLogado;
+
+        const vazio = (v) => v === undefined || v === null || String(v).trim() === '';
+        const horaValida = /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(hora || ''));
+        const hoje = new Date().toISOString().split('T')[0];
+
+        if (vazio(clie)) {
+            return res.send({ ok: false, msg: 'Sessão expirada. Faça login novamente.' });
+        }
+        if (vazio(data) || vazio(hora) || vazio(tipo) || String(tipo) === '0' || vazio(func) || String(func) === '0') {
+            return res.send({ ok: false, msg: 'Preencha o tipo de serviço, o profissional, a data e a hora.' });
+        }
+        if (!horaValida) {
+            return res.send({ ok: false, msg: 'Hora inválida. Informe um horário entre 00:00 e 23:59.' });
+        }
+        if (data < hoje) {
+            return res.send({ ok: false, msg: 'Não é permitido agendar em data anterior à atual.' });
+        }
+
+        // Preço vem do valor cadastrado no tipo de serviço selecionado
+        const tipoServico = await new TipoServico().obter(Number(tipo));
+        const preco = (tipoServico && tipoServico.getVALOR() != null) ? Number(tipoServico.getVALOR()) : 0;
+
+        // Cliente = usuário logado; status "Aguardando" (aprovação do admin)
+        const servico = new ServicoModel(0, data, hora, preco, 'Aguardando', obs || '', Number(tipo), Number(func), Number(clie));
+        const result = await servico.cadastrar();
+
+        if (result) {
+            return res.send({ ok: true, msg: 'Serviço agendado com sucesso! Aguarde a confirmação.' });
+        }
+        return res.send({ ok: false, msg: 'Erro ao agendar serviço.' });
     }
 }
 

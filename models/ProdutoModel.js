@@ -109,6 +109,13 @@ class ProdutoModel{
         return result;
     }
 
+    async ListNomesCategorias() {
+        const sql = "select distinct cat_nome from categoria where cat_nome is not null and cat_nome <> '' order by cat_nome";
+        const banco = new Database();
+        let result = await banco.ExecutaComando(sql);
+        return result.map(r => r.cat_nome);
+    }
+
     async GetLote(){
         const sql = `SELECT l.* FROM Lote l
                      INNER JOIN produto_lote pl ON l.lot_id = pl.lote_lot_id

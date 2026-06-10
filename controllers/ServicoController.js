@@ -88,21 +88,15 @@ class ServicoController {
             return res.send({ ok: false, msg: 'Status inválido para cadastro de serviço.' });
         }
 
-        try {
-            let servico = new ServicoModel(0, data, hora, precoNum, statusFinal, obs, Number(tipo), Number(func), Number(clie));
-            let result = await servico.cadastrar();
+        let servico = new ServicoModel(0, data, hora, precoNum, statusFinal, obs, Number(tipo), Number(func), Number(clie));
+        let result = await servico.cadastrar();
 
-            if (result) {
-                ok = true;
-                msg = "Serviço cadastrado com sucesso!";
-            } else {
-                ok = false;
-                msg = "Erro ao cadastrar serviço no banco de dados!";
-            }
-        } catch (error) {
-            console.error('Erro ao cadastrar serviço:', error.message);
+        if (result) {
+            ok = true;
+            msg = "Serviço cadastrado com sucesso!";
+        } else {
             ok = false;
-            msg = 'Erro ao cadastrar serviço. Verifique os dados informados.';
+            msg = "Erro ao cadastrar serviço no banco de dados!";
         }
 
         res.send({ ok, msg });

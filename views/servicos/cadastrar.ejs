@@ -22,8 +22,11 @@
               <label for="tipo">Tipo</label>
               <select name="tipo" id="tipo" class="form-control">
                 <option value="0">--Nenhum--</option>
-               <% for(let i = 0; i < listaTipos.length; i++) { %>
-             <option value="<%= listaTipos[i].getID() %>"><%= listaTipos[i].getNOME() %></option>
+               <% for(let i = 0; i < listaTipos.length; i++) {
+                    var _v = listaTipos[i].getVALOR();
+                    var _vTxt = (_v != null) ? (' — R$ ' + Number(_v).toFixed(2).replace('.', ',')) : '';
+               %>
+             <option value="<%= listaTipos[i].getID() %>" data-valor="<%= _v != null ? Number(_v).toFixed(2) : '' %>"><%= listaTipos[i].getNOME() %><%= _vTxt %></option>
                <% } %>
               </select>
             </div>

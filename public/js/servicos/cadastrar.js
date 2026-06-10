@@ -4,6 +4,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     btn.addEventListener("click", gravar);
 
+    // Preenche o Preço automaticamente com o valor do tipo de serviço selecionado
+    let selTipo = document.getElementById("tipo");
+    let inputPrecoAuto = document.getElementById("preco");
+    if (selTipo && inputPrecoAuto) {
+        selTipo.addEventListener("change", function () {
+            let opt = selTipo.options[selTipo.selectedIndex];
+            let valor = opt ? opt.getAttribute("data-valor") : "";
+            if (valor && valor !== "") {
+                inputPrecoAuto.value = Number(valor).toFixed(2);
+            }
+        });
+    }
+
     function gravar() {
 
         let inputData = document.getElementById("data");

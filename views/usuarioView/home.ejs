@@ -4,9 +4,12 @@
 <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
 
     <div class="carousel-indicators">
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"
+            aria-current="true" aria-label="Ir para o destaque 1: Farmácia Virtual"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"
+            aria-label="Ir para o destaque 2: Suplementos"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"
+            aria-label="Ir para o destaque 3: Sua Saúde"></button>
     </div>
 
     <div class="carousel-inner">
@@ -83,10 +86,12 @@
     </div><!-- /.carousel-inner -->
 
     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
     </button>
     <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Próximo</span>
     </button>
 
 </div><!-- /#heroCarousel -->
@@ -113,7 +118,6 @@
                     <a href="/shop" class="btn btn-sm btn-light mt-2 btn-rounded">Aproveitar</a>
                 </div>
             </div>
-            </div>
         </div>
     </div>
 </section>
@@ -125,44 +129,33 @@
 <section class="py-4 bg-white">
     <div class="container">
         <h2 class="section-title text-center mb-4">Categorias Populares</h2>
+        <%
+        var catList = (typeof categorias !== 'undefined' && Array.isArray(categorias)) ? categorias : [];
+        var catColors = ['cat-bg-yellow','cat-bg-pink','cat-bg-blue','cat-bg-purple','cat-bg-green','cat-bg-orange'];
+        function catEmoji(nome){
+            var n = (nome || '').toLowerCase();
+            if (n.indexOf('vitamin') > -1 || n.indexOf('suplement') > -1) return '💊';
+            if (n.indexOf('dermo') > -1 || n.indexOf('cosm') > -1) return '🧴';
+            if (n.indexOf('higiene') > -1) return '🧼';
+            if (n.indexOf('infantil') > -1 || n.indexOf('bebê') > -1 || n.indexOf('bebe') > -1) return '🍼';
+            if (n.indexOf('xampu') > -1 || n.indexOf('condicionador') > -1 || n.indexOf('tintura') > -1 || n.indexOf('colorante') > -1) return '🧴';
+            if (n.indexOf('aparelho') > -1 || n.indexOf('teste') > -1) return '🩺';
+            if (n.indexOf('primeiros socorros') > -1) return '🩹';
+            if (n.indexOf('antibiót') > -1 || n.indexOf('antibiot') > -1 || n.indexOf('prescri') > -1 || n.indexOf('contínuo') > -1 || n.indexOf('continuo') > -1) return '💉';
+            if (n.indexOf('analgés') > -1 || n.indexOf('antitérm') > -1 || n.indexOf('inflam') > -1 || n.indexOf('alérg') > -1 || n.indexOf('alerg') > -1) return '💊';
+            return '🏥';
+        }
+        %>
         <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 row-cols-lg-6 g-3 justify-content-center text-center">
 
+            <% catList.forEach(function(nome, i){ %>
             <div class="col">
-                <a href="/shop?categoria=vitaminas" class="category-pill">
-                    <div class="cat-icon-wrap cat-bg-yellow">💊</div>
-                    <span class="cat-label">Vitaminas</span>
+                <a href="/shop?categoria=<%= encodeURIComponent(nome) %>" class="category-pill">
+                    <div class="cat-icon-wrap <%= catColors[i % catColors.length] %>"><%= catEmoji(nome) %></div>
+                    <span class="cat-label"><%= nome %></span>
                 </a>
             </div>
-            <div class="col">
-                <a href="/shop?categoria=dermatologia" class="category-pill">
-                    <div class="cat-icon-wrap cat-bg-pink">🧴</div>
-                    <span class="cat-label">Dermatologia</span>
-                </a>
-            </div>
-            <div class="col">
-                <a href="/shop?categoria=cuidado-ocular" class="category-pill">
-                    <div class="cat-icon-wrap cat-bg-blue">👁️</div>
-                    <span class="cat-label">Cuidado Ocular</span>
-                </a>
-            </div>
-            <div class="col">
-                <a href="/shop?categoria=bebe-e-mamae" class="category-pill">
-                    <div class="cat-icon-wrap cat-bg-purple">🍼</div>
-                    <span class="cat-label">Bebê & Mamãe</span>
-                </a>
-            </div>
-            <div class="col">
-                <a href="/shop?categoria=saude-cardiaca" class="category-pill">
-                    <div class="cat-icon-wrap cat-bg-green">🫀</div>
-                    <span class="cat-label">Saúde Cardíaca</span>
-                </a>
-            </div>
-            <div class="col">
-                <a href="/shop?categoria=suplementos" class="category-pill">
-                    <div class="cat-icon-wrap cat-bg-orange">💪</div>
-                    <span class="cat-label">Suplementos</span>
-                </a>
-            </div>
+            <% }); %>
 
         </div>
     </div>
@@ -214,39 +207,32 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
                 </div>
             <% }); %>
         <% } else { %>
-            <!-- Fallback: produtos estáticos quando não há promoções -->
-            <div class="col-6 col-md-4 col-lg-3 col-xl-2-4">
-                <div class="product-card h-100">
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap">
-                        <img src="https://placehold.co/160x130/e8f5e9/2D6A4F?text=Vitamina+C" alt="Vitamina C" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">VitaPlus</div>
-                        <div class="prod-title">Vitamina C 1000mg + Zinco 60 cáps.</div>
-                        <div class="price-row">
-                            <span class="price-now">R$ 29,90</span>
+            <% var fallbackList = (typeof produtos !== 'undefined' && Array.isArray(produtos)) ? produtos.slice(0, 5) : []; %>
+            <% if (fallbackList.length > 0) { %>
+                <% fallbackList.forEach(function(prod){
+                    var fImg = prod.img ? prod.img : 'https://placehold.co/160x130/e8f0fe/4E8098?text=Produto';
+                    var fPreco = Number(prod.preco || 0);
+                %>
+                    <div class="col-6 col-md-4 col-lg-3 col-xl-2-4">
+                        <div class="product-card h-100">
+                            <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
+                            <div class="img-wrap">
+                                <img src="<%= fImg %>" alt="<%= prod.nome %>" />
+                            </div>
+                            <div class="card-body">
+                                <div class="brand-tag"><%= prod.marca || 'FarmaFipp' %></div>
+                                <div class="prod-title"><%= prod.nome %></div>
+                                <div class="price-row">
+                                    <span class="price-now">R$ <%= fPreco.toFixed(2).replace('.', ',') %></span>
+                                </div>
+                                <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
+                            </div>
                         </div>
-                        <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
                     </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4 col-lg-3 col-xl-2-4">
-                <div class="product-card h-100">
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap">
-                        <img src="https://placehold.co/160x130/fff8e1/F4D35E?text=Vitamina+D3" alt="Vitamina D3" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">HelioVit</div>
-                        <div class="prod-title">Vitamina D3 2000UI + K2 120 cáps.</div>
-                        <div class="price-row">
-                            <span class="price-now">R$ 42,90</span>
-                        </div>
-                        <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
-                    </div>
-                </div>
-            </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12 text-center text-muted py-4">Nenhuma oferta disponível no momento.</div>
+            <% } %>
         <% } %>
 
         </div><!-- /.row -->
@@ -324,72 +310,36 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
             <h2 class="section-title mb-0">Produtos em Destaque</h2>
             <a href="/shop" class="see-all-link">Ver todos <i class="bi bi-arrow-right"></i></a>
         </div>
+        <%
+        var destaqueList = (typeof produtos !== 'undefined' && Array.isArray(produtos)) ? produtos : [];
+        %>
         <div class="row g-3">
 
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="product-card h-100">
-                    <span class="badge-discount">Novo</span>
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap img-bg-blue-light">
-                        <img src="https://placehold.co/160x130/bbdefb/4E8098?text=Enxaguante" alt="Enxaguante Bucal" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">OralCare</div>
-                        <div class="prod-title">Enxaguante Bucal Menta 500ml</div>
-                        <div class="price-row"><span class="price-now">R$ 18,90</span></div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="product-card h-100">
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap img-bg-purple-light">
-                        <img src="https://placehold.co/160x130/e1bee7/7b1fa2?text=Ômega+3" alt="Ômega 3" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">OmegaVit</div>
-                        <div class="prod-title">Ômega 3 TG 2g 120 cáps.</div>
-                        <div class="price-row"><span class="price-now">R$ 49,90</span></div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="product-card h-100">
-                    <span class="badge-discount">-10%</span>
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap img-bg-green-light">
-                        <img src="https://placehold.co/160x130/c8e6c9/2D6A4F?text=Colágeno" alt="Colágeno" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">CollagenX</div>
-                        <div class="prod-title">Colágeno Hidrolisado + Vit. C 300g</div>
-                        <div class="price-row">
-                            <span class="price-now">R$ 67,90</span>
-                            <span class="price-old">R$ 75,40</span>
+            <% if (destaqueList.length > 0) { %>
+                <% destaqueList.forEach(function(prod){
+                    var pImg = prod.img ? prod.img : 'https://placehold.co/160x130/e8f0fe/4E8098?text=Produto';
+                    var pPreco = Number(prod.preco || 0);
+                %>
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="product-card h-100">
+                            <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
+                            <div class="img-wrap">
+                                <img src="<%= pImg %>" alt="<%= prod.nome %>" />
+                            </div>
+                            <div class="card-body">
+                                <div class="brand-tag"><%= prod.marca || 'FarmaFipp' %></div>
+                                <div class="prod-title"><%= prod.nome %></div>
+                                <div class="price-row">
+                                    <span class="price-now">R$ <%= pPreco.toFixed(2).replace('.', ',') %></span>
+                                </div>
+                                <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
+                            </div>
                         </div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="product-card h-100">
-                    <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                    <div class="img-wrap img-bg-orange-light">
-                        <img src="https://placehold.co/160x130/ffe0b2/e65100?text=Magnésio" alt="Magnésio" />
-                    </div>
-                    <div class="card-body">
-                        <div class="brand-tag">MinerPure</div>
-                        <div class="prod-title">Magnésio Dimalato 500mg 60 cáps.</div>
-                        <div class="price-row"><span class="price-now">R$ 38,90</span></div>
-                        <button class="btn-add"><i class="bi bi-bag-plus me-1"></i>Adicionar</button>
-                    </div>
-                </div>
-            </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12 text-center text-muted py-4">Nenhum produto disponível no momento.</div>
+            <% } %>
 
         </div>
     </div>

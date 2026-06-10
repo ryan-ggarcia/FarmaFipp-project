@@ -1,0 +1,96 @@
+<!-- ════════════════════════════════
+     AGENDAR SERVIÇO — HERO
+════════════════════════════════ -->
+<div class="shop-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="/">Início</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Agendar Serviço</li>
+            </ol>
+        </nav>
+        <h1>Agendar Serviço</h1>
+        <p class="subtitle">
+            <i class="bi bi-calendar-check me-1"></i>
+            Escolha o serviço, o profissional e o melhor horário. O agendamento fica em análise até a confirmação.
+        </p>
+    </div>
+</div>
+
+<!-- ════════════════════════════════
+     FORMULÁRIO
+════════════════════════════════ -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+
+            <div class="col-lg-8">
+                <div class="contato-card">
+                    <h4 class="contato-card-title">
+                        <i class="bi bi-calendar-plus me-2"></i>Novo Agendamento
+                    </h4>
+                    <p class="contato-card-sub">Preencha os dados abaixo para solicitar o seu serviço.</p>
+
+                    <form id="formAgendar">
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">Tipo de Serviço</label>
+                                <select id="tipo" class="form-select">
+                                    <option value="0">-- Selecione --</option>
+                                    <% for (let i = 0; i < listaTipos.length; i++) {
+                                        var _v = listaTipos[i].getVALOR();
+                                        var _vTxt = (_v != null) ? ('R$ ' + Number(_v).toFixed(2).replace('.', ',')) : 'valor a definir';
+                                    %>
+                                        <option value="<%= listaTipos[i].getID() %>" data-valor="<%= _v != null ? Number(_v).toFixed(2) : '' %>"><%= listaTipos[i].getNOME() %> — <%= _vTxt %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Profissional</label>
+                                <select id="func" class="form-select">
+                                    <option value="">-- Selecione --</option>
+                                    <% for (let i = 0; i < listaFunc.length; i++) { %>
+                                        <option value="<%= listaFunc[i].funcId %>"><%= listaFunc[i].funcNome %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Data</label>
+                                <input id="data" type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Hora</label>
+                                <input id="hora" type="time" class="form-control">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Valor do Serviço</label>
+                                <input id="valorServico" type="text" class="form-control" value="—" readonly>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Observações <span class="text-muted small">(opcional)</span></label>
+                                <textarea id="obs" class="form-control" rows="3"
+                                    placeholder="Alguma informação adicional para o atendimento?"></textarea>
+                            </div>
+
+                            <div class="col-12 mt-2">
+                                <button id="btnAgendar" type="button" class="btn btn-contato w-100">
+                                    <i class="bi bi-calendar-check me-2"></i>Agendar Serviço
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script src="/js/servicos/agendar.js"></script>
