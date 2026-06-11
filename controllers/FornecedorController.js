@@ -23,6 +23,9 @@ class FornecedorController{
     async alterarView(req, res){
         const fornecedor = new FornecedorModel();
         const fornecedorModel = await fornecedor.Get(req.params.id);
+        if (!fornecedorModel) {
+            return res.redirect("/admin/fornecedores/");
+        }
         const endereco = new EnderecoModel();
         const enderecoModel = await endereco.GetByFornecedor(req.params.id);
         res.render('fornecedores/alterar', { fornecedor: fornecedorModel, endereco: enderecoModel, active: 'fornecedores' });

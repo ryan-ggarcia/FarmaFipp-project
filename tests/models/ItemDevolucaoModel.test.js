@@ -33,7 +33,7 @@ describe('ItemDevolucaoModel', () => {
             expect(result).toBe(true);
             expect(mockExecutaComandoNonQuery).toHaveBeenCalledWith(
                 expect.stringContaining('INSERT INTO item_devolucao'),
-                [2, 15, 'Defeito de fábrica', 7]
+                [2, 15, 'Defeito de fábrica', 7, null]
             );
         });
 

@@ -167,9 +167,16 @@ class DevolucaoModel {
     }
 
     async atualizarStatus() {
-        let sql = `UPDATE efetuar_devolucao 
-                    SET devo_status = ?, devo_observacao = ?, Funcionario_idFuncionario = ?`;
-        let valores = [this.#status, this.#observacao, this.#funcionarioId];
+        let sql = `UPDATE efetuar_devolucao
+                    SET devo_status = ?, devo_observacao = ?`;
+        let valores = [this.#status, this.#observacao];
+
+        // Só atualiza o funcionário responsável quando um valor é informado,
+        // evitando apagar o vínculo existente a cada mudança de status.
+        if (this.#funcionarioId != null) {
+            sql += `, Funcionario_idFuncionario = ?`;
+            valores.push(this.#funcionarioId);
+        }
 
         // Se o status for 'Aprovado' e é finalização, registrar a data
         if (this.#dataFinalizacao) {

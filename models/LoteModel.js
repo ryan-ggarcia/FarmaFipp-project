@@ -98,6 +98,51 @@ class LoteModel {
         
     }
 
+    // Escolhe o lote do produto para receber uma devolução: prioriza lotes ainda
+    // válidos, com a validade mais próxima (consistente com FEFO); fallback no lote
+    // mais recente. Retorna o lot_id ou null se o produto não tiver lote.
+    async getLotePreferencialPorProduto(produtoId) {
+        if (!produtoId) {
+            return null;
+        }
+
+        const sql = `select l.lot_id
+                     from Lote l
+                     inner join produto_lote pl on l.lot_id = pl.lote_lot_id
+                     where pl.produto_idProduto = ?
+                     order by (l.lot_validade >= curdate()) desc, l.lot_validade asc
+                     limit 1`;
+        const banco = new Database();
+        const rows = await banco.ExecutaComando(sql, [produtoId]);
+
+        return rows.length ? rows[0].lot_id : null;
+    }
+
+    // Seleciona o lote para uma venda: do produto, ainda válido (não vencido) e com
+    // saldo suficiente, priorizando a validade mais próxima (FEFO). Retorna lot_id ou null.
+    async getLoteParaVenda(produtoId, quantidade, transactionConnection = null) {
+        const qtd = Number(quantidade);
+        if (!produtoId || Number.isNaN(qtd) || qtd <= 0) {
+            return null;
+        }
+
+        const sql = `select l.lot_id
+                     from Lote l
+                     inner join produto_lote pl on l.lot_id = pl.lote_lot_id
+                     where pl.produto_idProduto = ?
+                       and l.lot_validade >= curdate()
+                       and l.lot_qnt >= ?
+                     order by l.lot_validade asc
+                     limit 1`;
+        const values = [produtoId, qtd];
+        const banco = new Database();
+        const rows = transactionConnection
+            ? await banco.ExecutaComandoTransacao(sql, values, transactionConnection)
+            : await banco.ExecutaComando(sql, values);
+
+        return rows.length ? rows[0].lot_id : null;
+    }
+
     async HasAvailableStock(quantidade) {
         const quantidadeNum = Number(quantidade);
 
@@ -117,7 +162,7 @@ class LoteModel {
         return Number(rows[0].lot_qnt) >= quantidadeNum;
     }
 
-    async DecreaseStock(quantidade) {
+    async DecreaseStock(quantidade, transactionConnection = null) {
         const quantidadeNum = Number(quantidade);
 
         if (!this.#id || Number.isNaN(quantidadeNum) || quantidadeNum <= 0) {
@@ -127,7 +172,9 @@ class LoteModel {
         const sql = 'update Lote set lot_qnt = lot_qnt - ? where lot_id = ? and lot_qnt >= ?';
         const values = [quantidadeNum, this.#id, quantidadeNum];
         const banco = new Database();
-        const result = await banco.ExecutaComando(sql, values);
+        const result = transactionConnection
+            ? await banco.ExecutaComandoTransacao(sql, values, transactionConnection)
+            : await banco.ExecutaComando(sql, values);
 
         return !!(result && result.affectedRows > 0);
     }

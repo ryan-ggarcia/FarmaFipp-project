@@ -3,8 +3,8 @@ const ClienteModel = require('../models/ClienteModel')
 class AuthMiddleware{
 
     async validarCliente(req,res,next){
-        if(req.cookies != undefined && req.cookies.usuarioLogado != undefined){
-            let usuarioId = req.cookies.usuarioLogado
+        if(req.signedCookies != undefined && req.signedCookies.usuarioLogado != undefined){
+            let usuarioId = req.signedCookies.usuarioLogado
             let usuario = new ClienteModel()
             usuario = await usuario.Get(usuarioId)
             if(usuario != null && usuario.cliStatus == 1 && (usuario.perfilId == 1 || usuario.perfilId == 3)){
@@ -17,8 +17,8 @@ class AuthMiddleware{
         }
     }
     async validarAdmin(req,res,next){
-        if(req.cookies != undefined && req.cookies.usuarioLogado != undefined ){
-            let usuarioId = req.cookies.usuarioLogado
+        if(req.signedCookies != undefined && req.signedCookies.usuarioLogado != undefined ){
+            let usuarioId = req.signedCookies.usuarioLogado
             let usuario = new ClienteModel()
             usuario = await usuario.Get(usuarioId)
             if(usuario != null && usuario.cliStatus == 1 && usuario.perfilId == 3){

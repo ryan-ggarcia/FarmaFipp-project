@@ -7,14 +7,16 @@ class ItemDevolucaoModel {
     #motivo
     #produtoId
     #nomeProduto
+    #produtoSubstituto
 
-    constructor(id, quantidade, devolucaoId, motivo, produtoId, nomeProduto) {
+    constructor(id, quantidade, devolucaoId, motivo, produtoId, nomeProduto, produtoSubstituto = null) {
         this.#id = id;
         this.#quantidade = quantidade;
         this.#devolucaoId = devolucaoId;
         this.#motivo = motivo;
         this.#produtoId = produtoId;
         this.#nomeProduto = nomeProduto;
+        this.#produtoSubstituto = produtoSubstituto;
     }
 
     // Getters
@@ -24,6 +26,7 @@ class ItemDevolucaoModel {
     getMOTIVO() { return this.#motivo; }
     getPRODUTOID() { return this.#produtoId; }
     getNOMEPRODUTO() { return this.#nomeProduto; }
+    getPRODUTOSUBSTITUTO() { return this.#produtoSubstituto; }
 
     // Setters
     setID(x) { this.#id = x; }
@@ -34,20 +37,35 @@ class ItemDevolucaoModel {
     setNOMEPRODUTO(x) { this.#nomeProduto = x; }
 
     async cadastrar() {
-        let sql = `INSERT INTO item_devolucao 
-            (itemDev_quantidade, EfetuarDevolucao_ItemDevolucao, itemDev_motivo, Produto_ItemDevolucao) 
-            VALUES (?, ?, ?, ?)`;
+        let sql = `INSERT INTO item_devolucao
+            (itemDev_quantidade, EfetuarDevolucao_ItemDevolucao, itemDev_motivo, Produto_ItemDevolucao, Produto_Substituto)
+            VALUES (?, ?, ?, ?, ?)`;
 
         let valores = [
             this.#quantidade,
             this.#devolucaoId,
             this.#motivo,
-            this.#produtoId
+            this.#produtoId,
+            this.#produtoSubstituto != null ? this.#produtoSubstituto : null
         ];
 
         let banco = new Database();
         let result = await banco.ExecutaComandoNonQuery(sql, valores);
         return result;
+    }
+
+    async totalDevolvidoAprovadoPorProduto(produtoId) {
+        const pid = Number(produtoId);
+        if (Number.isNaN(pid) || pid <= 0) {
+            return 0;
+        }
+        let sql = `SELECT COALESCE(SUM(i.itemDev_quantidade), 0) total
+                   FROM item_devolucao i
+                   INNER JOIN efetuar_devolucao d ON i.EfetuarDevolucao_ItemDevolucao = d.idEfetuar_devolucao
+                   WHERE i.Produto_ItemDevolucao = ? AND d.devo_status = 'Aprovado'`;
+        let banco = new Database();
+        let rows = await banco.ExecutaComando(sql, [pid]);
+        return Number(rows[0] ? rows[0].total : 0);
     }
 
     async listarPorDevolucao(devolucaoId) {
@@ -56,8 +74,9 @@ class ItemDevolucaoModel {
                 i.idItem_devolucao, 
                 i.itemDev_quantidade, 
                 i.EfetuarDevolucao_ItemDevolucao, 
-                i.itemDev_motivo, 
+                i.itemDev_motivo,
                 i.Produto_ItemDevolucao,
+                i.Produto_Substituto,
                 p.pro_nome
             FROM item_devolucao i
             INNER JOIN produto p ON i.Produto_ItemDevolucao = p.idProduto
@@ -76,7 +95,8 @@ class ItemDevolucaoModel {
                 rows[i]["EfetuarDevolucao_ItemDevolucao"],
                 rows[i]["itemDev_motivo"],
                 rows[i]["Produto_ItemDevolucao"],
-                rows[i]["pro_nome"]
+                rows[i]["pro_nome"],
+                rows[i]["Produto_Substituto"]
             );
             lista.push(item);
         }

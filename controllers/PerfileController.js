@@ -6,7 +6,7 @@ class PerfilController{
 
     async perfileView(req, res){
         let usuario = new ClienteModel();
-        let id = req.cookies.usuarioLogado;
+        let id = req.signedCookies.usuarioLogado;
         let cliente = await usuario.Get(id);
         let user = cliente || false;
         res.render("perfil/perfile", {user: user, layout: false});
@@ -14,7 +14,7 @@ class PerfilController{
 
     async editarView(req, res){
         let usuario = new ClienteModel();
-        let id = req.cookies.usuarioLogado;
+        let id = req.signedCookies.usuarioLogado;
         let cliente = await usuario.Get(id);
         let user = cliente || false;
         res.render("perfil/editar", {user: user, layout: false});
@@ -22,12 +22,12 @@ class PerfilController{
 
     async alterar(req, res){
         try {
-            let id = req.cookies.usuarioLogado;
+            let id = req.signedCookies.usuarioLogado;
             if (!id) {
                 return res.status(401).send({ ok: false, msg: "Usuário não autenticado." });
             }
 
-            const { 
+            const {
                 nome, 
                 data, 
                 telefone, 
@@ -129,7 +129,7 @@ class PerfilController{
 
     async excluir(req, res) {
         try {
-            let id = req.cookies.usuarioLogado;
+            let id = req.signedCookies.usuarioLogado;
             if (!id) {
                 return res.status(401).send({ ok: false, msg: "Usuário não autenticado." });
             }

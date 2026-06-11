@@ -219,7 +219,7 @@ class ProdutoModel{
         return await banco.ExecutaComando(sql, values);
     }
 
-    async DecreaseStock(idProduto, quantidade) {
+    async DecreaseStock(idProduto, quantidade, transactionConnection = null) {
         const qtdNum = Number(quantidade || 0);
         if (!idProduto || Number.isNaN(qtdNum) || qtdNum <= 0) {
             return false;
@@ -234,6 +234,9 @@ class ProdutoModel{
         const values = [qtdNum, idProduto, qtdNum];
         const banco = new Database();
 
+        if (transactionConnection) {
+            return await banco.ExecutaComandoNonQueryTransacao(sql, values, transactionConnection);
+        }
         return await banco.ExecutaComandoNonQuery(sql, values);
     }
 

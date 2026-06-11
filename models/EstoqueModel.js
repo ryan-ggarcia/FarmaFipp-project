@@ -93,6 +93,12 @@ class EstoqueModel{
         return result;
     }
 
+    async existeMovimentacaoPorOrigem(origem){
+        let sql = 'select 1 from movimentacao_estoque where origem = ? limit 1';
+        let rows = await banco.ExecutaComando(sql, [origem]);
+        return rows.length > 0;
+    }
+
     async ListInventory(){
         let sql = 'select m.*, l.lot_name, l.lot_validade from movimentacao_estoque m left join Lote l on m.lote_id = l.lot_id order by m.mov_id desc';
 

@@ -7,10 +7,16 @@ jest.mock('../../models/DevolucaoModel');
 jest.mock('../../models/ItemDevolucaoModel');
 jest.mock('../../models/ProdutoModel');
 jest.mock('../../models/ClienteModel');
+jest.mock('../../models/LoteModel');
+jest.mock('../../models/EstoqueModel');
+jest.mock('../../models/ItemVendaModel');
 
 const DevolucaoController = require('../../controllers/DevolucaoController');
 const DevolucaoModel = require('../../models/DevolucaoModel');
 const ItemDevolucaoModel = require('../../models/ItemDevolucaoModel');
+const EstoqueModel = require('../../models/EstoqueModel');
+const ItemVendaModel = require('../../models/ItemVendaModel');
+const LoteModel = require('../../models/LoteModel');
 
 describe('DevolucaoController', () => {
     let controller;
@@ -27,6 +33,17 @@ describe('DevolucaoController', () => {
             status: jest.fn().mockReturnThis()
         };
         jest.clearAllMocks();
+
+        // Restock é exercitado em teste de integração; aqui o guard de idempotência
+        // curto-circuita o fluxo para manter os testes unitários do controller isolados.
+        EstoqueModel.mockImplementation(() => ({
+            existeMovimentacaoPorOrigem: jest.fn().mockResolvedValue(true)
+        }));
+
+        // Substituto de troca (RN-11): por padrão há lote disponível.
+        LoteModel.mockImplementation(() => ({
+            getLoteParaVenda: jest.fn().mockResolvedValue(1)
+        }));
     });
 
     describe('cadastrarPresencial()', () => {
@@ -67,14 +84,22 @@ describe('DevolucaoController', () => {
             dataRecente.setDate(dataRecente.getDate() - 5);
             mockReq.body = {
                 tipo: 'Venda', clienteId: 1, dataCompra: dataRecente.toISOString().split('T')[0],
-                produtoId: 1, quantidade: 2, motivo: 'Defeito', observacao: 'OK'
+                produtoId: 1, quantidade: 2, motivo: 'Defeito', observacao: 'OK', produtoSubstituto: 2
             };
 
             const mockCadastrar = jest.fn().mockResolvedValue(10);
             DevolucaoModel.mockImplementation(() => ({ cadastrar: mockCadastrar }));
 
             const mockItemCadastrar = jest.fn().mockResolvedValue(true);
-            ItemDevolucaoModel.mockImplementation(() => ({ cadastrar: mockItemCadastrar }));
+            ItemDevolucaoModel.mockImplementation(() => ({
+                cadastrar: mockItemCadastrar,
+                totalDevolvidoAprovadoPorProduto: jest.fn().mockResolvedValue(0)
+            }));
+
+            // Produto com histórico de venda suficiente (RN-13)
+            ItemVendaModel.mockImplementation(() => ({
+                totalVendidoPorProduto: jest.fn().mockResolvedValue(100)
+            }));
 
             await controller.cadastrarPresencial(mockReq, mockRes);
             expect(mockRes.send).toHaveBeenCalledWith(expect.objectContaining({ ok: true }));
@@ -143,10 +168,16 @@ describe('DevolucaoController', () => {
             dataRecente.setDate(dataRecente.getDate() - 3);
             mockReq.body = {
                 tipo: 'Venda', produtoId: 1, dataCompra: dataRecente.toISOString().split('T')[0],
-                quantidade: 1, motivo: 'Defeito', nomeCliente: 'João', contato: '(18)99999-0000'
+                quantidade: 1, motivo: 'Defeito', nomeCliente: 'João', contato: '(18)99999-0000', produtoSubstituto: 2
             };
             DevolucaoModel.mockImplementation(() => ({ cadastrar: jest.fn().mockResolvedValue(20) }));
-            ItemDevolucaoModel.mockImplementation(() => ({ cadastrar: jest.fn().mockResolvedValue(true) }));
+            ItemDevolucaoModel.mockImplementation(() => ({
+                cadastrar: jest.fn().mockResolvedValue(true),
+                totalDevolvidoAprovadoPorProduto: jest.fn().mockResolvedValue(0)
+            }));
+            ItemVendaModel.mockImplementation(() => ({
+                totalVendidoPorProduto: jest.fn().mockResolvedValue(100)
+            }));
             await controller.solicitarOnline(mockReq, mockRes);
             expect(mockRes.send).toHaveBeenCalledWith(expect.objectContaining({ ok: true }));
         });

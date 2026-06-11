@@ -14,7 +14,7 @@ class LoginController{
         let perfil = 0
         let { email, senha } = req.body
 
-        if(email != "" && senha != ""){
+        if(email && senha){
             let banco = new LoginModel()
             let result = await banco.verificar(email)
             if(result != null){
@@ -22,7 +22,7 @@ class LoginController{
                 if( await bcrypt.compare(senha,result.senha)){
                     // gravar id do usuário no cookie (result tem cli_id)
                     
-                    res.cookie("usuarioLogado", result.cli_id)
+                    res.cookie("usuarioLogado", result.cli_id, { signed: true, httpOnly: true })
                     ok = true
                     msg = "Redirecionando para a página inícial..."
                     perfil = result.cli_status

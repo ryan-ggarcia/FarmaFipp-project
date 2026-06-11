@@ -30,6 +30,15 @@
           <label class="form-label">Quantidade</label>
           <input id="quantidade" type="number" min="1" value="1" class="form-control">
         </div>
+        <div class="col-md-8" id="grupoSubstituto" style="display:none;">
+          <label class="form-label">Produto desejado na troca</label>
+          <select id="produtoSubstituto" class="form-control">
+            <option value="">--Selecione o produto--</option>
+            <% for(let i = 0; i < listaProdutos.length; i++) { %>
+              <option value="<%= listaProdutos[i].id %>"><%= listaProdutos[i].nome %></option>
+            <% } %>
+          </select>
+        </div>
         <div class="col-md-6">
           <label class="form-label">Seu Nome</label>
           <input id="nomeCliente" type="text" class="form-control" placeholder="Nome completo">

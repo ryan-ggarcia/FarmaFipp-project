@@ -131,7 +131,7 @@ class UsuarioController {
 
     async agendarServico(req, res) {
         const { data, hora, tipo, func, obs } = req.body;
-        const clie = req.cookies.usuarioLogado;
+        const clie = req.signedCookies.usuarioLogado;
 
         const vazio = (v) => v === undefined || v === null || String(v).trim() === '';
         const horaValida = /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(hora || ''));
@@ -148,6 +148,15 @@ class UsuarioController {
         }
         if (data < hoje) {
             return res.send({ ok: false, msg: 'Não é permitido agendar em data anterior à atual.' });
+        }
+
+        // Impede agendamento em horário já ocupado (pelo profissional ou pelo próprio cliente)
+        const conflito = await new ServicoModel().verificarConflito(data, hora, Number(func), Number(clie));
+        if (conflito) {
+            const msg = conflito.funcionario
+                ? 'O profissional selecionado já possui um serviço nesse horário.'
+                : 'Você já possui um serviço agendado nesse horário.';
+            return res.send({ ok: false, msg });
         }
 
         // Preço vem do valor cadastrado no tipo de serviço selecionado

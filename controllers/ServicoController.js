@@ -33,6 +33,10 @@ class ServicoController {
         listaFunc = await listaFunc.Read()
         servico = await servico.obter(req.params.idAlteracao);
 
+        if (!servico) {
+            return res.redirect("/admin/servicos");
+        }
+
         res.render("servicos/alterar", { servico,listaTipos, listaCliente, listaFunc, active: 'servicos' });
     }
 
@@ -86,6 +90,13 @@ class ServicoController {
 
         if (!statusFinal) {
             return res.send({ ok: false, msg: 'Status inválido para cadastro de serviço.' });
+        }
+
+        const conflito = await new ServicoModel().verificarConflito(data, hora, Number(func), Number(clie));
+        if (conflito) {
+            return res.send({ ok: false, msg: conflito.funcionario
+                ? 'O profissional já possui um serviço nesse horário.'
+                : 'O cliente já possui um serviço nesse horário.' });
         }
 
         let servico = new ServicoModel(0, data, hora, precoNum, statusFinal, obs, Number(tipo), Number(func), Number(clie));
@@ -143,6 +154,13 @@ class ServicoController {
 
         const statusFinal = statusMap[String(status).toLowerCase()] || status;
 
+        const conflito = await new ServicoModel().verificarConflito(data, hora, Number(func), Number(clie), Number(id));
+        if (conflito) {
+            return res.send({ ok: false, msg: conflito.funcionario
+                ? 'O profissional já possui um serviço nesse horário.'
+                : 'O cliente já possui um serviço nesse horário.' });
+        }
+
         let servico = new ServicoModel(Number(id), data, hora, precoNum, statusFinal, obs, Number(tipo), Number(func), Number(clie));
         let result = await servico.atualizar();
 
@@ -164,7 +182,7 @@ class ServicoController {
         if (req.body.id && req.body.id != "0") {
             let servico = new ServicoModel();
             let result = await servico.deletar(req.body.id);
-            if (result != null) {
+            if (result) {
                 ok = true;
                 msg = "Serviço excluído!";
             }

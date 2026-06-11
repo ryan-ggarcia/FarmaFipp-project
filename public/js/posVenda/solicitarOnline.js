@@ -3,6 +3,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let btn = document.getElementById("btnEnviar");
     btn.addEventListener("click", enviar);
 
+    // Mostra o campo de produto substituto apenas quando o tipo for Troca ('Venda')
+    let tipoSelect = document.getElementById("tipo");
+    let grupoSubstituto = document.getElementById("grupoSubstituto");
+    tipoSelect.addEventListener("change", function () {
+        grupoSubstituto.style.display = tipoSelect.value === "Venda" ? "" : "none";
+    });
+
     function enviar() {
         let inputTipo = document.getElementById("tipo");
         inputTipo.style.borderColor = "#ced4da";
@@ -18,6 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
         inputContato.style.borderColor = "#ced4da";
         let inputMotivo = document.getElementById("motivo");
         inputMotivo.style.borderColor = "#ced4da";
+        let inputSubstituto = document.getElementById("produtoSubstituto");
+        inputSubstituto.style.borderColor = "#ced4da";
 
         // Validação dos campos obrigatórios
         let listaValidacao = [];
@@ -28,6 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (inputNome.value.trim() === "") listaValidacao.push("nomeCliente");
         if (inputContato.value.trim() === "") listaValidacao.push("contato");
         if (inputMotivo.value.trim() === "") listaValidacao.push("motivo");
+        // Na troca ('Venda'), o produto substituto é obrigatório
+        if (inputTipo.value === "Venda" && inputSubstituto.value === "") listaValidacao.push("produtoSubstituto");
 
         // Validação da data da compra
         if (inputDataCompra.value !== "") {
@@ -61,7 +72,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     quantidade: inputQuantidade.value,
                     motivo: inputMotivo.value,
                     nomeCliente: inputNome.value,
-                    contato: inputContato.value
+                    contato: inputContato.value,
+                    produtoSubstituto: inputSubstituto.value
                 })
             })
             .then(function (resposta) {

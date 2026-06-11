@@ -29,16 +29,14 @@ const server = express();
 const middleware = require('./middleware/authMiddleware');
 
 server.set('view engine', 'ejs');
-server.use(cookieParser());
+server.use(cookieParser(process.env.COOKIE_SECRET));
 server.use(expressEjsLayouts);
 server.set('layout', "layout");
 server.use(express.static(__dirname + "/public"));
 server.use(express.urlencoded({extended:true}));
 server.use(express.json());
 
-// ==============================
-// ROTAS LIVRES (sem login)
-// ==============================
+
 server.use("/login", loginRouter);
 
 server.get("/logout", function (req, res) {
@@ -46,9 +44,7 @@ server.get("/logout", function (req, res) {
     res.redirect("/login");
 });
 
-// ==============================
-// ROTAS ADMIN (layout admin)
-// ==============================
+
 server.use("/admin/produtos", middleware.validarAdmin, ProdutoRouter);
 server.use("/admin/servicos", middleware.validarAdmin, ServicoRouter);
 server.use("/admin/clientes", middleware.validarAdmin, ClienteRouter);
@@ -59,17 +55,13 @@ server.use("/admin/pos-venda", middleware.validarAdmin, DevolucaoRouter);
 server.use("/admin/promocoes", middleware.validarAdmin, PromocaoRouter);
 server.use("/admin", middleware.validarAdmin, homeRouter);
 
-// ==============================
-// ROTAS CLIENTE / PÚBLICAS LOGADAS
-// ==============================
+
 server.use("/perfil", middleware.validarCliente, PerfilRoute);
 server.use("/produtos", middleware.validarCliente, ProdutoPublicRouter);
 server.use("/pos-venda", middleware.validarCliente, DevolucaoPublicRouter);
 server.use("/", middleware.validarCliente, usuarioRouter);
 
-// ==============================
-// API
-// ==============================
+
 server.use("/venda", VendaRouter);
 
 global.CAMINHO_IMG_ABS = __dirname + "/public/img/produtos/";  

@@ -86,15 +86,17 @@ class VendaModel{
         this.formaPagamento = formaPagamento
     }
 
-    async RegistrarVenda(){
-        let sql = `INSERT INTO venda_teste 
-            (ven_status, ven_forma_pagamento, ven_total) 
+    async RegistrarVenda(transactionConnection = null){
+        let sql = `INSERT INTO venda_teste
+            (ven_status, ven_forma_pagamento, ven_total)
             VALUES (?, ?, ?)`
 
         let values = [this.status || 'PENDENTE', this.formaPagamento || 'PIX', this.valorFinal || 0]
 
-        let result = await banco.ExecutaComandoLastInserted(sql, values)
-        
+        let result = transactionConnection
+            ? await banco.ExecutaComandoLastInsertedTransacao(sql, values, transactionConnection)
+            : await banco.ExecutaComandoLastInserted(sql, values)
+
         this.id = result;
 
         return result
@@ -148,12 +150,14 @@ class VendaModel{
         return null
     }
 
-    async AtualizarVenda(){
+    async AtualizarVenda(transactionConnection = null){
         let sql = "UPDATE venda_teste SET ven_total = ?, ven_status = ? WHERE id_venda = ?"
 
         let values = [this.valorFinal, this.status, this.id]
 
-        let result = await banco.ExecutaComandoNonQuery(sql, values)
+        let result = transactionConnection
+            ? await banco.ExecutaComandoNonQueryTransacao(sql, values, transactionConnection)
+            : await banco.ExecutaComandoNonQuery(sql, values)
 
         return result
     }

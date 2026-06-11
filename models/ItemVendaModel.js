@@ -96,14 +96,16 @@ class ItemVendaModel{
         this.#venda_valor_total = venda_valor_total
     }
 
-    async RegistrarItemVenda(){
-        let sql = `INSERT INTO venda_item_teste 
-            (id_venda, id_produto, id_lote, vitem_quant, vitem_valoruni, vitem_valortotal) 
+    async RegistrarItemVenda(transactionConnection = null){
+        let sql = `INSERT INTO venda_item_teste
+            (id_venda, id_produto, id_lote, vitem_quant, vitem_valoruni, vitem_valortotal)
             VALUES (?, ?, ?, ?, ?, ?)`
 
         let values = [this.id_venda, this.id_produto, this.id_lote, this.item_quant, this.item_valor, this.item_valor_total]
 
-        let result = await banco.ExecutaComandoNonQuery(sql, values)
+        let result = transactionConnection
+            ? await banco.ExecutaComandoNonQueryTransacao(sql, values, transactionConnection)
+            : await banco.ExecutaComandoNonQuery(sql, values)
 
         return result
     }
@@ -190,6 +192,16 @@ class ItemVendaModel{
                 itemValorTotal: Number(row.vitem_valortotal_ajustado || 0)
             };
         });
+    }
+
+    async totalVendidoPorProduto(produtoId){
+        const pid = Number(produtoId);
+        if (Number.isNaN(pid) || pid <= 0) {
+            return 0;
+        }
+        const sql = 'select coalesce(sum(vitem_quant), 0) total from venda_item_teste where id_produto = ?';
+        const rows = await banco.ExecutaComando(sql, [pid]);
+        return Number(rows[0] ? rows[0].total : 0);
     }
 
     async ListarPorVenda(idVenda) {

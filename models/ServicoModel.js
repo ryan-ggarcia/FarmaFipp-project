@@ -74,6 +74,31 @@ class ServicoModel{
         return result;
     }
 
+    async verificarConflito(data, hora, func, clie, ignorarId = null) {
+        let sql = `select funcionario_agenda, cliente_agenda
+                   from agendar_servico
+                   where serv_data = ? and serv_hora = ? and serv_status <> 'Inativo'
+                     and (funcionario_agenda = ? or cliente_agenda = ?)`;
+        let valores = [data, hora, func, clie];
+
+        if (ignorarId) {
+            sql += " and idAgendar_Servico <> ?";
+            valores.push(ignorarId);
+        }
+
+        let banco = new Database();
+        let rows = await banco.ExecutaComando(sql, valores);
+
+        if (rows.length === 0) {
+            return null;
+        }
+
+        return {
+            funcionario: rows.some(r => Number(r.funcionario_agenda) === Number(func)),
+            cliente: rows.some(r => Number(r.cliente_agenda) === Number(clie))
+        };
+    }
+
     async obter(id) {
         let sql = `select idAgendar_Servico, serv_data, serv_hora, serv_preco, serv_status,
                           serv_observacoes, serv_tipo,
@@ -126,20 +151,16 @@ class ServicoModel{
     }
 
     async deletar(id) {
-        //Deletando primeiro a entidade filho do relacionamentos muitos pra muitos
+        //Remove eventuais vínculos na tabela filha (M2M) — pode não existir nenhum,
+        //por isso não condicionamos a exclusão principal ao retorno deste delete
         const sqlChild = "delete from agendar_servico_funcionario where Agendar_Servico_idAgendar_Servico = ?"
-        
+
         const sql = "delete from agendar_servico where idAgendar_Servico = ?";
-        const valores = [id]; 
+        const valores = [id];
         const banco = new Database();
-        let deleteChild = await banco.ExecutaComandoNonQuery(sqlChild, valores);
-        if(deleteChild){
-            //Caso o retoro da promisse de deleção do filho seja positivo 
-            let result = await banco.ExecutaComandoNonQuery(sql, valores);
-            return result
-        }else{
-            return null;
-        }
+        await banco.ExecutaComandoNonQuery(sqlChild, valores);
+        let result = await banco.ExecutaComandoNonQuery(sql, valores);
+        return result;
 
     }
 

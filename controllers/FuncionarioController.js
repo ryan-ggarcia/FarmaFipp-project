@@ -18,6 +18,9 @@ class FuncionarioController{
         let funcionario = new FuncionarioModel();
         let endereco = new EnderecoModelFuncionario();
         funcionario = await funcionario.Get(req.params.id)
+        if (!funcionario) {
+            return res.redirect("/admin/funcionarios/listar");
+        }
         endereco = await endereco.Get(funcionario.funcId)
         res.render("funcionarios/alterar", { funcionario, endereco, active: 'funcionarios' })
     }

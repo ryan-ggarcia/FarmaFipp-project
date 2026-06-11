@@ -3,6 +3,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let btn = document.getElementById("btnGravar");
     btn.addEventListener("click", gravar);
 
+    // Mostra o campo de produto substituto apenas quando o tipo for Troca ('Venda')
+    let tipoSelect = document.getElementById("tipo");
+    let grupoSubstituto = document.getElementById("grupoSubstituto");
+    tipoSelect.addEventListener("change", function () {
+        grupoSubstituto.style.display = tipoSelect.value === "Venda" ? "" : "none";
+    });
+
     // Inicializar Select2 no campo de produto (se disponível)
     if (typeof $ !== 'undefined' && $.fn.select2) {
         $('.select2-produto').select2({
@@ -24,6 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
         inputQuantidade.style.borderColor = "#ced4da";
         let inputMotivo = document.getElementById("motivo");
         inputMotivo.style.borderColor = "#ced4da";
+        let inputSubstituto = document.getElementById("produtoSubstituto");
+        inputSubstituto.style.borderColor = "#ced4da";
 
         // Validação dos campos obrigatórios
         let listaValidacao = [];
@@ -33,6 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (inputProduto.value === "") listaValidacao.push("produtoId");
         if (inputQuantidade.value === "" || inputQuantidade.value <= 0) listaValidacao.push("quantidade");
         if (inputMotivo.value === "") listaValidacao.push("motivo");
+        // Na troca ('Venda'), o produto substituto é obrigatório
+        if (inputTipo.value === "Venda" && inputSubstituto.value === "") listaValidacao.push("produtoSubstituto");
 
         if (listaValidacao.length === 0) {
             let observacao = document.getElementById("observacao").value;
@@ -49,7 +60,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     produtoId: inputProduto.value,
                     quantidade: inputQuantidade.value,
                     motivo: inputMotivo.value,
-                    observacao: observacao
+                    observacao: observacao,
+                    produtoSubstituto: inputSubstituto.value
                 })
             })
             .then(function (resposta) {

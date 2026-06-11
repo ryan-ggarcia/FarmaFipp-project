@@ -18,6 +18,9 @@ class ClienteController{
         let cliente = new ClienteModel();
         let endereco = new EnderecoModelCliente()
         cliente = await cliente.Get(req.params.id)
+        if (!cliente) {
+            return res.redirect("/admin/clientes/listar");
+        }
         endereco = await endereco.Get(cliente.cliId)
         res.render('clientes/alterar', { cliente, endereco, active: 'clientes' });
     }
@@ -98,10 +101,17 @@ class ClienteController{
         if(!cpf.isValid(cpfLimpo)){
             return res.send({ok: false, msg: "CPF inválido"})
         }
+        //Verifica se a senha foi alterada
+        let senhaHash = senha
+        let clienteDoBanco = new ClienteModel()
+        clienteDoBanco = await clienteDoBanco.Get(id)
 
+        if(clienteDoBanco.cliSenha != senha){
+            senhaHash = await bcrypt.hash(senha, 10)
+        }
 
         //Update do cliente
-        let cliente = new ClienteModel(id, nome, status, cpfLimpo, email, senha, telefone, data, 1)
+        let cliente = new ClienteModel(id, nome, status, cpfLimpo, email, senhaHash, telefone, data, 1)
         let result = await cliente.Update()
 
         //Update do endereço

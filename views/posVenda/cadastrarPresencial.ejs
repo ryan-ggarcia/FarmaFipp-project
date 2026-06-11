@@ -39,6 +39,15 @@
             <label class="form-label">Quantidade</label>
             <input id="quantidade" type="number" min="1" value="1" class="form-control">
           </div>
+          <div class="col-md-4" id="grupoSubstituto" style="display:none;">
+            <label class="form-label">Produto de Troca (substituto)</label>
+            <select id="produtoSubstituto" class="form-control select2-produto">
+              <option value="">--Selecione--</option>
+              <% for(let i = 0; i < listaProdutos.length; i++) { %>
+                <option value="<%= listaProdutos[i].id %>"><%= listaProdutos[i].nome %></option>
+              <% } %>
+            </select>
+          </div>
           <div class="col-md-12">
             <label class="form-label">Motivo da Devolução/Troca</label>
             <textarea id="motivo" class="form-control" rows="3" placeholder="Descreva o motivo..."></textarea>
