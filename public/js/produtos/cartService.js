@@ -68,26 +68,42 @@ function CartService() {
 
     // ── Public: addToCart ────────────────────────────────────
     function addToCart(produto) {
+        // Usa o preço promocional vigente quando houver (alinhado ao que o servidor cobra).
+        var precoEfetivo = Number(produto.precoPromocional) > 0
+            ? Number(produto.precoPromocional)
+            : Number(produto.preco);
+
+        // Estoque disponível (mesmo valor exibido na vitrine) para limitar a quantidade.
+        var estoque = Number(produto.quantidade);
+        var temEstoque = !Number.isNaN(estoque) && estoque > 0;
+
         var existing = cartList.find(function (item) {
             return String(item.id) === String(produto.id);
         });
 
         if (existing) {
+            if (temEstoque && (Number(existing.quantidade) || 0) >= estoque) {
+                return false; // já atingiu o estoque disponível
+            }
             existing.quantidade = (Number(existing.quantidade) || 0) + 1;
+            existing.preco = precoEfetivo;
+            if (temEstoque) existing.estoque = estoque;
         } else {
             cartList.push({
                 id: produto.id,
                 nome: produto.nome,
-                preco: Number(produto.preco),
+                preco: precoEfetivo,
                 quantidade: 1,
                 descricao: produto.descricao,
                 imagem: produto.imagem || produto.img,
-                id_lote: produto.id_lote || produto.idLote || null
+                id_lote: produto.id_lote || produto.idLote || null,
+                estoque: temEstoque ? estoque : undefined
             });
         }
 
         saveCart();
         updateBadge();
+        return true;
     }
 
     // ── Public: removeFromCart ───────────────────────────────
@@ -180,6 +196,10 @@ function CartService() {
                     return getItemKey(item) === String(btn.dataset.key);
                 });
                 if (target) {
+                    var estoqueT = Number(target.estoque);
+                    if (!Number.isNaN(estoqueT) && (Number(target.quantidade) || 0) >= estoqueT) {
+                        return; // não passa do estoque disponível
+                    }
                     target.quantidade = (Number(target.quantidade) || 0) + 1;
                     saveCart();
                     updateBadge();
@@ -273,8 +293,22 @@ document.addEventListener('DOMContentLoaded', function () {
                         id_lote: loteId || data.produto.id_lote || data.produto.idLote || null
                     };
 
-                    cartService.addToCart(produto);
+                    const adicionado = cartService.addToCart(produto);
                     updateCartBadge();
+
+                    if (!adicionado) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Estoque máximo',
+                            text: `Você já adicionou todo o estoque disponível de "${produto.nome}".`,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2500,
+                            timerProgressBar: true
+                        });
+                        return;
+                    }
 
                     Swal.fire({
                         icon: 'success',

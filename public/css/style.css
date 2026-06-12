@@ -294,3 +294,42 @@ body {
   display: flex;
   align-items: flex-start;
 }
+
+/* ══ LO-1 — responsividade do painel admin (<576px) ══════════
+   Mantém todo o conteúdo dentro da largura da tela: a cadeia de
+   containers não excede a viewport, tabelas largas rolam dentro
+   do próprio bloco e gráficos/imagens não forçam largura. */
+@media (max-width: 575.98px) {
+  /* Clampa o shell inteiro à largura da tela (a sobra vinha daqui) */
+  html, body, .wrapper, .content-wrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .content-wrapper .container-fluid,
+  .content-wrapper .dashboard-section,
+  .content-wrapper .card {
+    max-width: 100%;
+  }
+  /* Tabela rola horizontalmente apenas dentro do seu container */
+  .content-wrapper .table-responsive {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Largura mínima legível garante o scroll quando há muitas colunas */
+  .content-wrapper .table-responsive > .table {
+    min-width: 560px;
+  }
+  /* Gráficos e imagens nunca excedem o container */
+  .content-wrapper canvas,
+  .content-wrapper img {
+    max-width: 100% !important;
+  }
+  /* Rodapé quebra linha em vez de ser cortado */
+  .main-footer {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

@@ -554,6 +554,22 @@ table.table-produtos > tbody > tr.produto-row:hover {
   }
 }
 
+/* ══ LO-1 — telas pequenas (<576px): evita overflow horizontal ══ */
+@media (max-width: 575.98px) {
+  /* Força 2 colunas que encolhem até caber — sem 3º card cortado */
+  .stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* Grupo de ações do cabeçalho (busca + botões) quebra linha */
+  .d-flex.gap-2 {
+    flex-wrap: wrap;
+  }
+  /* Busca ocupa a linha inteira; os botões descem para a próxima */
+  .search-box {
+    flex: 1 1 100%;
+  }
+}
+
 /* ══ ANIMATION ══ */
 .produto-row {
   animation: fadeRow .3s ease both;

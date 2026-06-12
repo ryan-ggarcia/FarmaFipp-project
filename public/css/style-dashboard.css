@@ -193,3 +193,15 @@
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ══ LO-1 — telas pequenas (<576px): KPIs encolhem/quebram ══ */
+@media (max-width: 575.98px) {
+  /* Força 2 colunas que encolhem até caber — sem 3º card cortado */
+  .dash-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* Cabeçalhos dos cards de gráfico (título + total) quebram linha */
+  .dash-chart-card .d-flex {
+    flex-wrap: wrap;
+  }
+}

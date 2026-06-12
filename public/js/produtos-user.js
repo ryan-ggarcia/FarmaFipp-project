@@ -101,15 +101,6 @@ document.querySelectorAll('.wishlist-btn').forEach(btn => {
     });
 });
 
-// Add to cart feedback
-document.querySelectorAll('.btn-add:not([disabled])').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const orig = this.innerHTML;
-        this.innerHTML = '<i class="bi bi-check-circle me-1"></i>Adicionado!';
-        this.style.background = '#2D6A4F';
-        setTimeout(() => {
-            this.innerHTML = orig;
-            this.style.background = '';
-        }, 1500);
-    });
-});
+// Observação: a adição real ao carrinho é feita pelos botões `.add-to-cart`
+// (ver cartService.js). Os elementos `.btn-add` da home são links "Ver no Shop",
+// portanto não há aqui nenhum handler de "adicionar" — evita feedback enganoso.

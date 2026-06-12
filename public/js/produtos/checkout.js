@@ -149,6 +149,19 @@ document.addEventListener("DOMContentLoaded", function() {
         let produtoId = this.dataset.produto;
         for(let i = 0; i < listaCarrinho.length; i++) {
             if(String(listaCarrinho[i].id) === String(produtoId)) {
+                let estoque = Number(listaCarrinho[i].estoque);
+                if(!Number.isNaN(estoque) && listaCarrinho[i].quantidade >= estoque) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Estoque máximo',
+                        text: 'Quantidade limitada ao estoque disponível.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                    return;
+                }
                 listaCarrinho[i].quantidade += 1;
                 break;
             }
@@ -188,6 +201,20 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Evita duplo clique (venda duplicada): trava o botão durante o envio.
+        let btnConfirm = document.getElementById("btnConfirmOrder");
+        let textoOriginalBtn = btnConfirm ? btnConfirm.innerHTML : "";
+        if(btnConfirm) {
+            btnConfirm.disabled = true;
+            btnConfirm.innerHTML = "Processando...";
+        }
+        function reativarBotao() {
+            if(btnConfirm) {
+                btnConfirm.disabled = false;
+                btnConfirm.innerHTML = textoOriginalBtn;
+            }
+        }
+
         let itens = [];
         for(let i = 0; i < listaCarrinho.length; i++) {
             let item = listaCarrinho[i];
@@ -220,6 +247,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     window.location.href = "/shop";
                 });
             } else {
+                reativarBotao();
                 Swal.fire({
                     icon: 'error',
                     title: 'Erro no pedido',
@@ -229,6 +257,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(function(erro) {
+            reativarBotao();
             console.error("Erro ao confirmar venda:", erro);
             Swal.fire({
                 icon: 'error',
