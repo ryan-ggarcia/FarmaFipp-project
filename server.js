@@ -50,7 +50,7 @@ server.get("/logout", function (req, res) {
 // ROTAS ADMIN (layout admin)
 // ==============================
 server.use("/admin/produtos", middleware.validarAdmin, ProdutoRouter);
-server.use("/admin/servicos", middleware.validarAdmin, ServicoRouter);
+server.use("/admin/servicos", middleware.validarAdminOuFuncionario, ServicoRouter);
 server.use("/admin/clientes", middleware.validarAdmin, ClienteRouter);
 server.use("/admin/fornecedores", middleware.validarAdmin, FornecedorRouter);
 server.use("/admin/funcionarios", middleware.validarAdmin, FuncionarioRouter);

@@ -16,10 +16,18 @@ function formatarDataHora(value) {
 }
 
 function mapearStatus(status) {
+	const statusTexto = String(status || "").toLowerCase();
 	const statusNum = Number(status);
-	if (statusNum === 1) return { texto: "Agendado", classe: "bg-primary" };
-	if (statusNum === 2) return { texto: "Concluido", classe: "bg-success" };
-	if (statusNum === 3) return { texto: "Cancelado", classe: "bg-danger" };
+	if (statusNum === 1 || statusTexto === "ativo" || statusTexto === "agendado" || statusTexto === "aprovado") {
+		return { texto: "Aprovado", classe: "bg-success" };
+	}
+	if (statusTexto === "aguardando" || statusTexto === "aguardando aprovacao") {
+		return { texto: "Aguardando Aprovação", classe: "bg-secondary" };
+	}
+	if (statusNum === 2 || statusTexto === "concluido") return { texto: "Concluido", classe: "bg-primary" };
+	if (statusNum === 3 || statusTexto === "cancelado" || statusTexto === "inativo" || statusTexto === "nao_aprovado" || statusTexto === "recusado") {
+		return { texto: "Recusado", classe: "bg-danger" };
+	}
 	return { texto: "Aguardando Aprovação", classe: "bg-secondary" };
 }
 %>

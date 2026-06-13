@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function(){
             .then(dados =>{
                 if(dados.ok){
                     alert("Serviço cadastrado com sucesso!");
+                    window.location.href="/servicos/listar"
                 } else {
                     alert("Erro ao cadastrar serviço: " + dados.msg);
                 }

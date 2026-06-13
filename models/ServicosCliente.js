@@ -100,6 +100,34 @@ class ServicosCliente {
         return lista;
     }
 
+    async listarSolicitacoesAdmin(){
+        const sql = `
+            select
+                sc.serv_id,
+                sc.serv_data,
+                sc.serv_obs,
+                sc.serv_tipo,
+                sc.serv_status,
+                sc.cli_id,
+                ts.tipo_nome,
+                c.cli_nome
+            from servicos_cliente sc
+            inner join Tipo_Servico ts on sc.serv_tipo = ts.tipo_id
+            inner join cliente c on sc.cli_id = c.idClinete
+            order by sc.serv_data asc
+        `;
+
+        const rows = await banco.ExecutaComando(sql);
+        return rows || [];
+    }
+
+    async atualizarStatus(id, status){
+        const sql = "update servicos_cliente set serv_status = ? where serv_id = ?";
+        const values = [status, id];
+        const result = await banco.ExecutaComandoNonQuery(sql, values);
+        return result;
+    }
+
     async deletar(id){
         let sql = "update servicos_cliente set serv_status = 'Inativo' where serv_id = ?";
 

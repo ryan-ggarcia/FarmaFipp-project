@@ -7,6 +7,11 @@ const _total       = lista.length;
 const _aprovados   = lista.filter(s => s.getSTATUS() === 'aprovado').length;
 const _aguardando  = lista.filter(s => s.getSTATUS() === 'aguardando').length;
 const _naoAprov    = lista.filter(s => s.getSTATUS() === 'nao_aprovado').length;
+const _solicitacoes = Array.isArray(solicitacoes) ? solicitacoes : [];
+const _pendentes = _solicitacoes.filter(s => {
+  const st = String(s.serv_status || '').toLowerCase();
+  return st === 'aguardando' || st === 'aguardando aprovacao';
+}).length;
 %>
 
 <div class="p-3 p-1-25">
@@ -197,5 +202,90 @@ const _naoAprov    = lista.filter(s => s.getSTATUS() === 'nao_aprovado').length;
       </small>
     </div>
   <% } %>
+
+  <!-- ── Solicitações de clientes (aprovação) ── -->
+  <div id="solicitacoes-clientes" class="d-flex justify-content-between align-items-center mt-4 mb-3 flex-wrap gap-2">
+    <div>
+      <h4 class="mb-0">Solicitações de clientes</h4>
+      <small class="text-muted">Aprove ou não as solicitações de serviço enviadas no portal do cliente</small>
+    </div>
+    <span class="qtd-badge qtd-low">Pendentes: <%= _pendentes %></span>
+  </div>
+
+  <div class="card card-saas no-hover">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle table-produtos" id="tabelaSolicitacoes">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Tipo</th>
+              <th>Data</th>
+              <th>Status</th>
+              <th>Observações</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if(_solicitacoes.length === 0){ %>
+              <tr>
+                <td colspan="7" class="text-center py-4 text-muted">Nenhuma solicitação de cliente encontrada.</td>
+              </tr>
+            <% } %>
+
+            <% _solicitacoes.forEach((sol) => { %>
+              <% 
+                const statusSolicitacao = String(sol.serv_status || '').toLowerCase();
+                const statusPendente = statusSolicitacao === 'aguardando' || statusSolicitacao === 'aguardando aprovacao';
+                const dataSolicitacao = sol.serv_data ? new Date(sol.serv_data) : null;
+                const dataSolicitacaoFmt = dataSolicitacao && !Number.isNaN(dataSolicitacao.getTime())
+                  ? dataSolicitacao.toLocaleString('pt-BR')
+                  : '—';
+              %>
+              <tr>
+                <td><span class="id-badge">#<%= sol.serv_id %></span></td>
+                <td><%= sol.cli_nome || '—' %></td>
+                <td><span class="cat-badge"><%= sol.tipo_nome || '—' %></span></td>
+                <td><%= dataSolicitacaoFmt %></td>
+                <td>
+                  <% if(statusPendente){ %>
+                    <span class="qtd-badge qtd-low">Aguardando Aprovação</span>
+                  <% } else if(statusSolicitacao === 'aprovado'){ %>
+                    <span class="qtd-badge qtd-ok">Aprovado</span>
+                  <% } else if(statusSolicitacao === 'recusado' || statusSolicitacao === 'nao_aprovado'){ %>
+                    <span class="qtd-badge qtd-out">Recusado</span>
+                  <% } else { %>
+                    <span class="lote-badge"><%= sol.serv_status || '—' %></span>
+                  <% } %>
+                </td>
+                <td>
+                  <span style="max-width:220px; display:inline-block; overflow:hidden;
+                               text-overflow:ellipsis; white-space:nowrap; font-size:.8rem;
+                               color:#666;" title="<%= sol.serv_obs || '' %>">
+                    <%= sol.serv_obs || '—' %>
+                  </span>
+                </td>
+                <td class="text-end">
+                  <div class="acoes-wrap">
+                    <button data-id="<%= sol.serv_id %>"
+                            class="btn btn-sm btn-action btn-edit btnAprovarSolicitacao"
+                            title="Aprovar solicitação">
+                      <i class="fas fa-check"></i>
+                    </button>
+                    <button data-id="<%= sol.serv_id %>"
+                            class="btn btn-sm btn-action btn-delete btnReprovarSolicitacao"
+                            title="Recusar solicitação">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
 </div>

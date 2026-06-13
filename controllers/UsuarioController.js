@@ -105,11 +105,11 @@ class UsuarioController {
         servico.serv_data = new Date(`${data}T${hora}`);
         servico.serv_obs = obs || "";
         servico.serv_tipo = tipo;
-        servico.serv_status = 1 // Definindo o status como ativo
+        servico.serv_status = "Aguardando Aprovacao";
         servico.cliente_id = usuarioId;
         await servico.cadastrar();
 
-        return res.send({ ok: true, msg: "Serviço cadastrado com sucesso!" });
+        return res.send({ ok: true, msg: "Serviço cadastrado com sucesso! Aguarde a aprovação da equipe." });
     }
 
     async listarServicos(req, res){
@@ -124,8 +124,16 @@ class UsuarioController {
             .filter(serv => {
                 const mesmoCliente = Number(serv.cliente_id) === usuarioId;
                 const status = String(serv.serv_status).toLowerCase();
-                const ativo = status === "1" || status === "ativo";
-                return mesmoCliente && ativo;
+                const visivel =
+                    status === "1" ||
+                    status === "ativo" ||
+                    status === "agendado" ||
+                    status === "aguardando" ||
+                    status === "aguardando aprovacao" ||
+                    status === "aprovado" ||
+                    status === "recusado" ||
+                    status === "nao_aprovado";
+                return mesmoCliente && visivel;
             })
             .sort((a, b) => new Date(a.serv_data) - new Date(b.serv_data));
 

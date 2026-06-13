@@ -9,6 +9,8 @@ router.get("/cadastrar", controladora.cadastrarView);
 router.post("/cadastrar", controladora.cadastrar);
 router.post("/alterar", controladora.alterar);
 router.post("/deletar", controladora.deletar);
+router.post("/solicitacoes/aprovar", controladora.aprovarSolicitacao);
+router.post("/solicitacoes/reprovar", controladora.reprovarSolicitacao);
 
 
 router.get("/alterar/:idAlteracao", controladora.alterarView);
