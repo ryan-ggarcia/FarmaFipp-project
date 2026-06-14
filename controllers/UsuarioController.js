@@ -1,5 +1,8 @@
 const ProdutoModel = require('../models/ProdutoModel');
 const ProdutoPromocaoModel = require('../models/ProdutoPromocaoModel');
+const TipoServicoModel = require('../models/TipoServicoModel');
+const ServicosCliente = require("../models/ServicosCliente");
+const ClienteModel = require("../models/ClienteModel");
 
 class UsuarioController {
     async homeView(req, res) {
@@ -100,6 +103,135 @@ class UsuarioController {
 
     sobreView(req, res) {
         res.render("usuarioView/sobre", { layout: "layoutPublico" });
+    }
+
+    async cadastrarServicoView(req, res){
+        let tipoServico = new TipoServicoModel();
+        let listaServicos = await tipoServico.listar();
+        res.render("usuarioView/servicos", { layout: "layoutPublico", listaServicos });
+    }
+
+    async cadastrarServico(req, res){
+        let usuarioModel = new ClienteModel();
+        let usuario = await usuarioModel.Get(req.usuarioId);
+
+        let usuarioId = usuario.cliId;
+        console.log(usuarioId);
+
+        const { data, hora, tipo, obs } = req.body;
+        console.log(req.body);
+        if(!data || !hora || !tipo){
+            return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
+        }
+
+        let dataHoraServico = new Date(`${data}T${hora}`);
+
+        if(dataHoraServico < new Date()){
+            return res.send({ ok: false, msg: "Insira uma data válida!" });
+        }
+        
+        let servico = new ServicosCliente();
+        servico.serv_id = null;
+        servico.serv_data = new Date(`${data}T${hora}`);
+        servico.serv_obs = obs || "";
+        servico.serv_tipo = tipo;
+        servico.serv_status = "Aguardando Aprovacao";
+        servico.cliente_id = usuarioId;
+        await servico.cadastrar();
+
+        return res.send({ ok: true, msg: "Serviço cadastrado com sucesso! Aguarde a aprovação da equipe." });
+    }
+
+    async listarServicos(req, res){
+        let usuarioModel = new ClienteModel();
+        let usuario = await usuarioModel.Get(req.usuarioId);
+
+        let usuarioId = usuario.cliId;
+
+        let servico = new ServicosCliente();
+        let listaServicos = await servico.listar();
+        let servicosUsuario = listaServicos
+            .filter(serv => {
+                const mesmoCliente = Number(serv.cliente_id) === usuarioId;
+                const status = String(serv.serv_status).toLowerCase();
+                const visivel =
+                    status === "1" ||
+                    status === "ativo" ||
+                    status === "agendado" ||
+                    status === "aguardando" ||
+                    status === "aguardando aprovacao" ||
+                    status === "aprovado" ||
+                    status === "recusado" ||
+                    status === "nao_aprovado";
+                return mesmoCliente && visivel;
+            })
+            .sort((a, b) => new Date(a.serv_data) - new Date(b.serv_data));
+
+        res.render("usuarioView/listarServicos", { layout: "layoutPublico", listaServicos: servicosUsuario });
+    }
+
+    async excluirServico(req, res){
+        const id = req.body?.id || req.params?.id;
+
+        if(!id){
+            return res.send({ ok: false, msg: "ID do serviço é obrigatório!" });
+        }
+
+        let servico = new ServicosCliente();
+        let result = await servico.deletar(id);
+
+        if(result){
+            return res.send({ ok: true, msg: "Serviço cancelado com sucesso!" });
+        } else {
+            return res.send({ ok: false, msg: "Erro ao cancelar o serviço." });
+        }
+    }
+
+    async alterarView(req, res){
+        let servico = new ServicosCliente();
+        let lista = await servico.get(req.params.id);
+        let servicoSelecionado = Array.isArray(lista) ? lista[0] : null;
+
+        if(!servicoSelecionado){
+            return res.redirect("/servicos/listar");
+        }
+
+        let tipoServico = new TipoServicoModel();
+        let tipos = await tipoServico.listar();
+
+        res.render("usuarioView/alterarServico", {
+            layout: "layoutPublico",
+            lista: servicoSelecionado,
+            tipos
+        });
+    }
+
+    async alterarServico(req, res){
+        const id = req.params?.id || req.body?.id;
+        const { data, hora, tipo, obs, status } = req.body;
+
+        if(!id){
+            return res.send({ ok: false, msg: "ID do serviço é obrigatório!" });
+        }
+
+        if(!data || !hora || !tipo){
+            return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
+        }
+
+        let dataHoraServico = new Date(`${data}T${hora}`);
+
+        if(dataHoraServico < new Date()){
+            return res.send({ ok: false, msg: "Insira uma data válida!" });
+        }
+
+        let servico = new ServicosCliente(id, dataHoraServico, obs || "", tipo, status || "Ativo", null);
+        let result = await servico.update(id);
+
+        if(result){
+            return res.send({ ok: true, msg: "Serviço alterado com sucesso!" });
+        } else {
+            return res.send({ ok: false, msg: "Erro ao alterar o serviço." });
+        }
     }
 }
 

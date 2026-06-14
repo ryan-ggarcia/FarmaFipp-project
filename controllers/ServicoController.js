@@ -2,13 +2,16 @@ const ServicoModel = require("../models/ServicoModel");
 const TipoServico = require("../models/TipoServicoModel");
 const ClienteModel = require("../models/ClienteModel")
 const FuncionarioModel = require("../models/FuncionarioModel")
+const ServicosCliente = require("../models/ServicosCliente")
 
 class ServicoController {
     async listarView(req, res) {
         let servico = new ServicoModel();
         let lista = await servico.listar();
+        let solicitacaoModel = new ServicosCliente();
+        let solicitacoes = await solicitacaoModel.listarSolicitacoesAdmin();
 
-        res.render("servicos/listar", { lista, active: 'servicos' })
+        res.render("servicos/listar", { lista, solicitacoes, active: 'servicos' })
     }
 
     async cadastrarView(req, res) {
@@ -184,6 +187,50 @@ class ServicoController {
             msg = "ID não informado para exclusão!";
         }
         res.send({ ok, msg });
+    }
+
+    async aprovarSolicitacao(req, res) {
+        try {
+            const id = req.body?.id;
+
+            if (!id || String(id) === "0") {
+                return res.send({ ok: false, msg: "ID da solicitação não informado!" });
+            }
+
+            const servicoCliente = new ServicosCliente();
+            const result = await servicoCliente.atualizarStatus(Number(id), "Aprovado");
+
+            if (result) {
+                return res.send({ ok: true, msg: "Solicitação aprovada com sucesso!" });
+            }
+
+            return res.send({ ok: false, msg: "Não foi possível aprovar a solicitação." });
+        } catch (error) {
+            console.error("Erro ao aprovar solicitação:", error.message);
+            return res.status(500).send({ ok: false, msg: "Erro interno ao aprovar solicitação." });
+        }
+    }
+
+    async reprovarSolicitacao(req, res) {
+        try {
+            const id = req.body?.id;
+
+            if (!id || String(id) === "0") {
+                return res.send({ ok: false, msg: "ID da solicitação não informado!" });
+            }
+
+            const servicoCliente = new ServicosCliente();
+            const result = await servicoCliente.atualizarStatus(Number(id), "Recusado");
+
+            if (result) {
+                return res.send({ ok: true, msg: "Solicitação marcada como recusada." });
+            }
+
+            return res.send({ ok: false, msg: "Não foi possível atualizar a solicitação." });
+        } catch (error) {
+            console.error("Erro ao recusar solicitação:", error.message);
+            return res.status(500).send({ ok: false, msg: "Erro interno ao recusar solicitação." });
+        }
     }
 }
 

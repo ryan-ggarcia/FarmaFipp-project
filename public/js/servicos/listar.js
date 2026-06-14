@@ -1,5 +1,32 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    const tratarAcaoSolicitacao = (url, id, tituloSucesso) => {
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.ok) {
+                Swal.fire({
+                    title: tituloSucesso,
+                    text: data.msg,
+                    icon: 'success',
+                    confirmButtonColor: '#A31621',
+                    timer: 1800,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => window.location.reload());
+            } else {
+                Swal.fire({ title: 'Erro!', text: data.msg, icon: 'error', confirmButtonColor: '#A31621' });
+            }
+        })
+        .catch(() => {
+            Swal.fire({ title: 'Erro!', text: 'Erro ao atualizar a solicitação.', icon: 'error', confirmButtonColor: '#A31621' });
+        });
+    };
+
     /* ── Busca na tabela ── */
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
@@ -61,6 +88,49 @@ document.addEventListener('DOMContentLoaded', function () {
                     .catch(() => {
                         Swal.fire({ title: 'Erro!', text: 'Erro ao excluir serviço.', icon: 'error', confirmButtonColor: '#A31621' });
                     });
+                }
+            });
+        });
+    });
+
+    /* ── Aprovação/Reprovação de solicitações de cliente ── */
+    document.querySelectorAll('.btnAprovarSolicitacao').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.dataset.id;
+
+            Swal.fire({
+                title: 'Aprovar solicitação?',
+                text: 'O cliente verá o serviço como aprovado.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Aprovar',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    tratarAcaoSolicitacao('/admin/servicos/solicitacoes/aprovar', id, 'Solicitação aprovada!');
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('.btnReprovarSolicitacao').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.dataset.id;
+
+            Swal.fire({
+                title: 'Não aprovar solicitação?',
+                text: 'A solicitação será marcada como não aprovada.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#A31621',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    tratarAcaoSolicitacao('/admin/servicos/solicitacoes/reprovar', id, 'Solicitação atualizada!');
                 }
             });
         });

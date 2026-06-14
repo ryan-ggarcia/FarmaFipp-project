@@ -15,6 +15,7 @@ const FuncionarioRouter = require('./routes/FuncionarioRoute');
 const DevolucaoRouter = require('./routes/DevolucaoRouter');
 const PromocaoRouter = require('./routes/PromocaoRouter');
 
+
 // Rotas públicas e cliente
 const usuarioRouter = require("./routes/UsuarioRouter");
 const loginRouter = require('./routes/loginRouter');
@@ -50,7 +51,7 @@ server.get("/logout", function (req, res) {
 // ROTAS ADMIN (layout admin)
 // ==============================
 server.use("/admin/produtos", middleware.validarAdmin, ProdutoRouter);
-server.use("/admin/servicos", middleware.validarAdmin, ServicoRouter);
+server.use("/admin/servicos", middleware.validarAdminOuFuncionario, ServicoRouter);
 server.use("/admin/clientes", middleware.validarAdmin, ClienteRouter);
 server.use("/admin/fornecedores", middleware.validarAdmin, FornecedorRouter);
 server.use("/admin/funcionarios", middleware.validarAdmin, FuncionarioRouter);
