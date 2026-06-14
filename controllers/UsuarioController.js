@@ -96,7 +96,9 @@ class UsuarioController {
             return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
         }
 
-        if(data < new Date().toISOString().split("T")[0]){
+        let dataHoraServico = new Date(`${data}T${hora}`);
+
+        if(dataHoraServico < new Date()){
             return res.send({ ok: false, msg: "Insira uma data válida!" });
         }
         
@@ -188,11 +190,13 @@ class UsuarioController {
             return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
         }
 
-        if(data < new Date().toISOString().split("T")[0]){
+        let dataHoraServico = new Date(`${data}T${hora}`);
+
+        if(dataHoraServico < new Date()){
             return res.send({ ok: false, msg: "Insira uma data válida!" });
         }
 
-        let servico = new ServicosCliente(id, new Date(`${data}T${hora}`), obs || "", tipo, status || "Ativo", null);
+        let servico = new ServicosCliente(id, dataHoraServico, obs || "", tipo, status || "Ativo", null);
         let result = await servico.update(id);
 
         if(result){
