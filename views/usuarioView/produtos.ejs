@@ -98,7 +98,6 @@ if (Array.isArray(produtosPromocao)) {
         <div class="row g-3" id="productsGrid">
             <% produtosLista.forEach(function (produto) {
                 var produtoId = produto.id != null ? produto.id : (produto.pro_id != null ? produto.pro_id : produto.produto_id);
-                var idLote = produto.id_lote != null ? produto.id_lote : (produto.idLote != null ? produto.idLote : produto.lot_id);
                 var nome = produto.nome || 'Produto sem nome';
                 var descricao = produto.descricao || '';
                 var categoria = produto.categoria || 'Sem categoria';
@@ -136,60 +135,48 @@ if (Array.isArray(produtosPromocao)) {
                         <!-- Wishlist -->
                         <button class="wishlist-btn" title="Favoritar"><i class="bi bi-heart"></i></button>
 
-                        <!-- Image -->
-                        <div class="card-img-area">
-                            <img src="<%= imagem %>" alt="<%= nome %>" />
-                        </div>
-
-                        <!-- Info -->
-                        <div class="card-info">
-                            <div class="card-brand"><%= marca %></div>
-                            <div class="card-title"><%= nome %></div>
-                            <div class="card-category">
-                                <i class="bi bi-grid"></i> <%= categoria %>
+                        <a href="/produto/<%= produtoId %>" class="card-link">
+                            <!-- Image -->
+                            <div class="card-img-area">
+                                <img src="<%= imagem %>" alt="<%= nome %>" />
                             </div>
 
-                            <% if (descricao) { %>
-                                <p class="card-desc">
-                                    <%= descricao.length > 60 ? descricao.substring(0, 60) + '…' : descricao %>
-                                </p>
-                            <% } %>
+                            <!-- Info -->
+                            <div class="card-info">
+                                <div class="card-brand"><%= marca %></div>
+                                <div class="card-title"><%= nome %></div>
+                                <div class="card-category">
+                                    <i class="bi bi-grid"></i> <%= categoria %>
+                                </div>
 
-                            <div class="card-details">
-                                <span class="detail-chip"><i class="bi bi-boxes"></i> Estoque: <strong><%= quantidade %></strong></span>
-                                <% if (lote) { %>
-                                    <span class="detail-chip"><i class="bi bi-upc-scan"></i> <%= lote %></span>
+                                <% if (descricao) { %>
+                                    <p class="card-desc">
+                                        <%= descricao.length > 60 ? descricao.substring(0, 60) + '…' : descricao %>
+                                    </p>
                                 <% } %>
-                                <% if (fornecedor) { %>
-                                    <span class="detail-chip"><i class="bi bi-building"></i> <%= fornecedor %></span>
-                                <% } %>
+
+                                <div class="card-details">
+                                    <span class="detail-chip"><i class="bi bi-boxes"></i> Estoque: <strong><%= quantidade %></strong></span>
+                                    <% if (fornecedor) { %>
+                                        <span class="detail-chip"><i class="bi bi-building"></i> <%= fornecedor %></span>
+                                    <% } %>
+                                </div>
+
+                                <div class="card-price-row">
+                                    <% if (isPromo && promoInfo) { %>
+                                        <div class="price-promo-wrap">
+                                            <span class="price-original">R$ <%= precoOriginal.toFixed(2) %></span>
+                                            <span class="price-promo">R$ <%= precoPromo.toFixed(2) %></span>
+                                        </div>
+                                    <% } else { %>
+                                        <span class="price-current">R$ <%= preco.toFixed(2) %></span>
+                                    <% } %>
+                                    <% if (produto.validade) { %>
+                                        <span class="price-validity">Val: <%= new Date(produto.validade).toLocaleDateString('pt-BR') %></span>
+                                    <% } %>
+                                </div>
                             </div>
-
-                            <div class="card-price-row">
-                                <% if (isPromo && promoInfo) { %>
-                                    <div class="price-promo-wrap">
-                                        <span class="price-original">R$ <%= precoOriginal.toFixed(2) %></span>
-                                        <span class="price-promo">R$ <%= precoPromo.toFixed(2) %></span>
-                                    </div>
-                                <% } else { %>
-                                    <span class="price-current">R$ <%= preco.toFixed(2) %></span>
-                                <% } %>
-                                <% if (produto.validade) { %>
-                                    <span class="price-validity">Val: <%= new Date(produto.validade).toLocaleDateString('pt-BR') %></span>
-                                <% } %>
-                            </div>
-
-                            <button
-                                class="btn-cart-add add-to-cart"
-                                type="button"
-                                data-produto="<%= produtoId %>"
-                                data-lote="<%= idLote || '' %>"
-                                <%= quantidade <= 0 ? 'disabled' : '' %>
-                            >
-                                <i class="bi bi-bag-plus"></i>
-                                <%= quantidade <= 0 ? 'Indisponível' : 'Adicionar ao carrinho' %>
-                            </button>
-                        </div>
+                        </a>
                     </article>
                 </div>
             <% }); %>
@@ -334,20 +321,6 @@ if (Array.isArray(produtosPromocao)) {
             icon.classList.toggle('bi-heart');
             icon.classList.toggle('bi-heart-fill');
             wishBtn.style.color = icon.classList.contains('bi-heart-fill') ? 'var(--primary-red)' : '';
-        }
-    });
-
-    // Add to cart animation
-    grid.addEventListener('click', function(e) {
-        var cartBtn = e.target.closest('.btn-cart-add');
-        if (cartBtn && !cartBtn.disabled) {
-            var orig = cartBtn.innerHTML;
-            cartBtn.innerHTML = '<i class="bi bi-check-circle"></i> Adicionado!';
-            cartBtn.classList.add('added');
-            setTimeout(function () {
-                cartBtn.innerHTML = orig;
-                cartBtn.classList.remove('added');
-            }, 1500);
         }
     });
 

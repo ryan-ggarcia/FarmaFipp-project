@@ -150,6 +150,14 @@ class ServicoModel{
         return result;
     }
 
+    async atualizarStatus(id, status) {
+        let sql = "update agendar_servico set serv_status = ? where idAgendar_Servico = ?";
+        let valores = [status, id];
+        let banco = new Database();
+        let result = await banco.ExecutaComandoNonQuery(sql, valores);
+        return result;
+    }
+
     async deletarDoCliente(id, clie) {
         const sql = "delete from agendar_servico where idAgendar_Servico = ? and cliente_agenda = ?";
         const valores = [id, clie];

@@ -220,7 +220,6 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
                 var precoOrig = Number(promo.precoOriginal || 0);
                 var precoPromo = Number(promo.precoPromocional || 0);
                 var desconto = Number(promo.porcentagem || 0);
-                var estoque = Number(promo.quantidade || 0);
             %>
                 <div class="col-6 col-md-4 col-lg-3">
                     <article class="shop-product-card card-promo-highlight">
@@ -228,36 +227,28 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
                             <span class="card-badge card-badge-promo"><i class="bi bi-tag-fill me-1"></i>-<%= desconto %>%</span>
                         <% } %>
                         <button class="wishlist-btn" title="Favoritar"><i class="bi bi-heart"></i></button>
-                        <div class="card-img-area">
-                            <img src="<%= imgSrc %>" alt="<%= promo.nomeProduto %>" />
-                        </div>
-                        <div class="card-info">
-                            <div class="card-brand"><%= promo.marca || 'FarmaFipp' %></div>
-                            <div class="card-title"><%= promo.nomeProduto %></div>
-                            <% if (promo.categoria) { %>
-                                <div class="card-category"><i class="bi bi-grid"></i> <%= promo.categoria %></div>
-                            <% } %>
-                            <div class="card-price-row">
-                                <% if (desconto > 0) { %>
-                                    <div class="price-promo-wrap">
-                                        <span class="price-original">R$ <%= precoOrig.toFixed(2).replace('.', ',') %></span>
-                                        <span class="price-promo">R$ <%= precoPromo.toFixed(2).replace('.', ',') %></span>
-                                    </div>
-                                <% } else { %>
-                                    <span class="price-current">R$ <%= precoPromo.toFixed(2).replace('.', ',') %></span>
-                                <% } %>
+                        <a href="/produto/<%= promo.idProduto %>" class="card-link">
+                            <div class="card-img-area">
+                                <img src="<%= imgSrc %>" alt="<%= promo.nomeProduto %>" />
                             </div>
-                            <button
-                                class="btn-cart-add add-to-cart"
-                                type="button"
-                                data-produto="<%= promo.idProduto %>"
-                                data-lote="<%= promo.lotId || '' %>"
-                                <%= estoque <= 0 ? 'disabled' : '' %>
-                            >
-                                <i class="bi bi-bag-plus"></i>
-                                <%= estoque <= 0 ? 'Indisponível' : 'Adicionar ao carrinho' %>
-                            </button>
-                        </div>
+                            <div class="card-info">
+                                <div class="card-brand"><%= promo.marca || 'FarmaFipp' %></div>
+                                <div class="card-title"><%= promo.nomeProduto %></div>
+                                <% if (promo.categoria) { %>
+                                    <div class="card-category"><i class="bi bi-grid"></i> <%= promo.categoria %></div>
+                                <% } %>
+                                <div class="card-price-row">
+                                    <% if (desconto > 0) { %>
+                                        <div class="price-promo-wrap">
+                                            <span class="price-original">R$ <%= precoOrig.toFixed(2).replace('.', ',') %></span>
+                                            <span class="price-promo">R$ <%= precoPromo.toFixed(2).replace('.', ',') %></span>
+                                        </div>
+                                    <% } else { %>
+                                        <span class="price-current">R$ <%= precoPromo.toFixed(2).replace('.', ',') %></span>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </a>
                     </article>
                 </div>
             <% }); %>
@@ -267,34 +258,25 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
                 <% fallbackList.forEach(function(prod){
                     var fImg = prod.img ? prod.img : '/img/produtos/imagem.png';
                     var fPreco = Number(prod.preco || 0);
-                    var fEstoque = Number(prod.quantidade || 0);
                 %>
                     <div class="col-6 col-md-4 col-lg-3">
                         <article class="shop-product-card">
                             <button class="wishlist-btn" title="Favoritar"><i class="bi bi-heart"></i></button>
-                            <div class="card-img-area">
-                                <img src="<%= fImg %>" alt="<%= prod.nome %>" />
-                            </div>
-                            <div class="card-info">
-                                <div class="card-brand"><%= prod.marca || 'FarmaFipp' %></div>
-                                <div class="card-title"><%= prod.nome %></div>
-                                <% if (prod.categoria) { %>
-                                    <div class="card-category"><i class="bi bi-grid"></i> <%= prod.categoria %></div>
-                                <% } %>
-                                <div class="card-price-row">
-                                    <span class="price-current">R$ <%= fPreco.toFixed(2).replace('.', ',') %></span>
+                            <a href="/produto/<%= prod.id %>" class="card-link">
+                                <div class="card-img-area">
+                                    <img src="<%= fImg %>" alt="<%= prod.nome %>" />
                                 </div>
-                                <button
-                                    class="btn-cart-add add-to-cart"
-                                    type="button"
-                                    data-produto="<%= prod.id %>"
-                                    data-lote="<%= prod.id_lote || '' %>"
-                                    <%= fEstoque <= 0 ? 'disabled' : '' %>
-                                >
-                                    <i class="bi bi-bag-plus"></i>
-                                    <%= fEstoque <= 0 ? 'Indisponível' : 'Adicionar ao carrinho' %>
-                                </button>
-                            </div>
+                                <div class="card-info">
+                                    <div class="card-brand"><%= prod.marca || 'FarmaFipp' %></div>
+                                    <div class="card-title"><%= prod.nome %></div>
+                                    <% if (prod.categoria) { %>
+                                        <div class="card-category"><i class="bi bi-grid"></i> <%= prod.categoria %></div>
+                                    <% } %>
+                                    <div class="card-price-row">
+                                        <span class="price-current">R$ <%= fPreco.toFixed(2).replace('.', ',') %></span>
+                                    </div>
+                                </div>
+                            </a>
                         </article>
                     </div>
                 <% }); %>
@@ -417,29 +399,21 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
                                 <span class="card-badge card-badge-ultimas">Últimas unid.</span>
                             <% } %>
                             <button class="wishlist-btn" title="Favoritar"><i class="bi bi-heart"></i></button>
-                            <div class="card-img-area">
-                                <img src="<%= pImg %>" alt="<%= prod.nome %>" />
-                            </div>
-                            <div class="card-info">
-                                <div class="card-brand"><%= prod.marca || 'FarmaFipp' %></div>
-                                <div class="card-title"><%= prod.nome %></div>
-                                <% if (prod.categoria) { %>
-                                    <div class="card-category"><i class="bi bi-grid"></i> <%= prod.categoria %></div>
-                                <% } %>
-                                <div class="card-price-row">
-                                    <span class="price-current">R$ <%= pPreco.toFixed(2).replace('.', ',') %></span>
+                            <a href="/produto/<%= prod.id %>" class="card-link">
+                                <div class="card-img-area">
+                                    <img src="<%= pImg %>" alt="<%= prod.nome %>" />
                                 </div>
-                                <button
-                                    class="btn-cart-add add-to-cart"
-                                    type="button"
-                                    data-produto="<%= prod.id %>"
-                                    data-lote="<%= prod.id_lote || '' %>"
-                                    <%= pEstoque <= 0 ? 'disabled' : '' %>
-                                >
-                                    <i class="bi bi-bag-plus"></i>
-                                    <%= pEstoque <= 0 ? 'Indisponível' : 'Adicionar ao carrinho' %>
-                                </button>
-                            </div>
+                                <div class="card-info">
+                                    <div class="card-brand"><%= prod.marca || 'FarmaFipp' %></div>
+                                    <div class="card-title"><%= prod.nome %></div>
+                                    <% if (prod.categoria) { %>
+                                        <div class="card-category"><i class="bi bi-grid"></i> <%= prod.categoria %></div>
+                                    <% } %>
+                                    <div class="card-price-row">
+                                        <span class="price-current">R$ <%= pPreco.toFixed(2).replace('.', ',') %></span>
+                                    </div>
+                                </div>
+                            </a>
                         </article>
                     </div>
                 <% }); %>

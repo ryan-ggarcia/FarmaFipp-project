@@ -174,9 +174,20 @@ const _naoAprov    = lista.filter(s => _statusCanon(s.getSTATUS()) === 'nao_apro
                   </span>
                 </td>
 
-                <!-- Ações -->
                 <td class="text-end">
                   <div class="acoes-wrap">
+                    <% if(status === 'aguardando'){ %>
+                      <button data-id="<%= s.getID() %>"
+                              class="btn btn-sm btn-action btn-activate btnAceitar"
+                              title="Aceitar">
+                        <i class="fas fa-check"></i>
+                      </button>
+                      <button data-id="<%= s.getID() %>"
+                              class="btn btn-sm btn-action btn-delete btnCancelar"
+                              title="Cancelar">
+                        <i class="fas fa-ban"></i>
+                      </button>
+                    <% } %>
                     <a href="/admin/servicos/alterar/<%= s.getID() %>"
                        class="btn btn-sm btn-action btn-edit" title="Alterar">
                       <i class="fas fa-edit"></i>

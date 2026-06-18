@@ -8,6 +8,8 @@ router.get("/", controladora.listarView);
 router.get("/cadastrar", controladora.cadastrarView);
 router.post("/cadastrar", controladora.cadastrar);
 router.post("/alterar", controladora.alterar);
+router.post("/aceitar", controladora.aceitar);
+router.post("/cancelar", controladora.cancelar);
 router.post("/deletar", controladora.deletar);
 
 

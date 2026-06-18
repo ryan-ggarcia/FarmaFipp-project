@@ -6,6 +6,7 @@ const router = express.Router()
 
 router.get("/", controller.homeView)
 router.get("/shop", controller.produtosView)
+router.get("/produto/:id", controller.produtoDetalheView)
 router.get("/servicos", controller.agendarServicoView)
 router.post("/servicos/agendar", controller.agendarServico)
 router.post("/servicos/excluir", controller.excluirAgendamento)

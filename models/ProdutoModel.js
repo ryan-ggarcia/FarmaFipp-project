@@ -61,28 +61,24 @@ class ProdutoModel{
     }
 
     async #discardProductsExpired(){
-        const sql = `SELECT 
-                        p.idProduto, 
-                        l.lot_id, 
-                        l.lot_qnt
-                    FROM produto p
-                    INNER JOIN produto_lote pl ON p.idProduto = pl.produto_idProduto
-                    INNER JOIN Lote l ON pl.lote_lot_id = l.lot_id
-                    WHERE l.lot_validade < CURDATE();`
         const banco = new Database();
-        let listValues = []
-        let rows = await banco.ExecutaComando(sql);
-        if(!rows || rows.length === 0) { return false; }
-        else{
-            rows.forEach(row => {
-                listValues.push([row.idProduto, row.lot_id, row.lot_qnt]);
-            })
-        }
-        const sqlInserted = `INSERT INTO efetuar_descarte (des_date, des_quantidade, Produto_Descarte, Funcionario_Descarte) VALUES (?, ?, ?, ?)`
-        for (const row of listValues) {
-            // ID 1 é usado como 'Funcionário do Sistema' para descartes automáticos
-            let values = [new Date(), row[2], row[0], 1];
-            await banco.ExecutaComandoNonQuery(sqlInserted, values);
+        const sql = `SELECT l.lot_id, l.lot_qnt, l.prod_id,
+                            (SELECT pl.produto_idProduto FROM produto_lote pl WHERE pl.lote_lot_id = l.lot_id LIMIT 1) AS produto_vinculo
+                     FROM Lote l
+                     WHERE l.lot_validade < CURDATE()
+                       AND l.lot_qnt > 0`;
+        const lotes = await banco.ExecutaComando(sql);
+        if(!lotes || lotes.length === 0) { return false; }
+
+        const sqlZerar = `UPDATE Lote SET lot_qnt = 0 WHERE lot_id = ? AND lot_qnt > 0`;
+        const sqlInserted = `INSERT INTO efetuar_descarte (des_date, des_quantidade, Produto_Descarte, Funcionario_Descarte) VALUES (?, ?, ?, ?)`;
+        for (const lote of lotes) {
+            const produtoId = lote.produto_vinculo || lote.prod_id;
+            if (!produtoId) { continue; }
+            const zerado = await banco.ExecutaComandoNonQuery(sqlZerar, [lote.lot_id]);
+            if (zerado) {
+                await banco.ExecutaComandoNonQuery(sqlInserted, [new Date(), lote.lot_qnt, produtoId, 1]);
+            }
         }
         return true;
     }

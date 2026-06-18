@@ -127,6 +127,16 @@ class ProdutoController {
             return res.send({ ok: false, msg: 'Preencha os dados corretamente!' });
         }
 
+        if (nome.trim().length > 45) {
+            return res.send({ ok: false, msg: 'O nome do produto deve ter no máximo 45 caracteres!' });
+        }
+        if (marca.trim().length > 30) {
+            return res.send({ ok: false, msg: 'A marca deve ter no máximo 30 caracteres!' });
+        }
+        if (descricao.trim().length > 200) {
+            return res.send({ ok: false, msg: 'A descrição deve ter no máximo 200 caracteres!' });
+        }
+
         const precoNum = parseFloat(preco);
         const qtdNum = parseInt(quantidade, 10);
 
@@ -204,6 +214,16 @@ class ProdutoController {
 
             if(!id || !nome?.trim() || !descricao?.trim() || !preco || !quantidade || !marca?.trim() || !categoria || !fornecedor) {
                 return res.send({ ok: false, msg: 'Preencha os dados corretamente!' });
+            }
+
+            if (nome.trim().length > 45) {
+                return res.send({ ok: false, msg: 'O nome do produto deve ter no máximo 45 caracteres!' });
+            }
+            if (marca.trim().length > 30) {
+                return res.send({ ok: false, msg: 'A marca deve ter no máximo 30 caracteres!' });
+            }
+            if (descricao.trim().length > 200) {
+                return res.send({ ok: false, msg: 'A descrição deve ter no máximo 200 caracteres!' });
             }
 
             const precoNum = parseFloat(preco);

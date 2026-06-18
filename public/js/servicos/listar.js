@@ -22,7 +22,92 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ── Exclusão ── */
+    document.querySelectorAll('.btnAceitar').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.dataset.id;
+            Swal.fire({
+                title: 'Aceitar serviço?',
+                text: 'O serviço será aprovado.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, aceitar!',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/admin/servicos/aceitar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.ok) {
+                            Swal.fire({
+                                title: 'Aceito!',
+                                text: data.msg,
+                                icon: 'success',
+                                confirmButtonColor: '#A31621',
+                                timer: 1800,
+                                timerProgressBar: true,
+                                showConfirmButton: false
+                            }).then(() => window.location.reload());
+                        } else {
+                            Swal.fire({ title: 'Erro!', text: data.msg, icon: 'error', confirmButtonColor: '#A31621' });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({ title: 'Erro!', text: 'Erro ao aceitar serviço.', icon: 'error', confirmButtonColor: '#A31621' });
+                    });
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('.btnCancelar').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.dataset.id;
+            Swal.fire({
+                title: 'Cancelar serviço?',
+                text: 'O serviço será marcado como não aprovado.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#A31621',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, cancelar!',
+                cancelButtonText: 'Voltar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch('/admin/servicos/cancelar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.ok) {
+                            Swal.fire({
+                                title: 'Cancelado!',
+                                text: data.msg,
+                                icon: 'success',
+                                confirmButtonColor: '#A31621',
+                                timer: 1800,
+                                timerProgressBar: true,
+                                showConfirmButton: false
+                            }).then(() => window.location.reload());
+                        } else {
+                            Swal.fire({ title: 'Erro!', text: data.msg, icon: 'error', confirmButtonColor: '#A31621' });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({ title: 'Erro!', text: 'Erro ao cancelar serviço.', icon: 'error', confirmButtonColor: '#A31621' });
+                    });
+                }
+            });
+        });
+    });
+
     document.querySelectorAll('.btnExcluir').forEach(btn => {
         btn.addEventListener('click', function () {
             const id = this.dataset.id;

@@ -176,6 +176,50 @@ class ServicoController {
         res.send({ ok, msg });
     }
 
+    async aceitar(req, res) {
+        let ok = false;
+        let msg = "";
+        if (req.body.id && req.body.id != "0") {
+            let servico = new ServicoModel();
+            let result = await servico.atualizarStatus(req.body.id, "Ativo");
+            if (result) {
+                ok = true;
+                msg = "Serviço aprovado!";
+            }
+            else {
+                ok = false;
+                msg = "Erro ao aprovar serviço no banco de dados!";
+            }
+        }
+        else {
+            ok = false;
+            msg = "ID não informado!";
+        }
+        res.send({ ok, msg });
+    }
+
+    async cancelar(req, res) {
+        let ok = false;
+        let msg = "";
+        if (req.body.id && req.body.id != "0") {
+            let servico = new ServicoModel();
+            let result = await servico.atualizarStatus(req.body.id, "Inativo");
+            if (result) {
+                ok = true;
+                msg = "Serviço cancelado!";
+            }
+            else {
+                ok = false;
+                msg = "Erro ao cancelar serviço no banco de dados!";
+            }
+        }
+        else {
+            ok = false;
+            msg = "ID não informado!";
+        }
+        res.send({ ok, msg });
+    }
+
     async deletar(req, res) {
         let ok = false;
         let msg = "";

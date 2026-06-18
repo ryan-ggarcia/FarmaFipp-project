@@ -1,0 +1,87 @@
+<%
+const nome = produto.nome || 'Produto sem nome';
+const descricao = produto.descricao || '';
+const categoria = produto.categoria || 'Sem categoria';
+const marca = produto.marca || 'Sem marca';
+const fornecedor = produto.fornecedor || '';
+const quantidade = Number(produto.quantidade || 0);
+const preco = Number(produto.preco || 0);
+const idLote = produto.id_lote != null ? produto.id_lote : '';
+const imagem = (produto.img && produto.img !== 'Imagem não disponível')
+    ? produto.img
+    : '/img/produtos/imagem.png';
+const promoInfo = (typeof promo !== 'undefined' && promo) ? promo : null;
+const precoOriginal = promoInfo ? Number(promoInfo.precoOriginal) : preco;
+const precoPromo = promoInfo ? Number(promoInfo.precoPromocional) : preco;
+const porcentagem = promoInfo ? Number(promoInfo.porcentagem) : 0;
+%>
+
+<div class="container pd-section">
+    <nav aria-label="breadcrumb" class="pd-breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/"><i class="bi bi-house-door"></i> Início</a></li>
+            <li class="breadcrumb-item"><a href="/shop"><i class="bi bi-bag"></i> Produtos</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= nome %></li>
+        </ol>
+    </nav>
+
+    <div class="pd-card">
+        <div class="row g-0">
+            <div class="col-12 col-lg-6">
+                <div class="pd-img-area">
+                    <% if (promoInfo) { %>
+                        <span class="pd-badge card-badge-promo"><i class="bi bi-tag-fill me-1"></i>-<%= porcentagem %>%</span>
+                    <% } else if (quantidade <= 0) { %>
+                        <span class="pd-badge card-badge-esgotado">Esgotado</span>
+                    <% } else if (quantidade <= 10) { %>
+                        <span class="pd-badge card-badge-ultimas">Últimas unidades</span>
+                    <% } %>
+                    <img src="<%= imagem %>" alt="<%= nome %>" />
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="pd-info">
+                    <div class="pd-brand"><%= marca %></div>
+                    <h1 class="pd-title"><%= nome %></h1>
+                    <div class="pd-category"><i class="bi bi-grid"></i> <%= categoria %></div>
+
+                    <div class="pd-price-row">
+                        <% if (promoInfo) { %>
+                            <span class="pd-price-original">R$ <%= precoOriginal.toFixed(2) %></span>
+                            <span class="pd-price-promo">R$ <%= precoPromo.toFixed(2) %></span>
+                            <span class="pd-discount-tag"><i class="bi bi-tag-fill"></i> -<%= porcentagem %>%</span>
+                        <% } else { %>
+                            <span class="pd-price-current">R$ <%= preco.toFixed(2) %></span>
+                        <% } %>
+                    </div>
+
+                    <% if (descricao) { %>
+                        <p class="pd-desc"><%= descricao %></p>
+                    <% } %>
+
+                    <div class="pd-meta">
+                        <span class="pd-meta-chip"><i class="bi bi-boxes"></i> Estoque: <strong><%= quantidade %></strong></span>
+                        <% if (produto.validade) { %>
+                            <span class="pd-meta-chip"><i class="bi bi-calendar-check"></i> Validade: <%= new Date(produto.validade).toLocaleDateString('pt-BR') %></span>
+                        <% } %>
+                        <% if (fornecedor) { %>
+                            <span class="pd-meta-chip"><i class="bi bi-building"></i> <%= fornecedor %></span>
+                        <% } %>
+                    </div>
+
+                    <button
+                        class="pd-add-cart add-to-cart"
+                        type="button"
+                        data-produto="<%= produto.id %>"
+                        data-lote="<%= idLote %>"
+                        <%= quantidade <= 0 ? 'disabled' : '' %>
+                    >
+                        <i class="bi bi-bag-plus"></i>
+                        <%= quantidade <= 0 ? 'Indisponível' : 'Adicionar ao carrinho' %>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

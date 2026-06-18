@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check models/ProdutoModel.js)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

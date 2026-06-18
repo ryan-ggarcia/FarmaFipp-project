@@ -116,6 +116,39 @@ class UsuarioController {
         }
     }
 
+    async produtoDetalheView(req, res) {
+        const { id } = req.params;
+
+        const listaBruta = await new ProdutoModel().Read();
+        const produto = (Array.isArray(listaBruta) ? listaBruta : [])
+            .find(p => p && String(p.id) === String(id));
+
+        if (!produto) {
+            return res.redirect('/shop');
+        }
+
+        const promProducts = new ProdutoPromocaoModel();
+        const produtosPromocao = await promProducts.ReadProductExpirationDateNear();
+
+        let promo = null;
+        if (Array.isArray(produtosPromocao)) {
+            const match = produtosPromocao.find(p => String(p.id) === String(id));
+            if (match) {
+                promo = {
+                    precoOriginal: Number(match.precoOriginal || match.preco),
+                    precoPromocional: Number(match.precoPromocional || match.preco),
+                    porcentagem: Number(match.porcentagemDesconto || 15)
+                };
+            }
+        }
+
+        res.render("usuarioView/produto-detalhe", {
+            layout: "layoutPublico",
+            produto,
+            promo
+        });
+    }
+
     carrinhoView(req, res) {
         res.render("usuarioView/carrinho", { layout: "layoutPublico" });
     }
