@@ -230,10 +230,10 @@ class ProdutoController {
 
                 if (produtoOld.img) {
                     const nomeArquivoAnterior = path.basename(produtoOld.img);
+                    const imagensProtegidas = ['barra-de-imagem.png', 'imagem.png'];
                     const caminhoAnteriorAbs = path.join(pastaImg, nomeArquivoAnterior);
-                    
-                    // Valida se o caminho absoluto realmente aponta para dentro da pasta public/img/produtos
-                    if (caminhoAnteriorAbs.startsWith(pastaImg) && fs.existsSync(caminhoAnteriorAbs)) {
+
+                    if (!imagensProtegidas.includes(nomeArquivoAnterior) && caminhoAnteriorAbs.startsWith(pastaImg) && fs.existsSync(caminhoAnteriorAbs)) {
                         fs.unlinkSync(caminhoAnteriorAbs);
                     }
                 }

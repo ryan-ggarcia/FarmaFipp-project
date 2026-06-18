@@ -501,6 +501,21 @@ describe('ProdutoController — /admin/produtos', () => {
             expect(fs.unlinkSync).toHaveBeenCalled();
         });
 
+        it('não apaga o placeholder compartilhado quando a imagem antiga já estava faltando', async () => {
+            const fs = require('fs');
+            fs.existsSync.mockReturnValue(true);
+            fs.existsSync.mockReturnValueOnce(false);
+
+            mockExecutaComando.mockResolvedValueOnce([{ ...PRODUTO_ROW, pro_img: 'PRD-missing.jpg' }]);
+            mockExecutaComando.mockResolvedValueOnce({ affectedRows: 1 });
+
+            const { req, res } = mockReqRes(validAlterarBody, {}, { filename: 'PRD-new.jpg' });
+            await ctrl.alterar(req, res);
+
+            expect(res._data.ok).toBe(true);
+            expect(fs.unlinkSync).not.toHaveBeenCalledWith(expect.stringContaining('barra-de-imagem.png'));
+        });
+
         it('deve recusar quando id não é informado', async () => {
             const body = { ...validAlterarBody, id: '' };
             const { req, res } = mockReqRes(body);

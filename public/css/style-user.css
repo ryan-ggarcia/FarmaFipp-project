@@ -830,6 +830,33 @@ body {
 
 .brand-logo:hover { filter: grayscale(0) opacity(1); }
 
+.brand-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  width: 100%;
+  background: var(--gray-100);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: .6rem .75rem;
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: .85rem;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  transition: var(--t-fast);
+}
+
+.brand-chip i { color: var(--primary-blue); }
+
+.brand-chip:hover {
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+  background: var(--bg-white);
+}
+
 /* ══════════════════════════════════════════════════════════════
    SEÇÃO: DESTAQUE DA SEMANA
 ════════════════════════════════════════════════════════════════ */

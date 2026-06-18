@@ -2,16 +2,15 @@
      HERO CAROUSEL  — produtos reais (imagem + preço)
 ════════════════════════════════ -->
 <%
-// Monta os slides do hero a partir de dados reais: promoções → produtos → fallback.
 var heroPromos = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) ? promocoes : [];
 var heroProds  = (typeof produtos  !== 'undefined' && Array.isArray(produtos))  ? produtos  : [];
 
 function brl(v){ return 'R$ ' + Number(v || 0).toFixed(2).replace('.', ','); }
 
 var heroSlides = [];
+var heroVistos = new Set();
 
-// 1) Melhores ofertas em destaque
-heroPromos.slice(0, 4).forEach(function(p){
+heroPromos.slice(0, 2).forEach(function(p){
     var orig  = Number(p.precoOriginal || 0);
     var promo = Number(p.precoPromocional || 0);
     heroSlides.push({
@@ -19,34 +18,33 @@ heroPromos.slice(0, 4).forEach(function(p){
         icon:     'bi-tag-fill',
         nome:     p.nomeProduto,
         marca:    p.marca || 'FarmaFipp',
-        img:      p.imgProduto ? '/img/produtos/' + p.imgProduto : 'https://placehold.co/440x440/ffffff/4E8098?text=Produto',
+        img:      p.imgProduto ? '/img/produtos/' + p.imgProduto : '/img/produtos/imagem.png',
         preco:    promo,
         precoOriginal: orig > promo ? orig : 0,
         desconto: Number(p.porcentagem || 0)
     });
+    heroVistos.add(String(p.idProduto));
 });
 
-// 2) Completa com produtos em destaque até ao menos 3 slides
 heroProds.forEach(function(pr){
-    if (heroSlides.length >= 3) return;
+    if (heroSlides.length >= 5) return;
+    if (heroVistos.has(String(pr.id))) return;
     heroSlides.push({
         badge:    'Destaque',
         icon:     'bi-stars',
         nome:     pr.nome,
         marca:    pr.marca || 'FarmaFipp',
-        img:      pr.img ? pr.img : 'https://placehold.co/440x440/ffffff/4E8098?text=Produto',
+        img:      pr.img ? pr.img : '/img/produtos/imagem.png',
         preco:    Number(pr.preco || 0),
         precoOriginal: 0,
         desconto: 0
     });
+    heroVistos.add(String(pr.id));
 });
 
-// 3) Fallback total — mantém o hero funcional mesmo sem dados
 if (heroSlides.length === 0) {
     heroSlides = [
-        { badge:'Farmácia Online #1', icon:'bi-stars',          nome:'Vitamina C 1000mg', marca:'FarmaFipp', img:'https://placehold.co/440x440/ffffff/2D6A4F?text=Vitamina+C', preco:29.90, precoOriginal:0,     desconto:0  },
-        { badge:'Oferta Especial',    icon:'bi-tag-fill',       nome:'Ômega 3 2g',        marca:'FarmaFipp', img:'https://placehold.co/440x440/ffffff/4E8098?text=Omega+3',    preco:49.90, precoOriginal:69.90, desconto:28 },
-        { badge:'Cuidados com Saúde', icon:'bi-heart-pulse-fill', nome:'Protetor FPS 60', marca:'FarmaFipp', img:'https://placehold.co/440x440/ffffff/A31621?text=Protetor',  preco:34.90, precoOriginal:0,     desconto:0  }
+        { badge:'Farmácia Online', icon:'bi-stars', nome:'Bem-vindo à FarmaFipp', marca:'Sua farmácia online de confiança', img:'/img/produtos/imagem.png', preco:0, precoOriginal:0, desconto:0 }
     ];
 }
 
@@ -74,6 +72,7 @@ var heroThemes = ['hero-slide-1', 'hero-slide-2', 'hero-slide-3'];
                     <span class="hero-badge"><i class="bi <%= s.icon %> me-1"></i> <%= s.badge %></span>
                     <h1 class="hero-title"><%= s.nome %></h1>
 
+                    <% if (s.preco > 0) { %>
                     <div class="hero-price-row">
                         <span class="hero-price"><%= brl(s.preco) %></span>
                         <% if (s.precoOriginal) { %>
@@ -83,6 +82,7 @@ var heroThemes = ['hero-slide-1', 'hero-slide-2', 'hero-slide-3'];
                             <span class="hero-discount">-<%= s.desconto.toFixed(0) %>%</span>
                         <% } %>
                     </div>
+                    <% } %>
 
                     <p class="hero-subtitle"><%= s.marca %> · Entrega rápida em todo o Brasil.</p>
 
@@ -98,7 +98,9 @@ var heroThemes = ['hero-slide-1', 'hero-slide-2', 'hero-slide-3'];
                     </div>
                     <div class="hero-product-badge">
                         <div class="prod-name"><%= s.nome %></div>
+                        <% if (s.preco > 0) { %>
                         <div class="prod-price"><%= brl(s.preco) %></div>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -122,22 +124,35 @@ var heroThemes = ['hero-slide-1', 'hero-slide-2', 'hero-slide-3'];
 <!-- ════════════════════════════════
      BANNERS PROMOCIONAIS
 ════════════════════════════════ -->
+<%
+var bannerSource = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) ? promocoes : [];
+var bannerThemes = ['banner-yellow', 'banner-teal'];
+var bannerPromos = bannerSource.map(function(p){
+    return {
+        nome: p.nomeProduto,
+        categoria: p.categoria || 'Oferta por tempo limitado',
+        desconto: Number(p.porcentagem || 0)
+    };
+}).filter(function(b){ return b.desconto > 0; }).slice(0, 2);
+%>
 <section class="py-4">
     <div class="container">
         <div class="row g-3">
+            <% bannerPromos.forEach(function(b, i){ %>
             <div class="col-md-4">
-                <div class="promo-banner banner-yellow">
-                    <span class="badge-off">-30%</span>
-                    <h6>Vitamina D3 2000UI</h6>
-                    <p>Fortalece ossos e imunidade</p>
-                    <a href="/shop" class="btn btn-sm btn-dark mt-2 btn-rounded">Ver Produto</a>
+                <div class="promo-banner <%= bannerThemes[i % bannerThemes.length] %>">
+                    <span class="badge-off">-<%= b.desconto %>%</span>
+                    <h6><%= b.nome %></h6>
+                    <p><%= b.categoria %></p>
+                    <a href="/shop?filtro=promocao" class="btn btn-sm btn-dark mt-2 btn-rounded">Ver Produto</a>
                 </div>
             </div>
+            <% }); %>
             <div class="col-md-4">
-                <div class="promo-banner banner-teal">
-                    <h6>Frete Grátis</h6>
-                    <p>Compras acima de R$ 99,00 em todo o Brasil</p>
-                    <a href="/shop" class="btn btn-sm btn-light mt-2 btn-rounded">Aproveitar</a>
+                <div class="promo-banner banner-dark">
+                    <h6><i class="bi bi-arrow-repeat me-1"></i>Trocas e Devoluções</h6>
+                    <p>O produto veio com defeito ou você não gostou? Clique aqui para devolver ou trocar!</p>
+                    <a href="/pos-venda/online" class="btn btn-sm btn-light mt-2 btn-rounded">Devolver ou Trocar</a>
                 </div>
             </div>
         </div>
@@ -198,58 +213,89 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
         <div class="row g-3">
 
         <% if (promosList.length > 0) { %>
-            <% promosList.slice(0, 5).forEach(function(promo, idx) {
+            <% promosList.slice(0, 4).forEach(function(promo) {
                 var imgSrc = promo.imgProduto
                     ? '/img/produtos/' + promo.imgProduto
-                    : 'https://placehold.co/160x130/e8f0fe/4E8098?text=Produto';
-                var desconto = Number(promo.porcentagem || 0);
+                    : '/img/produtos/imagem.png';
                 var precoOrig = Number(promo.precoOriginal || 0);
                 var precoPromo = Number(promo.precoPromocional || 0);
-                var hideOnMobile = idx >= 4 ? ' d-none d-lg-block' : '';
+                var desconto = Number(promo.porcentagem || 0);
+                var estoque = Number(promo.quantidade || 0);
             %>
-                <div class="col-6 col-md-4 col-lg-3 col-xl-2-4<%= hideOnMobile %>">
-                    <div class="product-card h-100">
-                        <span class="badge-discount">-<%= desconto.toFixed(0) %>%</span>
-                        <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                        <div class="img-wrap">
+                <div class="col-6 col-md-4 col-lg-3">
+                    <article class="shop-product-card card-promo-highlight">
+                        <% if (desconto > 0) { %>
+                            <span class="card-badge card-badge-promo"><i class="bi bi-tag-fill me-1"></i>-<%= desconto %>%</span>
+                        <% } %>
+                        <button class="wishlist-btn" title="Favoritar"><i class="bi bi-heart"></i></button>
+                        <div class="card-img-area">
                             <img src="<%= imgSrc %>" alt="<%= promo.nomeProduto %>" />
                         </div>
-                        <div class="card-body">
-                            <div class="brand-tag"><%= promo.marca || 'FarmaFipp' %></div>
-                            <div class="prod-title"><%= promo.nomeProduto %></div>
-                            <div class="price-row">
-                                <span class="price-now">R$ <%= precoPromo.toFixed(2).replace('.', ',') %></span>
-                                <% if (precoOrig > precoPromo) { %>
-                                    <span class="price-old">R$ <%= precoOrig.toFixed(2).replace('.', ',') %></span>
+                        <div class="card-info">
+                            <div class="card-brand"><%= promo.marca || 'FarmaFipp' %></div>
+                            <div class="card-title"><%= promo.nomeProduto %></div>
+                            <% if (promo.categoria) { %>
+                                <div class="card-category"><i class="bi bi-grid"></i> <%= promo.categoria %></div>
+                            <% } %>
+                            <div class="card-price-row">
+                                <% if (desconto > 0) { %>
+                                    <div class="price-promo-wrap">
+                                        <span class="price-original">R$ <%= precoOrig.toFixed(2).replace('.', ',') %></span>
+                                        <span class="price-promo">R$ <%= precoPromo.toFixed(2).replace('.', ',') %></span>
+                                    </div>
+                                <% } else { %>
+                                    <span class="price-current">R$ <%= precoPromo.toFixed(2).replace('.', ',') %></span>
                                 <% } %>
                             </div>
-                            <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
+                            <button
+                                class="btn-cart-add add-to-cart"
+                                type="button"
+                                data-produto="<%= promo.idProduto %>"
+                                data-lote="<%= promo.lotId || '' %>"
+                                <%= estoque <= 0 ? 'disabled' : '' %>
+                            >
+                                <i class="bi bi-bag-plus"></i>
+                                <%= estoque <= 0 ? 'Indisponível' : 'Adicionar ao carrinho' %>
+                            </button>
                         </div>
-                    </div>
+                    </article>
                 </div>
             <% }); %>
         <% } else { %>
-            <% var fallbackList = (typeof produtos !== 'undefined' && Array.isArray(produtos)) ? produtos.slice(0, 5) : []; %>
+            <% var fallbackList = (typeof produtos !== 'undefined' && Array.isArray(produtos)) ? produtos.slice(0, 4) : []; %>
             <% if (fallbackList.length > 0) { %>
                 <% fallbackList.forEach(function(prod){
-                    var fImg = prod.img ? prod.img : 'https://placehold.co/160x130/e8f0fe/4E8098?text=Produto';
+                    var fImg = prod.img ? prod.img : '/img/produtos/imagem.png';
                     var fPreco = Number(prod.preco || 0);
+                    var fEstoque = Number(prod.quantidade || 0);
                 %>
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-2-4">
-                        <div class="product-card h-100">
-                            <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                            <div class="img-wrap">
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <article class="shop-product-card">
+                            <button class="wishlist-btn" title="Favoritar"><i class="bi bi-heart"></i></button>
+                            <div class="card-img-area">
                                 <img src="<%= fImg %>" alt="<%= prod.nome %>" />
                             </div>
-                            <div class="card-body">
-                                <div class="brand-tag"><%= prod.marca || 'FarmaFipp' %></div>
-                                <div class="prod-title"><%= prod.nome %></div>
-                                <div class="price-row">
-                                    <span class="price-now">R$ <%= fPreco.toFixed(2).replace('.', ',') %></span>
+                            <div class="card-info">
+                                <div class="card-brand"><%= prod.marca || 'FarmaFipp' %></div>
+                                <div class="card-title"><%= prod.nome %></div>
+                                <% if (prod.categoria) { %>
+                                    <div class="card-category"><i class="bi bi-grid"></i> <%= prod.categoria %></div>
+                                <% } %>
+                                <div class="card-price-row">
+                                    <span class="price-current">R$ <%= fPreco.toFixed(2).replace('.', ',') %></span>
                                 </div>
-                                <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
+                                <button
+                                    class="btn-cart-add add-to-cart"
+                                    type="button"
+                                    data-produto="<%= prod.id %>"
+                                    data-lote="<%= prod.id_lote || '' %>"
+                                    <%= fEstoque <= 0 ? 'disabled' : '' %>
+                                >
+                                    <i class="bi bi-bag-plus"></i>
+                                    <%= fEstoque <= 0 ? 'Indisponível' : 'Adicionar ao carrinho' %>
+                                </button>
                             </div>
-                        </div>
+                        </article>
                     </div>
                 <% }); %>
             <% } else { %>
@@ -257,7 +303,7 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
             <% } %>
         <% } %>
 
-        </div><!-- /.row -->
+        </div>
     </div>
 </section>
 
@@ -269,54 +315,74 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
     <div class="container">
         <div class="row g-4">
 
-            <!-- Destaque Semana -->
+            <%
+            var weeklySrc = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) ? promocoes.slice() : [];
+            function weeklyDesconto(p){
+                return Number(p.porcentagem || 0);
+            }
+            weeklySrc.sort(function(a, b){ return weeklyDesconto(b) - weeklyDesconto(a); });
+            var weekly = null;
+            if (weeklySrc.length > 0) {
+                var wp = weeklySrc[0];
+                weekly = {
+                    nome: wp.nomeProduto,
+                    img: wp.imgProduto ? '/img/produtos/' + wp.imgProduto : '/img/produtos/imagem.png',
+                    preco: Number(wp.precoPromocional || 0),
+                    desconto: weeklyDesconto(wp),
+                    link: '/shop?filtro=promocao'
+                };
+            } else {
+                var weeklyProds = (typeof produtos !== 'undefined' && Array.isArray(produtos)) ? produtos : [];
+                if (weeklyProds.length > 0) {
+                    var wd = weeklyProds[0];
+                    weekly = {
+                        nome: wd.nome,
+                        img: wd.img ? wd.img : '/img/produtos/imagem.png',
+                        preco: Number(wd.preco || 0),
+                        desconto: 0,
+                        link: '/shop'
+                    };
+                }
+            }
+            %>
+            <% if (weekly) { %>
             <div class="col-lg-4">
                 <div class="weekly-card h-100 d-flex flex-column">
                     <span class="label">Destaque da Semana</span>
-                    <h5 class="mt-1">Diagnóstico Dazzling<br />da Semana</h5>
-                    <p class="text-muted small">Confira o produto mais buscado pelos nossos clientes essa
-                        semana.</p>
+                    <h5 class="mt-1"><%= weekly.nome %></h5>
+                    <p class="text-muted small">
+                        <% if (weekly.desconto > 0) { %>
+                            Aproveite <%= weekly.desconto %>% de desconto por tempo limitado.
+                        <% } else { %>
+                            Um dos produtos preferidos dos nossos clientes.
+                        <% } %>
+                    </p>
                     <div class="text-center my-auto py-3">
-                        <img class="weekly-img" src="https://placehold.co/180x130/fff8e1/A31621?text=Produto+Semana"
-                            alt="Produto Semana" />
+                        <img class="weekly-img" src="<%= weekly.img %>" alt="<%= weekly.nome %>" />
                     </div>
-                    <a href="/shop" class="btn-weekly-cta btn-rounded mt-3">Ver Produto <i class="bi bi-arrow-right"></i></a>
+                    <div class="fw-bold fs-5 text-danger">R$ <%= weekly.preco.toFixed(2).replace('.', ',') %></div>
+                    <a href="<%= weekly.link %>" class="btn-weekly-cta btn-rounded mt-2">Ver Produto <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
+            <% } %>
 
-            <!-- Marcas -->
+            <%
+            var marcasList = (typeof marcas !== 'undefined' && Array.isArray(marcas)) ? marcas.slice(0, 10) : [];
+            %>
+            <% if (marcasList.length > 0) { %>
             <div class="col-lg-8">
                 <div class="brands-section h-100">
                     <h2 class="section-title mb-4">Nossas Marcas Parceiras</h2>
-                    <div class="row row-cols-3 row-cols-sm-4 row-cols-md-5 g-4 align-items-center">
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=EMS" alt="EMS" /></div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Medley" alt="Medley" />
+                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3 align-items-center">
+                        <% marcasList.forEach(function(marca){ %>
+                        <div class="col">
+                            <span class="brand-chip"><i class="bi bi-patch-check-fill"></i><%= marca %></span>
                         </div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Eurofarma" alt="Eurofarma" /></div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Sanofi" alt="Sanofi" />
-                        </div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Hypera" alt="Hypera" />
-                        </div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Pfizer" alt="Pfizer" />
-                        </div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Novartis" alt="Novartis" />
-                        </div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Roche" alt="Roche" /></div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Bayer" alt="Bayer" /></div>
-                        <div class="col text-center"><img class="brand-logo"
-                                src="https://placehold.co/100x36/cccccc/666666?text=Natur" alt="Natur" /></div>
+                        <% }); %>
                     </div>
                 </div>
             </div>
+            <% } %>
 
         </div>
     </div>
@@ -339,24 +405,42 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
 
             <% if (destaqueList.length > 0) { %>
                 <% destaqueList.forEach(function(prod){
-                    var pImg = prod.img ? prod.img : 'https://placehold.co/160x130/e8f0fe/4E8098?text=Produto';
+                    var pImg = prod.img ? prod.img : '/img/produtos/imagem.png';
                     var pPreco = Number(prod.preco || 0);
+                    var pEstoque = Number(prod.quantidade || 0);
                 %>
                     <div class="col-6 col-md-4 col-lg-3">
-                        <div class="product-card h-100">
-                            <button class="wishlist-btn"><i class="bi bi-heart"></i></button>
-                            <div class="img-wrap">
+                        <article class="shop-product-card">
+                            <% if (pEstoque <= 0) { %>
+                                <span class="card-badge card-badge-esgotado">Esgotado</span>
+                            <% } else if (pEstoque <= 10) { %>
+                                <span class="card-badge card-badge-ultimas">Últimas unid.</span>
+                            <% } %>
+                            <button class="wishlist-btn" title="Favoritar"><i class="bi bi-heart"></i></button>
+                            <div class="card-img-area">
                                 <img src="<%= pImg %>" alt="<%= prod.nome %>" />
                             </div>
-                            <div class="card-body">
-                                <div class="brand-tag"><%= prod.marca || 'FarmaFipp' %></div>
-                                <div class="prod-title"><%= prod.nome %></div>
-                                <div class="price-row">
-                                    <span class="price-now">R$ <%= pPreco.toFixed(2).replace('.', ',') %></span>
+                            <div class="card-info">
+                                <div class="card-brand"><%= prod.marca || 'FarmaFipp' %></div>
+                                <div class="card-title"><%= prod.nome %></div>
+                                <% if (prod.categoria) { %>
+                                    <div class="card-category"><i class="bi bi-grid"></i> <%= prod.categoria %></div>
+                                <% } %>
+                                <div class="card-price-row">
+                                    <span class="price-current">R$ <%= pPreco.toFixed(2).replace('.', ',') %></span>
                                 </div>
-                                <a href="/shop" class="btn-add"><i class="bi bi-bag-plus me-1"></i>Ver no Shop</a>
+                                <button
+                                    class="btn-cart-add add-to-cart"
+                                    type="button"
+                                    data-produto="<%= prod.id %>"
+                                    data-lote="<%= prod.id_lote || '' %>"
+                                    <%= pEstoque <= 0 ? 'disabled' : '' %>
+                                >
+                                    <i class="bi bi-bag-plus"></i>
+                                    <%= pEstoque <= 0 ? 'Indisponível' : 'Adicionar ao carrinho' %>
+                                </button>
                             </div>
-                        </div>
+                        </article>
                     </div>
                 <% }); %>
             <% } else { %>
@@ -400,20 +484,12 @@ var promosList = (typeof promocoes !== 'undefined' && Array.isArray(promocoes)) 
     </div>
 </section>
 <script>
-            // Wishlist toggle
-            document.querySelectorAll('.wishlist-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const icon = this.querySelector('i');
-                    icon.classList.toggle('bi-heart');
-                    icon.classList.toggle('bi-heart-fill');
-                    this.style.color = icon.classList.contains('bi-heart-fill') ? 'var(--primary-red)' : '';
-                });
-            });
-
-            // Static demo products — redirect to /shop so users can buy real products
-            document.querySelectorAll('.btn-add').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    window.location.href = '/shop';
-                });
-            });
-        </script>
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const icon = this.querySelector('i');
+            icon.classList.toggle('bi-heart');
+            icon.classList.toggle('bi-heart-fill');
+            this.style.color = icon.classList.contains('bi-heart-fill') ? 'var(--primary-red)' : '';
+        });
+    });
+</script>

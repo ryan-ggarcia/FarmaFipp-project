@@ -116,6 +116,13 @@ class ProdutoModel{
         return result.map(r => r.cat_nome);
     }
 
+    async ListNomesMarcas() {
+        const sql = "select distinct marca from produto where marca is not null and marca <> '' and coalesce(prod_status, 'Ativo') = 'Ativo' order by marca";
+        const banco = new Database();
+        let result = await banco.ExecutaComando(sql);
+        return result.map(r => r.marca);
+    }
+
     async GetLote(){
         const sql = `SELECT l.* FROM Lote l
                      INNER JOIN produto_lote pl ON l.lot_id = pl.lote_lot_id

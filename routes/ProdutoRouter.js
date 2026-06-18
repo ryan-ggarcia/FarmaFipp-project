@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const path = require('path');
 const router = express.Router();
 const fs = require('fs');
 const fileType = require('file-type'); // import file-type
@@ -8,9 +9,11 @@ const LoteController = require('../controllers/LoteController');
 const ctrl = new ProdutoController();
 const loteCtrl = new LoteController();
 
+const PASTA_PRODUTOS = path.join(__dirname, '..', 'public', 'img', 'produtos');
+
 let storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public/img/produtos');
+        cb(null, PASTA_PRODUTOS);
     },
     filename: function (req, file, cb) {
         let nome = `PRD-` + Date.now();
@@ -70,5 +73,7 @@ router.get('/alterar/:id', ctrl.AlterarView);
 router.post('/alterar', upload.single('img'), magicBytesValidator, ctrl.alterar);
 router.post('/excluir', ctrl.excluir);
 
+
+router.PASTA_PRODUTOS = PASTA_PRODUTOS;
 
 module.exports = router;

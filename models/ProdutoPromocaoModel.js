@@ -48,11 +48,27 @@ class ProdutoPromocaoModel extends ProdutoModel {
                 const insertSql = "INSERT INTO configuracoes (chave, valor) VALUES ('percentual_desconto', ?)";
                 await banco.ExecutaComandoNonQuery(insertSql, [val.toString()]);
             }
+            await ProdutoPromocaoModel.AplicarDescontoEmPromocoesAtivas(val);
             return true;
         } catch (error) {
             console.error('Erro ao atualizar desconto:', error);
             return false;
         }
+    }
+
+    static async AplicarDescontoEmPromocoesAtivas(percentual) {
+        const val = Number(percentual);
+        if (Number.isNaN(val) || val <= 0 || val > 100) {
+            return false;
+        }
+        const banco = new Database();
+        const sql = `UPDATE promocao pr
+                    INNER JOIN produto p ON pr.idProduto = p.idProduto
+                    SET pr.prom_porcentagem = ?,
+                        pr.prom_valor = ROUND(p.pro_preco - (p.pro_preco * ? / 100), 2)
+                    WHERE pr.prom_dataFinal >= CURDATE()
+                    AND coalesce(p.prod_status, 'Ativo') = 'Ativo'`;
+        return await banco.ExecutaComandoNonQuery(sql, [val, val]);
     }
 
     /**

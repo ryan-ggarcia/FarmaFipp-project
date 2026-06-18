@@ -54,6 +54,53 @@ describe('ProdutoPromocaoModel', () => {
             const result = await ProdutoPromocaoModel.SetDesconto('abc');
             expect(result).toBe(false);
         });
+
+        it('deve propagar o novo desconto para as promoções ativas', async () => {
+            mockExecutaComandoNonQuery.mockResolvedValueOnce(true);
+            mockExecutaComandoNonQuery.mockResolvedValueOnce(true);
+
+            const result = await ProdutoPromocaoModel.SetDesconto(20);
+
+            expect(result).toBe(true);
+            const ultimaChamada = mockExecutaComandoNonQuery.mock.calls[mockExecutaComandoNonQuery.mock.calls.length - 1];
+            expect(ultimaChamada[0]).toContain('UPDATE promocao');
+            expect(ultimaChamada[0]).toContain('prom_porcentagem');
+            expect(ultimaChamada[0]).toContain('prom_valor');
+            expect(ultimaChamada[1]).toEqual([20, 20]);
+        });
+    });
+
+    describe('AplicarDescontoEmPromocoesAtivas', () => {
+        it('recalcula preço e porcentagem das promoções ativas', async () => {
+            mockExecutaComandoNonQuery.mockResolvedValueOnce(true);
+
+            const result = await ProdutoPromocaoModel.AplicarDescontoEmPromocoesAtivas(20);
+
+            expect(result).toBe(true);
+            const [sql, values] = mockExecutaComandoNonQuery.mock.calls[0];
+            expect(sql).toContain('UPDATE promocao');
+            expect(sql).toContain('prom_valor');
+            expect(values).toEqual([20, 20]);
+        });
+
+        it('só atualiza promoções de produtos ativos e ainda vigentes', async () => {
+            mockExecutaComandoNonQuery.mockResolvedValueOnce(true);
+
+            await ProdutoPromocaoModel.AplicarDescontoEmPromocoesAtivas(20);
+
+            const sql = mockExecutaComandoNonQuery.mock.calls[0][0];
+            expect(sql).toContain('prom_dataFinal >= CURDATE()');
+            expect(sql).toContain("coalesce(p.prod_status, 'Ativo') = 'Ativo'");
+        });
+
+        it('rejeita percentual inválido sem tocar no banco', async () => {
+            const r1 = await ProdutoPromocaoModel.AplicarDescontoEmPromocoesAtivas(0);
+            const r2 = await ProdutoPromocaoModel.AplicarDescontoEmPromocoesAtivas(150);
+
+            expect(r1).toBe(false);
+            expect(r2).toBe(false);
+            expect(mockExecutaComandoNonQuery).not.toHaveBeenCalled();
+        });
     });
 
     describe('ReadProductExpirationDateNear', () => {

@@ -7,7 +7,13 @@ const FuncionarioModel = require('../models/FuncionarioModel');
 class UsuarioController {
     async homeView(req, res) {
         const promoModel = new ProdutoPromocaoModel();
-        const promocoes = await promoModel.ReadPromocoes();
+        const promocoesBrutas = await promoModel.ReadPromocoes();
+        const vistosPromo = new Set();
+        const promocoes = (Array.isArray(promocoesBrutas) ? promocoesBrutas : []).filter(p => {
+            if (!p || p.idProduto == null || vistosPromo.has(p.idProduto)) return false;
+            vistosPromo.add(p.idProduto);
+            return true;
+        });
 
         // Produtos reais em destaque — deduplicados por id (o Read traz 1 linha por lote)
         const listaBruta = await new ProdutoModel().Read();
@@ -29,11 +35,14 @@ class UsuarioController {
         ];
         const categorias = populares.filter(nome => todasCategorias.includes(nome));
 
+        const marcas = await new ProdutoModel().ListNomesMarcas();
+
         res.render("usuarioView/home", {
             layout: "layoutPublico",
             promocoes: Array.isArray(promocoes) ? promocoes : [],
             produtos,
-            categorias
+            categorias,
+            marcas
         });
     }
 

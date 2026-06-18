@@ -36,7 +36,7 @@ class PromocaoController {
 
             const result = await ProdutoPromocaoModel.SetDesconto(val);
             if (result) {
-                return res.send({ ok: true, msg: `Desconto alterado para ${val}%. As próximas promoções automáticas usarão este valor.` });
+                return res.send({ ok: true, msg: `Desconto alterado para ${val}%. As promoções ativas foram atualizadas para o novo valor.` });
             }
             return res.send({ ok: false, msg: 'Erro ao salvar configuração.' });
         } catch (error) {
