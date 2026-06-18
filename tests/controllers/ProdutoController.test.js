@@ -1,24 +1,9 @@
-/**
- * Testes End-to-End — ProdutoController (/admin/produtos)
- *
- * Cobre todas as rotas do ProdutoRouter:
- *   GET  /                 → listar
- *   GET  /cadastrar        → cadastrarView
- *   POST /cadastrar        → cadastrar
- *   GET  /obter/:produtoId → obterProduto
- *   GET  /alterar/:id      → AlterarView
- *   POST /alterar          → alterar
- *   POST /excluir          → excluir
- */
-
 const {
     mockExecutaComando,
     mockExecutaComandoNonQuery,
     mockExecutaComandoLastInserted
 } = require('../setup');
 
-// Mock fs para ProdutoController (alterar usa fs.existsSync/unlinkSync)
-// e ProdutoPromocaoModel (usa fs for config)
 jest.mock('fs', () => ({
     existsSync: jest.fn(() => false),
     readFileSync: jest.fn(() => '{}'),
@@ -28,7 +13,6 @@ jest.mock('fs', () => ({
 
 const ProdutoController = require('../../controllers/ProdutoController');
 
-// ─── Helper: mock req/res ─────────────────────────────────────────────
 function mockReqRes(body = {}, params = {}, file = null) {
     const req = {
         body,
@@ -48,7 +32,6 @@ function mockReqRes(body = {}, params = {}, file = null) {
     return { req, res };
 }
 
-// ─── Dados de mock reutilizáveis ──────────────────────────────────────
 const PRODUTO_ROW = {
     idProduto: 1,
     pro_nome: 'Vitamina C 500mg',
@@ -83,21 +66,16 @@ const LOTE_ROWS = [
     { lot_id: 10, prod_id: 1, lot_validade: '2026-12-31', lot_qnt: 50, forn_id: 1, lot_name: 'Lote ABC' }
 ];
 
-// =====================================================================
 describe('ProdutoController — /admin/produtos', () => {
     const ctrl = new ProdutoController();
 
-    // =================================================================
-    // GET / e GET /listar — listar
-    // =================================================================
     describe('listar (GET / e GET /listar)', () => {
         it('deve renderizar a view de listagem com produtos, categorias e lotes', async () => {
-            // Read() → discardProductsExpired (inner query) + main SELECT
             mockExecutaComando
-                .mockResolvedValueOnce([])           // discardProductsExpired query
-                .mockResolvedValueOnce(CATEGORIA_ROWS) // ListCategorias
-                .mockResolvedValueOnce([PRODUTO_ROW]) // Read
-                .mockResolvedValueOnce(LOTE_ROWS);     // Lote.List
+                .mockResolvedValueOnce([])
+                .mockResolvedValueOnce(CATEGORIA_ROWS)
+                .mockResolvedValueOnce([PRODUTO_ROW])
+                .mockResolvedValueOnce(LOTE_ROWS);
 
             const { req, res } = mockReqRes();
             await ctrl.listar(req, res);
@@ -112,10 +90,10 @@ describe('ProdutoController — /admin/produtos', () => {
 
         it('deve renderizar com lista vazia quando não há produtos', async () => {
             mockExecutaComando
-                .mockResolvedValueOnce([])              // discardProductsExpired
-                .mockResolvedValueOnce(CATEGORIA_ROWS)  // ListCategorias
-                .mockResolvedValueOnce([])              // Read (sem produtos)
-                .mockResolvedValueOnce([]);              // Lote.List
+                .mockResolvedValueOnce([])
+                .mockResolvedValueOnce(CATEGORIA_ROWS)
+                .mockResolvedValueOnce([])
+                .mockResolvedValueOnce([]);
 
             const { req, res } = mockReqRes();
             await ctrl.listar(req, res);
@@ -134,16 +112,11 @@ describe('ProdutoController — /admin/produtos', () => {
         });
     });
 
-    // =================================================================
-    // GET /cadastrar — cadastrarView
-    // =================================================================
     describe('cadastrarView (GET /cadastrar)', () => {
         it('deve renderizar a view com categorias e fornecedores', async () => {
-            // FornecedorModel.List()
             mockExecutaComando.mockResolvedValueOnce(FORNECEDOR_ROWS);
-            // ProdutoModel.ListCategorias() → discardProductsExpired + categorias
-            mockExecutaComando.mockResolvedValueOnce([]);              // discard
-            mockExecutaComando.mockResolvedValueOnce(CATEGORIA_ROWS);  // categorias
+            mockExecutaComando.mockResolvedValueOnce([]);
+            mockExecutaComando.mockResolvedValueOnce(CATEGORIA_ROWS);
 
             const { req, res } = mockReqRes();
             await ctrl.cadastrarView(req, res);
@@ -164,9 +137,6 @@ describe('ProdutoController — /admin/produtos', () => {
         });
     });
 
-    // =================================================================
-    // POST /cadastrar — cadastrar
-    // =================================================================
     describe('cadastrar (POST /cadastrar)', () => {
         const validBody = {
             nome: 'Paracetamol 750mg',
@@ -179,9 +149,7 @@ describe('ProdutoController — /admin/produtos', () => {
         };
 
         it('deve cadastrar produto com sucesso e registrar no estoque', async () => {
-            // produto.Create() → ExecutaComandoLastInserted
             mockExecutaComandoLastInserted.mockResolvedValueOnce(5);
-            // estoque.AddToInventory() → ExecutaComandoLastInserted
             mockExecutaComandoLastInserted.mockResolvedValueOnce(1);
 
             const { req, res } = mockReqRes(validBody, {}, { filename: 'PRD-999.jpg' });
@@ -312,19 +280,13 @@ describe('ProdutoController — /admin/produtos', () => {
         });
     });
 
-    // =================================================================
-    // GET /obter/:produtoId — obterProduto
-    // =================================================================
     describe('obterProduto (GET /obter/:produtoId)', () => {
         it('deve retornar dados do produto com lote e sem promoção', async () => {
             const fs = require('fs');
             fs.existsSync.mockReturnValue(false);
 
-            // produto.Get() query
             mockExecutaComando.mockResolvedValueOnce([PRODUTO_ROW]);
-            // produto.GetLote()
             mockExecutaComando.mockResolvedValueOnce([{ lot_id: 10, lot_qnt: 50 }]);
-            // promoModel.GetPromocaoByProdutoId()
             mockExecutaComando.mockResolvedValueOnce([]);
 
             const { req, res } = mockReqRes({}, { produtoId: '1' });
@@ -380,8 +342,8 @@ describe('ProdutoController — /admin/produtos', () => {
             fs.existsSync.mockReturnValue(false);
 
             mockExecutaComando.mockResolvedValueOnce([PRODUTO_ROW]);
-            mockExecutaComando.mockResolvedValueOnce([]);   // sem lotes
-            mockExecutaComando.mockResolvedValueOnce([]);    // sem promo
+            mockExecutaComando.mockResolvedValueOnce([]);
+            mockExecutaComando.mockResolvedValueOnce([]);
 
             const { req, res } = mockReqRes({}, { produtoId: '1' });
             await ctrl.obterProduto(req, res);

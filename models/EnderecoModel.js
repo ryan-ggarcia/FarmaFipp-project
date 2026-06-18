@@ -176,8 +176,6 @@ class EnderecoModel{
     }
 
     async DeleteByCliente(id){
-        // A tabela `endereco` não possui relacionamento direto com cliente (coluna `cli_id`).
-        // Esse vínculo é mantido em tabelas específicas de cliente.
         return false;
     }
     async DeleteByFornecedor(id){

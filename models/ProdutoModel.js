@@ -2,14 +2,11 @@ const Database = require('../utils/database')
 const fs = require('fs')
 const path = require('path')
 
-// Resolve o caminho da imagem do produto para o navegador.
-// Lida com: valor nulo, coluna BLOB (Buffer), caminhos já prefixados
-// (ex.: "/img/produtos/x.jpg") e arquivos que não existem em disco.
 function resolverImagem(raw){
     const FALLBACK = '/img/produtos/barra-de-imagem.png';
     if(raw == null) return FALLBACK;
     let nome = Buffer.isBuffer(raw) ? raw.toString('utf8') : String(raw);
-    nome = nome.trim().replace(/^.*[\\/]/, ''); // remove qualquer caminho, deixa só o nome do arquivo
+    nome = nome.trim().replace(/^.*[\\/]/, '');
     if(!nome) return FALLBACK;
     const baseAbs = global.CAMINHO_IMG_ABS || (path.join(__dirname, '..', 'public', 'img', 'produtos') + path.sep);
     if(!fs.existsSync(baseAbs + nome)) return FALLBACK;

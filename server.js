@@ -1,10 +1,8 @@
-//CommonJS
 require('dotenv').config()
 const express = require('express');
 const cookieParser = require("cookie-parser");
 const expressEjsLayouts = require('express-ejs-layouts');
 
-// Rotas admin
 const homeRouter = require("./routes/HomeRouter");
 const ServicoRouter = require('./routes/ServicoRouter');
 const ClienteRouter = require('./routes/ClienteRoute');
@@ -15,14 +13,12 @@ const FuncionarioRouter = require('./routes/FuncionarioRoute');
 const DevolucaoRouter = require('./routes/DevolucaoRouter');
 const PromocaoRouter = require('./routes/PromocaoRouter');
 
-// Rotas públicas e cliente
 const usuarioRouter = require("./routes/UsuarioRouter");
 const loginRouter = require('./routes/loginRouter');
 const ProdutoPublicRouter = require('./routes/ProdutoPublicRouter');
 const PerfilRoute = require('./routes/PerfilRoute');
 const DevolucaoPublicRouter = require('./routes/DevolucaoPublicRouter');
 
-// API
 const VendaRouter = require('./routes/VendaRouter');
 
 const server = express();

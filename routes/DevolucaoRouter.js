@@ -5,7 +5,6 @@ const router = express.Router();
 
 let controladora = new DevolucaoController();
 
-// Rotas internas (funcionário)
 router.get("/", controladora.listarView);
 router.get("/presencial", controladora.cadastrarPresencialView);
 router.post("/presencial", controladora.cadastrarPresencial);

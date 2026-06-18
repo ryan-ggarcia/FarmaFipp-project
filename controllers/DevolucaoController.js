@@ -6,9 +6,6 @@ const LoteModel = require("../models/LoteModel");
 const EstoqueModel = require("../models/EstoqueModel");
 const ItemVendaModel = require("../models/ItemVendaModel");
 
-// Valida uma devolução/troca contra o histórico de vendas (RN-13). O modelo de venda
-// não guarda vínculo com cliente, então a checagem é por produto: exige que o produto
-// tenha sido vendido e que a quantidade não exceda (vendido - já devolvido aprovado).
 async function validarDevolucaoContraVenda(produtoId, quantidade) {
     const qtd = Number(quantidade);
     if (!produtoId || Number.isNaN(qtd) || qtd <= 0) {
@@ -29,9 +26,6 @@ async function validarDevolucaoContraVenda(produtoId, quantidade) {
     return null;
 }
 
-// Devolve ao estoque os itens de uma devolução aprovada. O item devolvido sempre
-// retorna (tanto na Devolução quanto na Troca). Idempotente: se já houve
-// movimentação para esta devolução, não repete (evita duplicar em reaprovações).
 async function restocarDevolucao(devolucaoId) {
     const origem = `DEVOLUCAO #${devolucaoId}`;
 
@@ -49,7 +43,6 @@ async function restocarDevolucao(devolucaoId) {
             continue;
         }
 
-        // Item devolvido retorna ao estoque (entrada).
         const loteId = await new LoteModel().getLotePreferencialPorProduto(produtoId);
         if (loteId) {
             const lote = new LoteModel();
@@ -57,11 +50,9 @@ async function restocarDevolucao(devolucaoId) {
             await lote.IncreaseStock(quantidade);
         }
 
-        // Registra a entrada (auditoria) mesmo sem lote vinculado ao produto.
         const mov = new EstoqueModel(0, loteId, 'ENTRADA', origem, quantidade, produtoId, item.getID());
         await mov.AddToInventory();
 
-        // Troca (RN-11): o produto substituto entregue ao cliente sai do estoque.
         const substituto = item.getPRODUTOSUBSTITUTO();
         if (substituto) {
             const loteSubId = await new LoteModel().getLoteParaVenda(substituto, quantidade);
@@ -76,10 +67,9 @@ async function restocarDevolucao(devolucaoId) {
     }
 }
 
-// Valida o produto substituto numa troca (tipo 'Venda'): obrigatório e com saldo.
 async function validarSubstitutoTroca(tipo, produtoSubstituto, quantidade) {
     if (tipo !== 'Venda') {
-        return null; // só a troca exige substituto
+        return null;
     }
     if (!produtoSubstituto) {
         return 'Para troca, informe o produto substituto.';
@@ -92,10 +82,6 @@ async function validarSubstitutoTroca(tipo, produtoSubstituto, quantidade) {
 }
 
 class DevolucaoController {
-
-    // ===========================
-    // ROTAS INTERNAS (funcionário)
-    // ===========================
 
     async listarView(req, res) {
         let devolucao = new DevolucaoModel();
@@ -117,12 +103,10 @@ class DevolucaoController {
 
         let { tipo, clienteId, dataCompra, produtoId, quantidade, motivo, observacao, produtoSubstituto } = req.body;
 
-        // Validação dos campos obrigatórios
         if (!tipo || !clienteId || !dataCompra || !produtoId || !quantidade || !motivo) {
             return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
         }
 
-        // Validação do prazo de devolução (30 dias)
         let dataCompraDate = new Date(dataCompra);
         let hoje = new Date();
         let diffDias = Math.floor((hoje - dataCompraDate) / (1000 * 60 * 60 * 24));
@@ -135,21 +119,16 @@ class DevolucaoController {
             return res.send({ ok: false, msg: "A data da compra não pode ser uma data futura!" });
         }
 
-        // Valida contra o histórico de vendas (produto vendido e quantidade disponível)
         let erroVenda = await validarDevolucaoContraVenda(produtoId, quantidade);
         if (erroVenda) {
             return res.send({ ok: false, msg: erroVenda });
         }
 
-        // Troca: exige produto substituto com saldo
         let erroTroca = await validarSubstitutoTroca(tipo, produtoSubstituto, quantidade);
         if (erroTroca) {
             return res.send({ ok: false, msg: erroTroca });
         }
 
-        // Cadastrar a devolução (presencial = já Aprovado)
-        // ENUM tipo: 'Venda' ou 'Compra' (banco real)
-        // ENUM status: 'Aprovado', 'Aguardando', 'Nao Aprovado' (banco real)
         let dataHoje = new Date().toISOString().split('T')[0];
         let devolucao = new DevolucaoModel(
             0, dataHoje, 'Aprovado', observacao || '', 0, tipo, 'presencial', dataCompra, null, clienteId, null, null, null
@@ -158,12 +137,10 @@ class DevolucaoController {
         let devolucaoId = await devolucao.cadastrar();
 
         if (devolucaoId) {
-            // Cadastrar o item da devolução (com substituto quando for troca)
             let item = new ItemDevolucaoModel(0, quantidade, devolucaoId, motivo, produtoId, null, tipo === 'Venda' ? produtoSubstituto : null);
             let resultItem = await item.cadastrar();
 
             if (resultItem) {
-                // Presencial já entra 'Aprovado' → item devolvido entra e substituto (troca) sai
                 await restocarDevolucao(devolucaoId);
                 ok = true;
                 msg = "Devolução/troca registrada com sucesso!";
@@ -203,7 +180,6 @@ class DevolucaoController {
             return res.send({ ok: false, msg: "ID e status são obrigatórios!" });
         }
 
-        // Validar status permitidos (valores reais do banco)
         let statusPermitidos = ['Aprovado', 'Aguardando', 'Nao Aprovado'];
         if (!statusPermitidos.includes(status)) {
             return res.send({ ok: false, msg: "Status inválido!" });
@@ -215,7 +191,6 @@ class DevolucaoController {
         devolucao.setOBSERVACAO(observacao || '');
         devolucao.setFUNCIONARIOID(null);
 
-        // Se o status for 'Aprovado' vindo de 'Aguardando', é uma finalização
         if (status === 'Aprovado') {
             devolucao.setDATAFINALIZACAO(new Date());
         }
@@ -223,7 +198,6 @@ class DevolucaoController {
         let result = await devolucao.atualizarStatus();
 
         if (result) {
-            // Ao aprovar, o item devolvido retorna ao estoque (idempotente)
             if (status === 'Aprovado') {
                 await restocarDevolucao(id);
             }
@@ -260,10 +234,6 @@ class DevolucaoController {
         res.send({ ok, msg });
     }
 
-    // ===========================
-    // ROTAS PÚBLICAS (cliente)
-    // ===========================
-
     async solicitarOnlineView(req, res) {
         let produto = new ProdutoModel();
         let listaProdutos = await produto.Read();
@@ -276,12 +246,10 @@ class DevolucaoController {
 
         let { tipo, produtoId, dataCompra, quantidade, motivo, nomeCliente, contato, produtoSubstituto } = req.body;
 
-        // Validação dos campos obrigatórios
         if (!tipo || !produtoId || !dataCompra || !quantidade || !motivo || !nomeCliente || !contato) {
             return res.send({ ok: false, msg: "Preencha todos os campos obrigatórios!" });
         }
 
-        // Validação do prazo de devolução (30 dias)
         let dataCompraDate = new Date(dataCompra);
         let hoje = new Date();
         let diffDias = Math.floor((hoje - dataCompraDate) / (1000 * 60 * 60 * 24));
@@ -294,19 +262,16 @@ class DevolucaoController {
             return res.send({ ok: false, msg: "A data da compra não pode ser uma data futura!" });
         }
 
-        // Valida contra o histórico de vendas (produto vendido e quantidade disponível)
         let erroVenda = await validarDevolucaoContraVenda(produtoId, quantidade);
         if (erroVenda) {
             return res.send({ ok: false, msg: erroVenda });
         }
 
-        // Troca: exige produto substituto com saldo
         let erroTroca = await validarSubstitutoTroca(tipo, produtoSubstituto, quantidade);
         if (erroTroca) {
             return res.send({ ok: false, msg: erroTroca });
         }
 
-        // Cadastrar a devolução (online = Aguardando, sem funcionário)
         let dataHoje = new Date().toISOString().split('T')[0];
         let descricao = "Solicitação online - Cliente: " + nomeCliente + " | Contato: " + contato;
 
@@ -317,7 +282,6 @@ class DevolucaoController {
         let devolucaoId = await devolucao.cadastrar();
 
         if (devolucaoId) {
-            // Cadastrar o item da devolução (com substituto quando for troca)
             let item = new ItemDevolucaoModel(0, quantidade, devolucaoId, motivo, produtoId, null, tipo === 'Venda' ? produtoSubstituto : null);
             let resultItem = await item.cadastrar();
 

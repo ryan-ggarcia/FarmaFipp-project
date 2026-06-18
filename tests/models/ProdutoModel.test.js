@@ -1,15 +1,6 @@
-/**
- * Testes unitários para ProdutoModel
- * 
- * Testa os métodos Create(), ListCategorias(), Read(), Get(),
- * Update(), Delete(), DecreaseStock(), toJSON() e a lógica
- * de descarte automático de produtos vencidos.
- */
-
 const { mockExecutaComando, mockExecutaComandoNonQuery, mockExecutaComandoLastInserted } = require('../setup');
 const ProdutoModel = require('../../models/ProdutoModel');
 
-// Mock fs para o método Get()
 jest.mock('fs', () => ({
     existsSync: jest.fn().mockReturnValue(true)
 }));
@@ -102,15 +93,15 @@ describe('ProdutoModel', () => {
 
         it('deve processar descarte quando existem produtos vencidos', async () => {
             mockExecutaComando.mockResolvedValueOnce([
-                { idProduto: 1, lot_id: 10, lot_qnt: 5 },
-                { idProduto: 2, lot_id: 11, lot_qnt: 3 }
+                { prod_id: 1, lot_id: 10, lot_qnt: 5, produto_vinculo: null },
+                { prod_id: 2, lot_id: 11, lot_qnt: 3, produto_vinculo: null }
             ]);
             mockExecutaComandoNonQuery.mockResolvedValue(true);
             mockExecutaComando.mockResolvedValueOnce([{ idCategoria: 1, cat_nome: 'Geral' }]);
 
             const produto = new ProdutoModel(0, '', '', '', 0, 0, '', 0, '', '', '');
             await produto.ListCategorias();
-            expect(mockExecutaComandoNonQuery).toHaveBeenCalledTimes(2);
+            expect(mockExecutaComandoNonQuery).toHaveBeenCalledTimes(4);
         });
     });
 

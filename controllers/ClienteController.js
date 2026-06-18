@@ -46,7 +46,6 @@ class ClienteController{
         if(!cpfLimpo || !cpf.isValid(cpfLimpo)){
             return res.send({ ok: false, msg: "CPF inválido" })
         }
-        //Verificar se CPF ou email já existem no banco
         let cpfExistente = await new ClienteModel().FindByCpf(cpfLimpo);
         let emailExistente = await new ClienteModel().FindByEmail(email);
 
@@ -101,7 +100,6 @@ class ClienteController{
         if(!cpf.isValid(cpfLimpo)){
             return res.send({ok: false, msg: "CPF inválido"})
         }
-        //Verifica se a senha foi alterada
         let senhaHash = senha
         let clienteDoBanco = new ClienteModel()
         clienteDoBanco = await clienteDoBanco.Get(id)
@@ -110,15 +108,12 @@ class ClienteController{
             senhaHash = await bcrypt.hash(senha, 10)
         }
 
-        //Update do cliente
         let cliente = new ClienteModel(id, nome, status, cpfLimpo, email, senhaHash, telefone, data, 1)
         let result = await cliente.Update()
 
-        //Update do endereço
         let endereco = new EnderecoModelCliente(endId, rua, bairro, cidade, num, estado, uf, cep, complemento, id)
         let resultEnd = await endereco.Update()
 
-        //Verificação dos resultados
         if(result && resultEnd){
             return res.send({ok: true, msg: "Dados do cliente alterados com sucesso!"})
         }

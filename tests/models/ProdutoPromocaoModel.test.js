@@ -1,7 +1,3 @@
-/**
- * Testes unitários — ProdutoPromocaoModel
- */
-
 const { mockExecutaComando, mockExecutaComandoNonQuery } = require('../setup');
 
 const ProdutoPromocaoModel = require('../../models/ProdutoPromocaoModel');
@@ -113,7 +109,6 @@ describe('ProdutoPromocaoModel', () => {
         });
 
         it('deve retornar produtos com preço promocional quando há lotes a vencer', async () => {
-            // 1ª chamada: query de produtos próximos ao vencimento
             mockExecutaComando.mockResolvedValueOnce([
                 {
                     idProduto: 1,
@@ -129,10 +124,8 @@ describe('ProdutoPromocaoModel', () => {
                 }
             ]);
 
-            // 2ª chamada: verificação anti-duplicata (sem promoção existente)
             mockExecutaComando.mockResolvedValueOnce([]);
 
-            // 3ª chamada: inserção da promoção
             mockExecutaComandoNonQuery.mockResolvedValueOnce(true);
 
             const model = new ProdutoPromocaoModel();
@@ -141,12 +134,10 @@ describe('ProdutoPromocaoModel', () => {
             expect(Array.isArray(result)).toBe(true);
             expect(result.length).toBe(1);
             expect(result[0].nome).toBe('Vitamina C');
-            // Preço com 15% desconto: 50 - (50*0.15) = 42.50
             expect(result[0].precoPromocional).toBe('42.50');
         });
 
         it('não deve duplicar promoção se já existir uma ativa', async () => {
-            // 1ª chamada: query de produtos próximos ao vencimento
             mockExecutaComando.mockResolvedValueOnce([
                 {
                     idProduto: 1,
@@ -162,7 +153,6 @@ describe('ProdutoPromocaoModel', () => {
                 }
             ]);
 
-            // 2ª chamada: verificação anti-duplicata (promoção JÁ existe)
             mockExecutaComando.mockResolvedValueOnce([
                 { idPromocao: 99, prom_valor: 42.50 }
             ]);
@@ -172,9 +162,7 @@ describe('ProdutoPromocaoModel', () => {
 
             expect(Array.isArray(result)).toBe(true);
             expect(result.length).toBe(1);
-            // Não deve ter chamado ExecutaComandoNonQuery (não inseriu duplicata)
             expect(mockExecutaComandoNonQuery).not.toHaveBeenCalled();
-            // Preço retornado é o da promoção existente
             expect(result[0].precoPromocional).toBe('42.50');
         });
     });

@@ -102,7 +102,6 @@ class FornecedorController{
                 })
             }
 
-            /* Atualiza status se enviado */
             if(status === 'inativo'){
                 await fornecedorModel.Delete(id);
             } else if(status === 'ativo'){
@@ -138,7 +137,6 @@ class FornecedorController{
         const { rua, numero, bairro, estado, cidade, cep, uf } = req.body;
         const statusFinal = (status === 'inativo') ? 'inativo' : 'ativo';
 
-        // Validação dos dados do fornecedor
         if(!nome || !telefone || !cnpj){
             return res.send({
                 ok: false,
@@ -146,7 +144,6 @@ class FornecedorController{
             })
         }
         
-        // Validação dos dados do endereço
         if(!rua || !numero || !bairro || !cidade || !cep || !uf || !estado){
             return res.send({
                 ok: false,
@@ -176,11 +173,9 @@ class FornecedorController{
         }
 
         try {
-            // Instância criada ANTES de ser usada
             const fornecedorModel = new FornecedorModel();
             const cnpjFormatado = formatCnpj(cnpj);
 
-            // Verifica se já existe fornecedor com o mesmo CNPJ
             const fornecedoresExistentes = await fornecedorModel.ValidateByCnpj(cnpjFormatado);
             const fornecedorAtivo = Array.isArray(fornecedoresExistentes)
                 ? fornecedoresExistentes.find(f => String(f.forn_status).toLowerCase() === 'ativo')
@@ -193,7 +188,6 @@ class FornecedorController{
                 });
             }
 
-            // Busca apenas fornecedores INATIVOS para reativação
             const fornecedoresInativos = await fornecedorModel.ValidateByCnpjInativo(cnpjFormatado);
 
             if(fornecedoresInativos.length > 0){
@@ -212,7 +206,6 @@ class FornecedorController{
                 })
             }
 
-            // Variável com nome diferente para evitar conflito
             const novoFornecedor = new FornecedorModel(
                 0, nome, formatPhone(telefone), cnpjFormatado, statusFinal
             );
@@ -271,7 +264,6 @@ class FornecedorController{
 
         try{
             const endereco = new EnderecoModel();
-            //const resultEnd = await endereco.DeleteByFornecedor(id);
 
             const fornecedor = new FornecedorModel();
             const result = await fornecedor.Delete(id);

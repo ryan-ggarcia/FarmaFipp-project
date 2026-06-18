@@ -20,8 +20,6 @@ class LoginController{
             if(result != null){
                 
                 if( await bcrypt.compare(senha,result.senha)){
-                    // gravar id do usuário no cookie (result tem cli_id)
-                    
                     res.cookie("usuarioLogado", result.cli_id, { signed: true, httpOnly: true })
                     ok = true
                     msg = "Redirecionando para a página inícial..."
@@ -53,22 +51,18 @@ class LoginController{
 
             const cpfLimpo = inputCpf ? inputCpf.replace(/\D/g, '') : '';
 
-            // Validação dos dados pessoais
             if (!nome || !cpfLimpo || !data || !telefone || !email || !senha) {
                 return res.send({ ok: false, msg: "Preencha todos os dados pessoais" })
             }
 
-            // Validação dos dados de endereço
             if (!rua || !numero || !bairro || !cidade || !estado || !cep || !uf) {
                 return res.send({ ok: false, msg: "Preencha todos os dados do endereço" })
             }
 
-            // Validação do CPF
             if (!cpfLimpo || !cpf.isValid(cpfLimpo)) {
                 return res.send({ ok: false, msg: "CPF inválido" })
             }
 
-            // Verificar se CPF ou email já existem no banco
             let cpfExistente = await new ClienteModel().FindByCpf(cpfLimpo);
             let emailExistente = await new ClienteModel().FindByEmail(email);
 
@@ -78,10 +72,8 @@ class LoginController{
                 return res.send({ ok: false, msg: msgCpf + msgEmail })
             }
 
-            // Hash da senha
             const senhaHash = await bcrypt.hash(senha, 10)
 
-            // Criar cliente (status=1 ativo, perfil_id=1 cliente normal)
             let cliente = new ClienteModel(0, nome, 1, cpfLimpo, email, senhaHash, telefone, data, 1)
             let result = await cliente.Create()
 
@@ -91,7 +83,6 @@ class LoginController{
 
             const cliId = result
 
-            // Criar endereço do cliente
             let endereco = new EnderecoModelCliente(
                 0, rua, bairro, cidade, numero, estado, uf, cep, complemento || '', cliId
             )

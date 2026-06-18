@@ -1,6 +1,3 @@
-/**
- * Testes unitários para ItemDevolucaoModel
- */
 const { mockExecutaComando, mockExecutaComandoNonQuery } = require('../setup');
 const ItemDevolucaoModel = require('../../models/ItemDevolucaoModel');
 

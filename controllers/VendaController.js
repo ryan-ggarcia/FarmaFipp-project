@@ -52,7 +52,6 @@ class VendaController {
         let connection;
 
         try {
-            // Toda a venda ocorre numa transação: ou tudo é gravado, ou nada (sem dados parciais).
             connection = await banco.BeginTransaction();
 
             let venda = new VendaModel()
@@ -76,8 +75,6 @@ class VendaController {
 
                 const quant = Number(item.quantidade);
 
-                // Aplica o preço promocional vigente (o mesmo que o carrinho exibe),
-                // caindo no preço cheio quando não há promoção ativa.
                 const promo = await new ProdutoPromocaoModel().GetPromocaoByProdutoId(produto.id);
                 const preco = (promo && Number(promo.precoPromocional) > 0)
                     ? Number(promo.precoPromocional)
@@ -93,14 +90,12 @@ class VendaController {
                     return res.send({ ok: false, msg: `Preço inválido para o produto ${produto.nome}!` });
                 }
 
-                // Lote é a fonte da verdade do saldo: FEFO, não vencido e com saldo suficiente.
                 const loteId = await new LoteModel().getLoteParaVenda(produto.id, quant, connection);
                 if (!loteId) {
                     await banco.Rollback(connection);
                     return res.send({ ok: false, msg: `Quantidade insuficiente do produto ${produto.nome} no estoque!` });
                 }
 
-                // Baixa atômica no lote (o guard lot_qnt >= ? impede saldo negativo em vendas simultâneas).
                 const lote = new LoteModel();
                 lote.id = loteId;
                 const baixouLote = await lote.DecreaseStock(quant, connection);
@@ -109,7 +104,6 @@ class VendaController {
                     return res.send({ ok: false, msg: `Quantidade insuficiente do produto ${produto.nome} no estoque!` });
                 }
 
-                // Mantém o contador denormalizado do produto sincronizado (best-effort).
                 await new ProdutoModel().DecreaseStock(produto.id, quant, connection);
 
                 let itemVenda = new ItemVendaModel()

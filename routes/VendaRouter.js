@@ -5,9 +5,7 @@ const middleware = require('../middleware/authMiddleware');
 const router = express.Router();
 const controller = new VendaController();
 
-// Checkout do cliente — permanece público
 router.post('/confirmar', controller.RegistrarVenda);
-// Página/consulta de vendas — restrito ao admin
 router.get("/", middleware.validarAdmin, controller.VendasView)
 router.get('/listar', middleware.validarAdmin, controller.ListarVendas)
 

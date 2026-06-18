@@ -2,13 +2,11 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const mysql = require('mysql2')
 
-// Pool ÚNICO compartilhado por todas as instâncias de Database (singleton).
-// Evita criar um pool novo a cada `new Database()`, o que esgotava as conexões do banco.
 const pool = mysql.createPool({
-    host: process.env.DB_HOST, //endereço do nosso banco de dados na nuvem
-    database: process.env.DB_DATABASE, //a database de cada um de vocês possui a nomenclatura PFS2_(RA)
-    user: process.env.DB_USER, // usuario e senha de cada um de vocês é o RA
-    password: process.env.DB_PASSWORD, // usuario e senha de cada um de vocês é o RA
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     idleTimeout: Number(process.env.DB_IDLE_TIMEOUT) || 30000,
     connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 20
 });
@@ -59,7 +57,6 @@ class Database {
         })
     }
 
-    // Transações
     async BeginTransaction() {
         return new Promise((resolve, reject) => {
             this.#conexao.getConnection((err, connection) => {
@@ -99,7 +96,6 @@ class Database {
         });
     }
 
-    // Comandos usando uma conexão específica de transação
     async ExecutaComandoTransacao(sql, valores, connection) {
         return new Promise((resolve, reject) => {
             connection.query(sql, valores, (error, results) => {

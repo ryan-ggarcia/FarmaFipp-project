@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const router = express.Router();
 const fs = require('fs');
-const fileType = require('file-type'); // import file-type
+const fileType = require('file-type');
 const ProdutoController = require('../controllers/ProdutoController');
 const LoteController = require('../controllers/LoteController');
 const ctrl = new ProdutoController();
@@ -25,7 +25,6 @@ let storage = multer.diskStorage({
 let upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        // Filtro superficial (mimetype do Header)
         const allowed = ['image/jpeg', 'image/png', 'image/webp'];
         if (allowed.includes(file.mimetype)) {
             cb(null, true);
@@ -33,21 +32,18 @@ let upload = multer({
             cb(new Error('Tipo de arquivo não permitido! Use JPG, PNG ou WebP.'), false);
         }
     },
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-// Middleware para verificar Magic Bytes (CWE-434 mitigation)
 const magicBytesValidator = async (req, res, next) => {
     if (!req.file) {
-        return next(); // Se não há arquivo (cadastro sem imagem), segue normal.
+        return next();
     }
     try {
         const filePath = req.file.path;
         const type = await fileType.fromFile(filePath);
-        
-        // Verifica se a assinatura bate com extensões válidas e se mime-type é de imagem
+
         if (!type || !['jpg', 'png', 'webp'].includes(type.ext) || !type.mime.startsWith('image/')) {
-            // Arquivo malicioso/falsificado! Apaga o arquivo
             fs.unlinkSync(filePath);
             return res.status(400).send({ ok: false, msg: 'Arquivo corrompido ou malicioso detectado. Operação cancelada.' });
         }
@@ -61,7 +57,6 @@ const magicBytesValidator = async (req, res, next) => {
     }
 };
 
-// Produto routes
 router.get('/', ctrl.listar);
 router.get('/cadastrar', ctrl.cadastrarView);
 router.post('/cadastrar', upload.single('img'), magicBytesValidator, ctrl.cadastrar);

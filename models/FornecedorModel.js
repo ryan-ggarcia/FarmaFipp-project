@@ -44,13 +44,6 @@ class FornecedorModel{
                 rows[0].forn_telefone,
                 rows[0].forn_cnpj,
                 rows[0].forn_status,
-//                rows[0].end_rua,
-//                rows[0].end_bairro,
-//                rows[0].end_cidade,
-//                rows[0].end_num,
-//                rows[0].end_estado,
-//                rows[0].end_uf,
-//                rows[0].end_cep
             );
             return fornecedor;
         } else {
@@ -109,7 +102,6 @@ class FornecedorModel{
     }
 
     async Delete(id){
-        //Deleção lógica
         const sql = `update fornecedor set forn_status = 'inativo' where idFornecedor = ?`;
         const values = [id];
         let database = new Database();

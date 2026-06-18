@@ -31,7 +31,6 @@ class DevolucaoModel {
         this.#nomeFuncionario = nomeFuncionario;
     }
 
-    // Getters
     getID() { return this.#id; }
     getDATA() { return this.#data; }
     getSTATUS() { return this.#status; }
@@ -46,7 +45,6 @@ class DevolucaoModel {
     getNOMECLIENTE() { return this.#nomeCliente; }
     getNOMEFUNCIONARIO() { return this.#nomeFuncionario; }
 
-    // Setters
     setID(x) { this.#id = x; }
     setDATA(x) { this.#data = x; }
     setSTATUS(x) { this.#status = x; }
@@ -171,14 +169,11 @@ class DevolucaoModel {
                     SET devo_status = ?, devo_observacao = ?`;
         let valores = [this.#status, this.#observacao];
 
-        // Só atualiza o funcionário responsável quando um valor é informado,
-        // evitando apagar o vínculo existente a cada mudança de status.
         if (this.#funcionarioId != null) {
             sql += `, Funcionario_idFuncionario = ?`;
             valores.push(this.#funcionarioId);
         }
 
-        // Se o status for 'Aprovado' e é finalização, registrar a data
         if (this.#dataFinalizacao) {
             sql += `, devo_data_finalizacao = NOW()`;
         }
@@ -192,14 +187,12 @@ class DevolucaoModel {
     }
 
     async deletar(id) {
-        // Primeiro deleta os itens filhos
         const sqlItens = "DELETE FROM item_devolucao WHERE EfetuarDevolucao_ItemDevolucao = ?";
         const valores = [id];
         const banco = new Database();
 
         await banco.ExecutaComandoNonQuery(sqlItens, valores);
 
-        // Depois deleta a devolução
         const sql = "DELETE FROM efetuar_devolucao WHERE idEfetuar_devolucao = ?";
         let result = await banco.ExecutaComandoNonQuery(sql, valores);
         return result;

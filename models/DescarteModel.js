@@ -19,7 +19,6 @@ class DescarteModel {
         this.#nomeFuncionario = nomeFuncionario || null;
     }
 
-    // Getters
     getID() { return this.#id; }
     getData() { return this.#data; }
     getQuantidade() { return this.#quantidade; }
@@ -28,7 +27,6 @@ class DescarteModel {
     getNomeProduto() { return this.#nomeProduto; }
     getNomeFuncionario() { return this.#nomeFuncionario; }
 
-    // Setters
     setID(x) { this.#id = x; }
     setData(x) { this.#data = x; }
     setQuantidade(x) { this.#quantidade = x; }

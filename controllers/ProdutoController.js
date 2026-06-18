@@ -91,7 +91,6 @@ class ProdutoController {
                     : null;
                 const idLote = loteDisponivel ? loteDisponivel.lot_id : null;
 
-                // Verifica se existe promoção ativa
                 const promoModel = new ProdutoPromocaoModel();
                 const promo = await promoModel.GetPromocaoByProdutoId(produtoId);
 
@@ -191,7 +190,6 @@ class ProdutoController {
             let produto = new ProdutoModel();
             let result = await produto.Delete(id);
             if (result) {
-                // Invalida/Remove as promoções vinculadas
                 const promoModel = new ProdutoPromocaoModel();
                 const promoAtiva = await promoModel.GetPromocaoByProdutoId(id);
                 if (promoAtiva) {

@@ -15,7 +15,6 @@ class UsuarioController {
             return true;
         });
 
-        // Produtos reais em destaque — deduplicados por id (o Read traz 1 linha por lote)
         const listaBruta = await new ProdutoModel().Read();
         const vistos = new Set();
         const produtos = (Array.isArray(listaBruta) ? listaBruta : []).filter(p => {
@@ -24,7 +23,6 @@ class UsuarioController {
             return true;
         }).slice(0, 8);
 
-        // Categorias populares — apenas as selecionadas, na ordem definida (somente as que existem no banco)
         const todasCategorias = await new ProdutoModel().ListNomesCategorias();
         const populares = [
             'Higiene Pessoal e Cuidados',
@@ -91,7 +89,6 @@ class UsuarioController {
             const promProducts = new ProdutoPromocaoModel();
             const produtosPromocao = await promProducts.ReadProductExpirationDateNear();
 
-            // Cria um mapa de promoções indexado por ID do produto
             const promoMap = {};
             if (Array.isArray(produtosPromocao)) {
                 produtosPromocao.forEach(p => {
@@ -216,7 +213,6 @@ class UsuarioController {
             return res.send({ ok: false, msg: 'Não é permitido agendar em data anterior à atual.' });
         }
 
-        // Impede agendamento em horário já ocupado (pelo profissional ou pelo próprio cliente)
         const conflito = await new ServicoModel().verificarConflito(data, hora, Number(func), Number(clie));
         if (conflito) {
             const msg = conflito.funcionario
@@ -225,11 +221,9 @@ class UsuarioController {
             return res.send({ ok: false, msg });
         }
 
-        // Preço vem do valor cadastrado no tipo de serviço selecionado
         const tipoServico = await new TipoServico().obter(Number(tipo));
         const preco = (tipoServico && tipoServico.getVALOR() != null) ? Number(tipoServico.getVALOR()) : 0;
 
-        // Cliente = usuário logado; status "Aguardando" (aprovação do admin)
         const servico = new ServicoModel(0, data, hora, preco, 'Aguardando', obs || '', Number(tipo), Number(func), Number(clie));
         const result = await servico.cadastrar();
 

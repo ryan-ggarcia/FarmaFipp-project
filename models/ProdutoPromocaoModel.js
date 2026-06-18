@@ -3,7 +3,6 @@ const Database = require('../utils/database');
 const fs = require('fs');
 const path = require('path');
 
-// Caminho do arquivo de configuração de desconto
 const CONFIG_PATH = path.join(__dirname, '..', 'config_promocao.json');
 
 class ProdutoPromocaoModel extends ProdutoModel {
@@ -11,10 +10,6 @@ class ProdutoPromocaoModel extends ProdutoModel {
         super(id, nome, descricao, validade, preco, quantidade, categoria, fornecedor, marca, img);
     }
 
-    /**
-     * Retorna o percentual de desconto atual.
-     * Lê da tabela configuracoes; se não existir, retorna 15 (padrão).
-     */
     static async GetDescontoAtual() {
         try {
             const banco = new Database();
@@ -30,10 +25,6 @@ class ProdutoPromocaoModel extends ProdutoModel {
         return 15;
     }
 
-    /**
-     * Salva um novo percentual de desconto na tabela de configuração.
-     * @param {number} percentual — valor entre 1 e 100
-     */
     static async SetDesconto(percentual) {
         const val = Number(percentual);
         if (Number.isNaN(val) || val <= 0 || val > 100) {
@@ -43,7 +34,6 @@ class ProdutoPromocaoModel extends ProdutoModel {
             const banco = new Database();
             const sql = "UPDATE configuracoes SET valor = ? WHERE chave = 'percentual_desconto'";
             const result = await banco.ExecutaComandoNonQuery(sql, [val.toString()]);
-            // Caso a linha não exista, a gente insere
             if(!result){
                 const insertSql = "INSERT INTO configuracoes (chave, valor) VALUES ('percentual_desconto', ?)";
                 await banco.ExecutaComandoNonQuery(insertSql, [val.toString()]);
@@ -71,23 +61,16 @@ class ProdutoPromocaoModel extends ProdutoModel {
         return await banco.ExecutaComandoNonQuery(sql, [val, val]);
     }
 
-    /**
-     * Insere promoção para um produto SOMENTE se não existir promoção ativa.
-     * Retorna o preço promocional (existente ou recém-criado), ou false em erro.
-     */
     async #addInPromocao(produto) {
         const banco = new Database();
 
-        // Verifica se já existe promoção ativa para este produto
         const sqlCheck = 'SELECT idPromocao, prom_valor FROM promocao WHERE idProduto = ? AND prom_dataFinal >= CURDATE()';
         const existing = await banco.ExecutaComando(sqlCheck, [produto.id]);
 
         if (existing && existing.length > 0) {
-            // Promoção já existe — retorna o preço promocional existente
             return Number(existing[0].prom_valor).toFixed(2);
         }
 
-        // Cria nova promoção
         const discountRate = (await ProdutoPromocaoModel.GetDescontoAtual()) / 100;
         let precoFinal = Number(produto.preco) || 0;
         precoFinal = precoFinal - (precoFinal * discountRate);
@@ -103,10 +86,6 @@ class ProdutoPromocaoModel extends ProdutoModel {
         }
     }
 
-    /**
-     * Busca produtos com lotes vencendo nos próximos 90 dias e os coloca em promoção.
-     * Idempotente: não cria duplicatas graças ao #addInPromocao refatorado.
-     */
     async ReadProductExpirationDateNear() {
         const sql = `SELECT p.*, c.cat_nome AS categoria_nome, l.lot_validade, l.lot_qnt 
                     FROM produto p 
@@ -146,10 +125,6 @@ class ProdutoPromocaoModel extends ProdutoModel {
         return produto.length > 0 ? produto : false;
     }
 
-    /**
-     * Lista todas as promoções ativas com dados do produto.
-     * Usada pelo painel admin e pela home do usuário.
-     */
     async ReadPromocoes() {
         const sql = `SELECT pr.idPromocao, pr.prom_dataInicio, pr.prom_dataFinal, 
                             pr.prom_valor, pr.prom_porcentagem, pr.idProduto,
@@ -186,11 +161,6 @@ class ProdutoPromocaoModel extends ProdutoModel {
         }));
     }
 
-    /**
-     * Obtém promoção ativa de um produto específico.
-     * @param {number} produtoId
-     * @returns {object|null} dados da promoção ou null
-     */
     async GetPromocaoByProdutoId(produtoId) {
         const sql = `SELECT pr.idPromocao, pr.prom_valor, pr.prom_porcentagem, pr.prom_dataFinal
                     FROM promocao pr
@@ -209,19 +179,12 @@ class ProdutoPromocaoModel extends ProdutoModel {
         };
     }
 
-    /**
-     * Remove uma promoção pelo ID.
-     * @param {number} id — idPromocao
-     */
     async RemoverPromocao(id) {
         const sql = 'DELETE FROM promocao WHERE idPromocao = ?';
         const banco = new Database();
         return await banco.ExecutaComandoNonQuery(sql, [id]);
     }
 
-    /**
-     * Lista todas as promoções (ativas + expiradas) para o painel admin.
-     */
     async ReadTodasPromocoes() {
         const sql = `SELECT pr.idPromocao, pr.prom_dataInicio, pr.prom_dataFinal,
                             pr.prom_valor, pr.prom_porcentagem, pr.idProduto,

@@ -46,7 +46,6 @@ class PerfilController{
                 endId 
             } = req.body;
 
-            // 1. Validar se os campos obrigatórios estão preenchidos
             if (!nome || !data || !telefone || !email || !senhaAtual) {
                 return res.send({ ok: false, msg: "Preencha todos os campos pessoais obrigatórios e sua senha atual." });
             }
@@ -55,30 +54,25 @@ class PerfilController{
                 return res.send({ ok: false, msg: "Preencha todos os campos do endereço." });
             }
 
-            // 2. Buscar o cliente existente no banco para verificar a senha e pegar dados imutáveis (como CPF e status)
             let usuarioModel = new ClienteModel();
             let clienteDb = await usuarioModel.Get(id);
             if (!clienteDb) {
                 return res.send({ ok: false, msg: "Usuário não encontrado." });
             }
 
-            // 3. Verificar a senha atual
             const senhaValida = await bcrypt.compare(senhaAtual, clienteDb.cliSenha);
             if (!senhaValida) {
                 return res.send({ ok: false, msg: "Senha atual incorreta!" });
             }
 
-            // 4. Se for alterar a senha, validar a nova senha
-            let senhaFinal = clienteDb.cliSenha; // por padrão mantém a antiga
+            let senhaFinal = clienteDb.cliSenha;
             if (novaSenha && novaSenha.trim() !== "") {
                 if (novaSenha !== confirmSenha) {
                     return res.send({ ok: false, msg: "A nova senha e a confirmação de senha não coincidem." });
                 }
-                // Criptografar a nova senha
                 senhaFinal = await bcrypt.hash(novaSenha, 10);
             }
 
-            // 5. Verificar se o e-mail que o usuário quer colocar já pertence a outro cliente
             if (email !== clienteDb.cliEmail) {
                 let emailExistente = await usuarioModel.FindByEmail(email);
                 if (emailExistente && emailExistente.cliId != id) {
@@ -86,7 +80,6 @@ class PerfilController{
                 }
             }
 
-            // 6. Atualizar os dados do cliente
             let clienteAtualizado = new ClienteModel(
                 id,
                 nome,
@@ -100,7 +93,6 @@ class PerfilController{
             );
             let resultCliente = await clienteAtualizado.Update();
 
-            // 7. Atualizar os dados do endereço
             let enderecoAtualizado = new EnderecoModelCliente(
                 endId,
                 rua,
@@ -137,12 +129,10 @@ class PerfilController{
             let cliente = new ClienteModel();
             let endereco = new EnderecoModelCliente();
 
-            // Deletar o endereço primeiro devido à chave estrangeira
             let resultEnd = await endereco.Delete(id);
             let result = await cliente.Delete(id);
 
             if (result && resultEnd) {
-                // Limpar o cookie de login para deslogar o usuário
                 res.clearCookie("usuarioLogado");
                 return res.send({ ok: true, msg: "Sua conta foi excluída com sucesso!" });
             } else {

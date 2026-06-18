@@ -9,7 +9,6 @@ class HomeController {
 
     async home(req, res) {
         try {
-            /* ── dados existentes ── */
             let servicoModel = new ServicoModel();
             let servicos = await servicoModel.listar();
 
@@ -22,21 +21,17 @@ class HomeController {
             let fornecedorModel = new FornecedorModel();
             let fornecedores = await fornecedorModel.List();
 
-            /* ── produtos (corrige o contador fixo 0) ── */
             let produtoModel = new ProdutosModel();
             let produtos = await produtoModel.Read();
 
-            /* ── vendas para gráficos ── */
             let vendaModel = new VendaModel();
             let vendasRaw  = await vendaModel.ListarVendas();
 
-            // Objetos simples para serialização JSON segura
             const vendasData = vendasRaw.map(v => ({
                 data:       v.data ? new Date(v.data).toISOString().split('T')[0] : null,
                 valorFinal: parseFloat(v.valorFinal) || 0
             }));
 
-            // Serviços também como objetos simples
             const servicosData = servicos.map(s => {
                 let d = s.getDATA();
                 let dateStr = null;

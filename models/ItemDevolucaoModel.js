@@ -19,7 +19,6 @@ class ItemDevolucaoModel {
         this.#produtoSubstituto = produtoSubstituto;
     }
 
-    // Getters
     getID() { return this.#id; }
     getQUANTIDADE() { return this.#quantidade; }
     getDEVOLUCAOID() { return this.#devolucaoId; }
@@ -28,7 +27,6 @@ class ItemDevolucaoModel {
     getNOMEPRODUTO() { return this.#nomeProduto; }
     getPRODUTOSUBSTITUTO() { return this.#produtoSubstituto; }
 
-    // Setters
     setID(x) { this.#id = x; }
     setQUANTIDADE(x) { this.#quantidade = x; }
     setDEVOLUCAOID(x) { this.#devolucaoId = x; }

@@ -2,9 +2,6 @@ const ProdutoPromocaoModel = require('../models/ProdutoPromocaoModel');
 
 class PromocaoController {
 
-    /**
-     * GET /admin/promocoes — Lista promoções ativas e expiradas
-     */
     async listarView(req, res) {
         try {
             const promoModel = new ProdutoPromocaoModel();
@@ -22,9 +19,6 @@ class PromocaoController {
         }
     }
 
-    /**
-     * POST /admin/promocoes/alterar-desconto — Altera o percentual padrão de desconto
-     */
     async alterarDesconto(req, res) {
         try {
             const { percentual } = req.body;
@@ -45,9 +39,6 @@ class PromocaoController {
         }
     }
 
-    /**
-     * POST /admin/promocoes/remover — Remove uma promoção ativa
-     */
     async removerPromocao(req, res) {
         try {
             const { id } = req.body;
@@ -68,9 +59,6 @@ class PromocaoController {
         }
     }
 
-    /**
-     * POST /admin/promocoes/executar — Executa a lógica de promoção automática sob demanda
-     */
     async executarPromocaoAutomatica(req, res) {
         try {
             const promoModel = new ProdutoPromocaoModel();

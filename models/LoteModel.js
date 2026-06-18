@@ -98,9 +98,6 @@ class LoteModel {
         
     }
 
-    // Escolhe o lote do produto para receber uma devolução: prioriza lotes ainda
-    // válidos, com a validade mais próxima (consistente com FEFO); fallback no lote
-    // mais recente. Retorna o lot_id ou null se o produto não tiver lote.
     async getLotePreferencialPorProduto(produtoId) {
         if (!produtoId) {
             return null;
@@ -118,8 +115,6 @@ class LoteModel {
         return rows.length ? rows[0].lot_id : null;
     }
 
-    // Seleciona o lote para uma venda: do produto, ainda válido (não vencido) e com
-    // saldo suficiente, priorizando a validade mais próxima (FEFO). Retorna lot_id ou null.
     async getLoteParaVenda(produtoId, quantidade, transactionConnection = null) {
         const qtd = Number(quantidade);
         if (!produtoId || Number.isNaN(qtd) || qtd <= 0) {
