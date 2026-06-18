@@ -150,6 +150,14 @@ class ServicoModel{
         return result;
     }
 
+    async deletarDoCliente(id, clie) {
+        const sql = "delete from agendar_servico where idAgendar_Servico = ? and cliente_agenda = ?";
+        const valores = [id, clie];
+        const banco = new Database();
+        let result = await banco.ExecutaComandoNonQuery(sql, valores);
+        return result;
+    }
+
     async deletar(id) {
         //Remove eventuais vínculos na tabela filha (M2M) — pode não existir nenhum,
         //por isso não condicionamos a exclusão principal ao retorno deste delete
@@ -181,6 +189,46 @@ class ServicoModel{
 
         let banco = new Database();
         let rows = await banco.ExecutaComando(sql);
+        let lista = [];
+        for(let i = 0; i< rows.length; i++) {
+            let servico = new ServicoModel(
+                rows[i]["idAgendar_Servico"],
+                rows[i]["serv_data"],
+                rows[i]["serv_hora"],
+                rows[i]["serv_preco"],
+                rows[i]["serv_status"],
+                rows[i]["serv_observacoes"],
+                rows[i]["serv_tipo"],
+                rows[i]["funcionario_agenda"],
+                rows[i]["cliente_agenda"],
+                rows[i]["tipo_nome"],
+                rows[i]["func_nome"],
+                rows[i]["cli_nome"]
+            );
+            lista.push(servico);
+        }
+        return lista;
+    }
+
+    async listarPorCliente(clie) {
+
+        let sql = `
+            select
+                s.idAgendar_Servico, s.serv_data, s.serv_hora, s.serv_preco, s.serv_status, s.serv_observacoes,
+                s.serv_tipo, s.funcionario_agenda, s.cliente_agenda,
+                t.tipo_nome, f.func_nome, c.cli_nome
+            from
+                agendar_servico s
+            inner join Tipo_Servico t on s.serv_tipo = t.tipo_id
+            inner join funcionario f on s.funcionario_agenda = f.idFuncionario
+            inner join cliente c on s.cliente_agenda = c.idClinete
+            where s.cliente_agenda = ?
+            order by s.serv_data desc, s.serv_hora desc
+
+        `;
+
+        let banco = new Database();
+        let rows = await banco.ExecutaComando(sql, [clie]);
         let lista = [];
         for(let i = 0; i< rows.length; i++) {
             let servico = new ServicoModel(

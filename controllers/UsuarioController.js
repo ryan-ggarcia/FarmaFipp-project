@@ -129,13 +129,37 @@ class UsuarioController {
     }
 
     async agendarServicoView(req, res) {
+        const clie = req.signedCookies.usuarioLogado;
         const listaTipos = await new TipoServico().listar();
         const listaFunc = await new FuncionarioModel().Read();
+        const listaAgendamentos = await new ServicoModel().listarPorCliente(Number(clie));
         res.render("usuarioView/agendar-servico", {
             layout: "layoutPublico",
             listaTipos,
-            listaFunc
+            listaFunc,
+            listaAgendamentos
         });
+    }
+
+    async excluirAgendamento(req, res) {
+        const clie = req.signedCookies.usuarioLogado;
+        const { id } = req.body;
+
+        const vazio = (v) => v === undefined || v === null || String(v).trim() === '';
+
+        if (vazio(clie)) {
+            return res.send({ ok: false, msg: 'Sessão expirada. Faça login novamente.' });
+        }
+        if (vazio(id) || String(id) === '0') {
+            return res.send({ ok: false, msg: 'Agendamento não informado para exclusão.' });
+        }
+
+        const result = await new ServicoModel().deletarDoCliente(Number(id), Number(clie));
+
+        if (result) {
+            return res.send({ ok: true, msg: 'Agendamento excluído com sucesso!' });
+        }
+        return res.send({ ok: false, msg: 'Não foi possível excluir o agendamento.' });
     }
 
     async agendarServico(req, res) {

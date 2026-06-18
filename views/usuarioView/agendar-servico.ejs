@@ -1,29 +1,128 @@
-<!-- ════════════════════════════════
-     AGENDAR SERVIÇO — HERO
-════════════════════════════════ -->
+<%
+function _statusCanon(raw){
+  const s = String(raw || '').trim().toLowerCase();
+  if (s === 'ativo' || s === 'aprovado')        return 'aprovado';
+  if (s === 'aguardando')                       return 'aguardando';
+  if (s === 'inativo' || s === 'nao_aprovado')  return 'nao_aprovado';
+  return '';
+}
+
+function _dataFmt(dataRaw){
+  let dataFmt = '—';
+  if(dataRaw){
+    if(dataRaw instanceof Date){
+      dataFmt = dataRaw.toLocaleDateString('pt-BR');
+    } else if(typeof dataRaw === 'string'){
+      const parts = dataRaw.split('T')[0].split('-');
+      if(parts.length === 3) dataFmt = parts[2]+'/'+parts[1]+'/'+parts[0];
+      else dataFmt = dataRaw;
+    }
+  }
+  return dataFmt;
+}
+%>
+
 <div class="shop-hero">
     <div class="container">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-1">
                 <li class="breadcrumb-item"><a href="/">Início</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Agendar Serviço</li>
+                <li class="breadcrumb-item active" aria-current="page">Serviços</li>
             </ol>
         </nav>
-        <h1>Agendar Serviço</h1>
+        <h1>Serviços</h1>
         <p class="subtitle">
             <i class="bi bi-calendar-check me-1"></i>
-            Escolha o serviço, o profissional e o melhor horário. O agendamento fica em análise até a confirmação.
+            Acompanhe os seus serviços agendados ou solicite um novo. O agendamento fica em análise até a confirmação.
         </p>
     </div>
 </div>
 
-<!-- ════════════════════════════════
-     FORMULÁRIO
-════════════════════════════════ -->
 <section class="py-5">
     <div class="container">
-        <div class="row g-4 justify-content-center">
 
+        <div class="d-flex justify-content-center mb-4">
+            <div class="btn-group" role="group" aria-label="Alternar entre listagem e agendamento">
+                <button type="button" id="btnVerLista" class="btn btn-contato">
+                    <i class="bi bi-list-check me-2"></i>Meus Agendamentos
+                </button>
+                <button type="button" id="btnVerForm" class="btn btn-outline-secondary">
+                    <i class="bi bi-calendar-plus me-2"></i>Novo Agendamento
+                </button>
+            </div>
+        </div>
+
+        <div id="painelLista" class="row g-4 justify-content-center">
+            <div class="col-lg-10">
+                <div class="contato-card">
+                    <h4 class="contato-card-title">
+                        <i class="bi bi-list-check me-2"></i>Meus Agendamentos
+                    </h4>
+                    <p class="contato-card-sub">Veja os serviços que você agendou e o status de cada um.</p>
+
+                    <% if(listaAgendamentos.length === 0){ %>
+                        <div class="text-center py-5">
+                            <i class="bi bi-calendar-x d-block mb-2" style="font-size:2.5rem; color:var(--gray-500);"></i>
+                            <h5 class="mb-1">Nenhum serviço agendado</h5>
+                            <p class="text-muted mb-3">Solicite o seu primeiro agendamento agora mesmo.</p>
+                            <button type="button" id="btnIrForm" class="btn btn-contato">
+                                <i class="bi bi-calendar-plus me-2"></i>Novo Agendamento
+                            </button>
+                        </div>
+                    <% } else { %>
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Serviço</th>
+                                        <th>Profissional</th>
+                                        <th>Data</th>
+                                        <th>Hora</th>
+                                        <th>Valor</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for(let i = 0; i < listaAgendamentos.length; i++){ %>
+                                        <%
+                                            const s = listaAgendamentos[i];
+                                            const status = _statusCanon(s.getSTATUS());
+                                        %>
+                                        <tr>
+                                            <td><%= s.getDESC_TIPO() || '—' %></td>
+                                            <td><%= s.getNOME_FUNC() || '—' %></td>
+                                            <td><%= _dataFmt(s.getDATA()) %></td>
+                                            <td><%= s.getHORA() || '—' %></td>
+                                            <td>R$ <%= Number(s.getPRECO()).toFixed(2).replace('.', ',') %></td>
+                                            <td>
+                                                <% if(status === 'aprovado'){ %>
+                                                    <span class="badge bg-success">Aprovado</span>
+                                                <% } else if(status === 'aguardando'){ %>
+                                                    <span class="badge bg-warning text-dark">Aguardando</span>
+                                                <% } else if(status === 'nao_aprovado'){ %>
+                                                    <span class="badge bg-danger">Não Aprovado</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-secondary"><%= s.getSTATUS() || '—' %></span>
+                                                <% } %>
+                                            </td>
+                                            <td class="text-end">
+                                                <button type="button" data-id="<%= s.getID() %>"
+                                                        class="btn btn-sm btn-outline-danger btnExcluir" title="Excluir">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div id="painelForm" class="row g-4 justify-content-center d-none">
             <div class="col-lg-8">
                 <div class="contato-card">
                     <h4 class="contato-card-title">
@@ -88,8 +187,8 @@
                     </form>
                 </div>
             </div>
-
         </div>
+
     </div>
 </section>
 

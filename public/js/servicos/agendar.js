@@ -1,11 +1,81 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    const painelLista = document.getElementById("painelLista");
+    const painelForm = document.getElementById("painelForm");
+    const btnVerLista = document.getElementById("btnVerLista");
+    const btnVerForm = document.getElementById("btnVerForm");
+    const btnIrForm = document.getElementById("btnIrForm");
+
+    function mostrarLista() {
+        if (!painelLista || !painelForm) return;
+        painelForm.classList.add("d-none");
+        painelLista.classList.remove("d-none");
+        btnVerLista.classList.remove("btn-outline-secondary");
+        btnVerLista.classList.add("btn-contato");
+        btnVerForm.classList.remove("btn-contato");
+        btnVerForm.classList.add("btn-outline-secondary");
+    }
+
+    function mostrarForm() {
+        if (!painelLista || !painelForm) return;
+        painelLista.classList.add("d-none");
+        painelForm.classList.remove("d-none");
+        btnVerForm.classList.remove("btn-outline-secondary");
+        btnVerForm.classList.add("btn-contato");
+        btnVerLista.classList.remove("btn-contato");
+        btnVerLista.classList.add("btn-outline-secondary");
+    }
+
+    if (btnVerLista) btnVerLista.addEventListener("click", mostrarLista);
+    if (btnVerForm) btnVerForm.addEventListener("click", mostrarForm);
+    if (btnIrForm) btnIrForm.addEventListener("click", mostrarForm);
+
+    document.querySelectorAll(".btnExcluir").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const id = this.dataset.id;
+            Swal.fire({
+                title: 'Excluir agendamento?',
+                text: 'Esta ação não poderá ser desfeita.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#A31621',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch("/servicos/excluir", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ id })
+                    })
+                        .then(resposta => resposta.json())
+                        .then(corpo => {
+                            if (corpo.ok) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Excluído!',
+                                    text: corpo.msg,
+                                    timer: 1800,
+                                    showConfirmButton: false
+                                }).then(() => window.location.reload());
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Erro', text: corpo.msg });
+                            }
+                        })
+                        .catch(() => {
+                            Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha na comunicação. Tente novamente.' });
+                        });
+                }
+            });
+        });
+    });
+
     const btn = document.getElementById("btnAgendar");
     if (!btn) return;
 
     btn.addEventListener("click", agendar);
 
-    // Atualiza o valor exibido conforme o tipo de serviço escolhido
     const selTipo = document.getElementById("tipo");
     const valorServico = document.getElementById("valorServico");
     if (selTipo && valorServico) {
@@ -27,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         [inputTipo, inputFunc, inputData, inputHora].forEach(el => { el.style.borderColor = "#ced4da"; });
 
-        // Validação dos campos obrigatórios
         const listaValidacao = [];
         if (inputTipo.value === "0" || inputTipo.value === "") listaValidacao.push(inputTipo);
         if (inputFunc.value === "") listaValidacao.push(inputFunc);
@@ -74,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         text: corpo.msg,
                         timer: 2000,
                         showConfirmButton: false
-                    }).then(() => { window.location.href = "/"; });
+                    }).then(() => { window.location.href = "/servicos"; });
                 } else {
                     Swal.fire({ icon: 'error', title: 'Erro', text: corpo.msg });
                 }
